@@ -234,7 +234,7 @@ u16 freestyle_random_round_number (const freestyle_ctx *x)
 	u16 r;
 
 	/* Generate a random number */
-	r = x->min_rounds + arc4random_uniform (x->max_rounds - x->min_rounds + 1);
+	r = x->min_rounds + arc4random_uniform (x->max_rounds - x->min_rounds + x->hash_interval);
 
 	/* Make it a multiple of hash_interval */
 	r = x->hash_interval * (u16)(r/x->hash_interval);

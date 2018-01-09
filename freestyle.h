@@ -1,8 +1,6 @@
 /*
- * Copyright (c) 2017 
- *
- * P. Arun Babu <arun.hbni@gmail.com> and 
- * Jithin Jose Thomas <jithinjosethomas@gmail.com>
+ * Copyright (c) 2017  P. Arun Babu and Jithin Jose Thomas 
+ * arun DOT hbni AT gmail DOT com, jithinjosethomas AT gmail DOT com
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,6 +15,12 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/*
+Some code is taken from D. J. Bernstein's
+chacha-merged.c version 20080118
+Public domain.
+*/
+
 #ifndef FREESTYLE_H
 #define FREESTYLE_H
 
@@ -25,6 +29,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
+
+#define NUM_INIT_HASHES (32)
 
 #ifdef FREESTYLE_DEBUG
 	#include <assert.h>
@@ -36,18 +43,31 @@
 	#include <bsd/stdlib.h>
 #endif
 
+/*--- Elements of the cipher state --- */
 
-/* --------------------- */
+#define CONSTANT0 	(0)
+#define CONSTANT1 	(1)
+#define CONSTANT2 	(2)
+#define CONSTANT3 	(3)
+#define KEY0 		(4)
+#define KEY1 		(5)
+#define KEY2 		(6)
+#define KEY3 		(7)
+#define KEY4 		(8)
+#define KEY5 		(9)
+#define KEY6 		(10)
+#define KEY7 		(11)
+#define COUNTER 	(12)
+#define IV0 		(13)
+#define IV1 		(14)	
+#define IV2 		(15)
 
-/*
-From D. J. Bernstein's
-chacha-merged.c version 20080118
-Public domain.
-*/
+/*------*/
 
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
+typedef unsigned char 	u8;
+typedef unsigned short 	u16;
+typedef unsigned int 	u32;
+typedef uint64_t 	u64;
 
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)
@@ -75,6 +95,7 @@ typedef unsigned int u32;
 #define ROTATE(v,c) (ROTL32(v,c))
 #define XOR(v,w) ((v) ^ (w))
 #define PLUS(v,w) (U32V((v) + (w)))
+#define MINUS(v,w) (U32V((v) - (w)))
 #define PLUSONE(v) (PLUS((v),1))
 
 #define QR(a,b,c,d) \
@@ -86,8 +107,6 @@ typedef unsigned int u32;
 static const char sigma[16] = "expand 32-byte k";
 static const char tau[16] = "expand 16-byte k";
 
-/* --------------------- */
-
 #define AXR(a,b,c,r) {a = PLUS(a,b); c = ROTATE(XOR(c,a),r);}
 
 typedef struct freestyle_ctx {
@@ -96,12 +115,16 @@ typedef struct freestyle_ctx {
 	u16		min_rounds;
 	u16		max_rounds;
 
-	u32 		cipher_parameter;
+	u32 		cipher_parameter[2];
 	u32 		random_word[4];
 
-	u16 		init_stop_condition[28];
+	u16		num_rounds_possible;
+
+	u16 		init_stop_condition[NUM_INIT_HASHES];
 
 	u8 		hash_complexity;
+	u8 		init_complexity;
+
 	u16 		hash_interval;
 	u8 		num_output_elements_to_hash;
 
@@ -123,7 +146,8 @@ void freestyle_init_encrypt (
 	const 	u16 		min_rounds,
 	const 	u16		max_rounds,
 	const 	u8 		hash_complexity,
-	const 	u16 		hash_interval
+	const 	u16 		hash_interval,
+	const 	u8 		init_complexity
 );
 
 void freestyle_init_decrypt (
@@ -135,6 +159,7 @@ void freestyle_init_decrypt (
 	const 	u16		max_rounds,
 	const 	u8 		hash_complexity,
 	const 	u16 		hash_interval,
+	const 	u8 		init_complexity,
 	const	u16 		*init_stop_condition
 );
 
@@ -159,12 +184,16 @@ void freestyle_hashsetup (
 void freestyle_roundsetup (
 		freestyle_ctx 	*x,
 	const	u16 		min_rounds,
-	const	u16 		max_rounds
+	const	u16 		max_rounds,
+	const	u8 		init_complexity
 );
 
-void freestyle_randomsetup (
-		freestyle_ctx 	*x,
-	const 	bool 		do_encryption_setup
+void freestyle_randomsetup_encrypt (
+		freestyle_ctx 	*x
+);
+
+void freestyle_randomsetup_decrypt (
+		freestyle_ctx 	*x
 );
 
 u8 freestyle_hash (

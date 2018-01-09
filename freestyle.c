@@ -125,7 +125,7 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 		x->init_complexity == 32 ?  -1 : (1 << x->init_complexity)
 	);
 
-#ifdef FREESTYLE_RANDOMIZE_INDICES
+#ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
 	u8	random_mask   = arc4random_uniform (32); 
 #else
 	u8 	random_mask = 0;
@@ -242,7 +242,7 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 	u32 target = (u32)(((u64)1 << x->init_complexity) - 1); 
 
-#ifdef FREESTYLE_RANDOMIZE_INDICES
+#ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
 	u8	random_mask   = arc4random_uniform (32); 
 #else
 	u8 	random_mask = 0;
@@ -556,7 +556,7 @@ u16 freestyle_encrypt_block (
 
 	bool init = (plaintext == NULL) || (ciphertext == NULL) || (bytes == 0);
 
-#ifdef FREESTYLE_RANDOMIZE_INDICES
+#ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
 	u8	random_mask   = arc4random_uniform (256); 
 #else
 	u8 	random_mask = 0;

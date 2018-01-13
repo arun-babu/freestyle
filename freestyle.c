@@ -561,16 +561,6 @@ u16 freestyle_encrypt_block (
 	/* modify counter[0] */
 	output32[COUNTER] ^= x->random_word[3];
 
-	u32 temp1 = output32[COUNTER];
-	u32 temp2 = output32[KEY2]; 
-
-	AXR (temp1, output32[KEY3], temp2, 16);
-	AXR (temp2, output32[KEY4], temp1, 12);
-	AXR (temp1, output32[KEY5], temp2,  8);
-	AXR (temp2, output32[KEY6], temp1,  7);
-
-	u32 hash_count_mask = temp1;
-
 	for (r = 1; r <= random_rounds; ++r)
 	{
 		if (r & 1)
@@ -591,9 +581,7 @@ u16 freestyle_encrypt_block (
 		++hash_count [hash ^ random_mask];
 	}
 
-	u8 masked_hash_count = PLUS(hash_count[hash^random_mask], hash_count_mask) % x->num_rounds_possible;
-
-	*stop_condition = (hash << 8) | (masked_hash_count);
+	*stop_condition = (hash << 8) | (hash_count [hash ^ random_mask]);
 
 	if (! init)
 	{
@@ -628,8 +616,8 @@ u16 freestyle_decrypt_block (
 
 	bool init = (plaintext == NULL) || (ciphertext == NULL) || (bytes == 0);
 
-	u8 expected_hash 	= (*stop_condition >> 8) & 0xFF;
-	u8 masked_hash_count    = (*stop_condition & 0xFF); 
+	u8 expected_hash = (*stop_condition >> 8) & 0xFF;
+	u8 hash_count    = (*stop_condition & 0xFF); 
 
 	for (i = 0; i < 16; ++i) {
 		output32 [i] = x->input[i];
@@ -637,18 +625,6 @@ u16 freestyle_decrypt_block (
 
 	/* modify counter[0] */
 	output32[COUNTER] ^= x->random_word[3];
-
-	u32 temp1 = output32[COUNTER]; 
-	u32 temp2 = output32[KEY2]; 
-
-	AXR (temp1, output32[KEY3], temp2, 16);
-	AXR (temp2, output32[KEY4], temp1, 12);
-	AXR (temp1, output32[KEY5], temp2,  8);
-	AXR (temp2, output32[KEY6], temp1,  7);
-
-	u32 hash_count_mask = temp1;
-
-	u8 hash_count = (((i64)masked_hash_count - hash_count_mask) % x->num_rounds_possible + x->num_rounds_possible) % x->num_rounds_possible;
 
 	for (hc = 0; hc <= hash_count; ++hc)
 	{

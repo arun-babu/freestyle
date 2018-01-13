@@ -65,9 +65,11 @@ Public domain.
 /*------*/
 
 typedef unsigned char 	u8;
+typedef signed char 	i8;
 typedef unsigned short 	u16;
 typedef unsigned int 	u32;
 typedef uint64_t 	u64;
+typedef int64_t 	i64;
 
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)

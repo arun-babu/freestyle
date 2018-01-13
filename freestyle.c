@@ -561,13 +561,13 @@ u16 freestyle_encrypt_block (
 	/* modify counter[0] */
 	output32[COUNTER] ^= x->random_word[3];
 
-	u32 temp1 = 0;
-	u32 temp2 = 0; 
+	u32 temp1 = output32[COUNTER];
+	u32 temp2 = output32[KEY2]; 
 
-	AXR (temp1, output32[COUNTER], 	temp2, 16);
-	AXR (temp2, output32[KEY2], 	temp1, 12);
-	AXR (temp1, output32[KEY3], 	temp2,  8);
-	AXR (temp2, output32[KEY4], 	temp1,  7);
+	AXR (temp1, output32[KEY3], temp2, 16);
+	AXR (temp2, output32[KEY4], temp1, 12);
+	AXR (temp1, output32[KEY5], temp2,  8);
+	AXR (temp2, output32[KEY6], temp1,  7);
 
 	u32 hash_count_mask = temp1;
 
@@ -638,13 +638,13 @@ u16 freestyle_decrypt_block (
 	/* modify counter[0] */
 	output32[COUNTER] ^= x->random_word[3];
 
-	u32 temp1 = 0; 
-	u32 temp2 = 0; 
+	u32 temp1 = output32[COUNTER]; 
+	u32 temp2 = output32[KEY2]; 
 
-	AXR (temp1, output32[COUNTER], 	temp2, 16);
-	AXR (temp2, output32[KEY2], 	temp1, 12);
-	AXR (temp1, output32[KEY3], 	temp2,  8);
-	AXR (temp2, output32[KEY4], 	temp1,  7);
+	AXR (temp1, output32[KEY3], temp2, 16);
+	AXR (temp2, output32[KEY4], temp1, 12);
+	AXR (temp1, output32[KEY5], temp2,  8);
+	AXR (temp2, output32[KEY6], temp1,  7);
 
 	u32 hash_count_mask = temp1;
 

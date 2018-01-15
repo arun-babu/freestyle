@@ -69,6 +69,12 @@ typedef unsigned short 	u16;
 typedef unsigned int 	u32;
 typedef uint64_t 	u64;
 
+#define freestyle_encrypt(a,b,c,d,e) freestyle_process(a,b,c,d,e,true)
+#define freestyle_decrypt(a,b,c,d,e) freestyle_process(a,b,c,d,e,false)
+
+#define freestyle_encrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,true)
+#define freestyle_decrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,false)
+
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)
 
@@ -120,7 +126,7 @@ typedef struct freestyle_ctx {
 
 	u16		num_rounds_possible;
 
-	u16 		init_stop_condition[NUM_INIT_HASHES];
+	u8 		init_hash [NUM_INIT_HASHES];
 
 	u8 		hash_complexity;
 	u8 		init_complexity;
@@ -136,6 +142,18 @@ void freestyle_increment_counter (
 
 u16 random_round_number (
 	const freestyle_ctx *x
+);
+
+void freestyle_init_common (
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u32		key_length_bits,
+	const 	u8 		*iv,
+	const 	u16 		min_rounds,
+	const	u16		max_rounds,
+	const	u8 		hash_complexity,
+	const	u16 		hash_interval,
+	const	u8 		init_complexity
 );
 
 void freestyle_init_encrypt (
@@ -160,7 +178,7 @@ void freestyle_init_decrypt (
 	const 	u8 		hash_complexity,
 	const 	u16 		hash_interval,
 	const 	u8 		init_complexity,
-	const	u16 		*init_stop_condition
+	const	u8 		*init_hash
 );
 
 void freestyle_keysetup (
@@ -203,36 +221,22 @@ u8 freestyle_hash (
 	const 	u16 		rounds
 );
 
-void freestyle_encrypt (
-		freestyle_ctx 	*x,	
-	const 	u8 		*plaintext,
-		u8 		*ciphertext,
+int freestyle_process (
+		freestyle_ctx 	*x,
+	const 	u8 		*input,
+		u8 		*output,
 		u32 		bytes,
-		u16 		*stop_condition 
+		u8 		*hash,
+	const 	bool 		do_encryption
 );
 
-u16 freestyle_encrypt_block (
+u16 freestyle_process_block (
 		freestyle_ctx	*x,	
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
 		u8 		bytes,
-		u16		*stop_condiiton	
-);
-
-int freestyle_decrypt (
-		freestyle_ctx 	*x,
-	const 	u8 		*ciphertext,
-		u8 		*plaintext,
-		u32 		bytes,
-	const	u16 		*stop_condition
-);
-
-u16 freestyle_decrypt_block (
-		freestyle_ctx	*x,
-	const	u8 		*ciphertext,
-		u8 		*plaintext,
-		u8 		bytes,
-	const 	u16 		*stop_condition
+		u8		*expected_hash,	
+	const	bool 		do_encryption
 );
 
 #endif	/* FREESTYLE_H */

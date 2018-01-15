@@ -23,7 +23,7 @@ Public domain.
 
 #include "freestyle.h"
 
-void freestyle_init_encrypt (
+void freestyle_init_common (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
 	const 	u32		key_length_bits,
@@ -52,6 +52,20 @@ void freestyle_init_encrypt (
 	freestyle_ivsetup 		(x, iv,  NULL);
 	freestyle_hashsetup 		(x, hash_complexity, hash_interval);
 	freestyle_roundsetup 		(x, min_rounds, max_rounds, init_complexity);
+}
+
+void freestyle_init_encrypt (
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u32		key_length_bits,
+	const 	u8 		*iv,
+	const 	u16 		min_rounds,
+	const	u16		max_rounds,
+	const	u8 		hash_complexity,
+	const	u16 		hash_interval,
+	const	u8 		init_complexity)
+{	
+	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_complexity, hash_interval, init_complexity);
 	freestyle_randomsetup_encrypt 	(x);
 }
 
@@ -65,33 +79,16 @@ void freestyle_init_decrypt (
 	const	u8 		hash_complexity,
 	const	u16 		hash_interval,
 	const	u8 		init_complexity,
-	const	u16 		*init_stop_condition)
+	const	u8 		*init_hash)
 {	
-	assert (min_rounds <= max_rounds);
-
-	assert (min_rounds >= 1);
-	assert (max_rounds <= 256 * hash_interval);
-
-	assert (min_rounds % hash_interval == 0);
-	assert (max_rounds % hash_interval == 0);
-
-	assert (hash_complexity >= 1);
-	assert (hash_complexity <= 3);
-
-	assert (init_complexity >= 8);
-	assert (init_complexity <= 32);
-
-	freestyle_keysetup 		(x, key, key_length_bits);
-	freestyle_ivsetup 		(x, iv,  NULL);
-	freestyle_hashsetup 		(x, hash_complexity, hash_interval);
-	freestyle_roundsetup 		(x, min_rounds, max_rounds, init_complexity);
-
-	memcpy ( x->init_stop_condition,
-		 init_stop_condition,
-		 NUM_INIT_HASHES * sizeof(u16)
+	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_complexity, hash_interval, init_complexity);
+	
+	memcpy ( x->init_hash,
+		 init_hash,
+		 NUM_INIT_HASHES * sizeof(u8)
 	);
 
-	freestyle_randomsetup_decrypt 	(x);
+	freestyle_randomsetup_decrypt (x);
 }
 	
 void freestyle_randomsetup_encrypt (freestyle_ctx *x)
@@ -115,12 +112,7 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	x->max_rounds 		= 36;
 	x->hash_interval 	= 1;
 	x->hash_complexity 	= 3;
-
-	x->random_word[0] = 0;
-	x->random_word[1] = 0;
-	x->random_word[2] = 0;
-	x->random_word[3] = 0;
-
+	
 	u32 target = arc4random_uniform (
 		x->init_complexity == 32 ?  -1 : (1 << x->init_complexity)
 	);
@@ -145,7 +137,7 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 			NULL,
 			NULL,
 			0,
-			&x->init_stop_condition[index]
+			&x->init_hash [index]
 		);
 	}
 
@@ -166,7 +158,7 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 				NULL,
 				NULL,
 				0,
-				&x->init_stop_condition[index]
+				&x->init_hash [index]
 			);
 
 			if (CR[index] == 0) {
@@ -235,11 +227,6 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	x->hash_interval 	= 1;
 	x->hash_complexity 	= 3;
 
-	x->random_word[0] = 0;
-	x->random_word[1] = 0;
-	x->random_word[2] = 0;
-	x->random_word[3] = 0;
-
 	u32 target = (u32)(((u64)1 << x->init_complexity) - 1); 
 
 #ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
@@ -260,7 +247,7 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 				NULL,
 				NULL,
 				0,
-				&x->init_stop_condition[index]
+				&x->init_hash [index]
 			);
 
 			if (R[index] == 0) {
@@ -336,8 +323,7 @@ void freestyle_keysetup (
 		key += 16;
 		constants = sigma;
 	}
-	else
-	{
+	else {
 		constants = tau;
 	}
 
@@ -459,43 +445,13 @@ u8 freestyle_hash (
 	return  (u8)(hash[0] ^ hash[1] ^ hash[2] ^ hash[3]);
 }
 
-void freestyle_encrypt (
-		freestyle_ctx 	*x,	
-	const 	u8 	    	*plaintext,
-		u8 	    	*ciphertext,
-		u32 	    	bytes,
-		u16 	    	*stop_condition)
-{
-	int 	i 	= 0;
-	int 	block 	= 0;
-
-	while (bytes > 0)
-	{
-	    u8 bytes_to_process = bytes >= 64 ? 64 : bytes;
-
-	    (void) freestyle_encrypt_block (
-		x,
-		plaintext  + i,
-		ciphertext + i,
-		bytes_to_process,
-		&stop_condition [block]
-	    );
-	
-	    i 	  += bytes_to_process;
-	    bytes -= bytes_to_process;
-
-	    ++block;
-
-	    freestyle_increment_counter(x);
-	}
-}
-
-int freestyle_decrypt (
+int freestyle_process (
 		freestyle_ctx 	*x,
-	const 	u8 		*ciphertext,
-		u8 		*plaintext,
+	const 	u8 		*plaintext,
+		u8 		*ciphertext,
 		u32 		bytes,
-	const	u16 		*stop_condition)
+		u8 		*hash,
+	const 	bool 		do_encryption)
 {
 	int 	i	= 0;
 	int 	block 	= 0;
@@ -504,12 +460,13 @@ int freestyle_decrypt (
 	{
 	    u8 bytes_to_process = bytes >= 64 ? 64 : bytes;
 
-	    u16 num_rounds = freestyle_decrypt_block (
+	    u16 num_rounds = freestyle_process_block (
 		x,
-		ciphertext + i,
 		plaintext  + i,
+		ciphertext + i,
 		bytes_to_process,
-		&stop_condition [block]
+		&hash [block],
+		do_encryption
 	    );
 
 	    if (num_rounds < x->min_rounds) {
@@ -527,20 +484,19 @@ int freestyle_decrypt (
 	return 0;
 }
 
-u16 freestyle_encrypt_block (
+u16 freestyle_process_block (
 		freestyle_ctx	*x,	
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
-	const 	u8 		bytes,
-		u16 		*stop_condition)
+		u8 		bytes,
+		u8 		*expected_hash,
+	const 	bool		do_encryption)
 {
 	u16 	i, r;
 
 	u8 	hash = 0;
 
 	u32 	output32[16];
-
-	u16 	random_rounds = freestyle_random_round_number (x);
 
 	bool init = (plaintext == NULL) || (ciphertext == NULL) || (bytes == 0);
 
@@ -550,9 +506,13 @@ u16 freestyle_encrypt_block (
 	u8 	random_mask = 0;
 #endif
 
-	u8 hash_count [256];
+	u16 rounds = do_encryption ? freestyle_random_round_number (x) : x->max_rounds;
 
-	memset (hash_count, -1, 256 * sizeof(u8));
+	bool do_decryption = ! do_encryption;
+
+	bool hash_collided [256];
+
+	memset (hash_collided, false, 256 * sizeof(bool));
 
 	for (i = 0; i < 16; ++i) {
 		output32 [i] = x->input [i];
@@ -561,7 +521,7 @@ u16 freestyle_encrypt_block (
 	/* modify counter[0] */
 	output32[COUNTER] ^= x->random_word[3];
 
-	for (r = 1; r <= random_rounds; ++r)
+	for (r = 1; r <= rounds; ++r)
 	{
 		if (r & 1)
 			freestyle_column_round   (output32);
@@ -571,17 +531,25 @@ u16 freestyle_encrypt_block (
 		if (r >= x->min_rounds && r % x->hash_interval == 0)
 		{
 			hash = freestyle_hash (x,output32,hash,r);
-			++(hash_count [hash ^ random_mask]);
+
+			while (hash_collided [hash ^ random_mask]) {
+				hash = (hash + 1) % 256;
+			}
+
+			hash_collided [hash ^ random_mask] = true;
+
+			if (do_decryption && hash == *expected_hash)
+			{
+				break;
+			}
 		}
 	}
 
-	if (!init && random_rounds == x->max_rounds)
-	{
-		hash = arc4random_uniform (256);
-		++hash_count [hash ^ random_mask];
-	}
-
-	*stop_condition = (hash << 8) | (hash_count [hash ^ random_mask]);
+	if (do_encryption)
+		*expected_hash = hash;
+	else
+		if (r > x->max_rounds)
+			return 0;
 
 	if (! init)
 	{
@@ -598,83 +566,5 @@ u16 freestyle_encrypt_block (
 		}
         }
 
-	return random_rounds;
-}
-
-u16 freestyle_decrypt_block (
-		freestyle_ctx	*x,
-	const	u8 		*ciphertext,
-		u8 		*plaintext,
-		u8 		bytes,
-	const 	u16 		*stop_condition)
-{
-	u16 i, r = 0;
-
-	u8 hash = 0, hc;
-
-	u32 	output32[16];
-
-	bool init = (plaintext == NULL) || (ciphertext == NULL) || (bytes == 0);
-
-	u8 expected_hash = (*stop_condition >> 8) & 0xFF;
-	u8 hash_count    = (*stop_condition & 0xFF); 
-
-	for (i = 0; i < 16; ++i) {
-		output32 [i] = x->input[i];
-	}
-
-	/* modify counter[0] */
-	output32[COUNTER] ^= x->random_word[3];
-
-	for (hc = 0; hc <= hash_count; ++hc)
-	{
-		while (1)	
-		{
-			++r;
-
-			if (r > x->max_rounds) {
-				if (init)
-					return 0; // wrong key OR too many rounds
-				else
-					goto decrypt;
-			}
-
-			if (r & 1)
-				freestyle_column_round   (output32);
-			else
-				freestyle_diagonal_round (output32);
-
-			if (r >= x->min_rounds && r % x->hash_interval == 0)
-		  	{
-		   		hash = freestyle_hash (
-					x,
-					output32,
-				 	hash,
-					r
-				);
-
-				if (hash == expected_hash) {
-					break;
-				}
-			}
-		}
-	}
-
-decrypt:
-	if (! init)	
-	{
-		u8 output8[64];
-
-		for (i = 0; i < 16; ++i)
-		{
-			output32 [i] = PLUS(output32[i], x->input[i]);
-	     		U32TO8_LITTLE (output8 + 4 * i, output32[i]);
-		}
-
-		for (i = 0; i < bytes; ++i) {
-			plaintext[i] = ciphertext[i] ^ output8[i];
-		}
-	}
-
-	return r;
+	return do_encryption ? rounds : r;
 }

@@ -2,7 +2,7 @@
 
 Freestyle is a randomized version of ChaCha cipher to resist brute-force and dictionary attacks.
 
-Tested on OpenBSD
+Tested on Linux and OpenBSD
 
 Released in ISC licence.
 

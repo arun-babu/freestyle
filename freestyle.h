@@ -31,7 +31,9 @@ Public domain.
 #include <stdbool.h>
 #include <stdint.h>
 
-#define NUM_INIT_HASHES (32)
+#define NUM_INIT_HASHES (28)
+
+#define MAX_HASH_VALUE (65536)
 
 #ifdef FREESTYLE_DEBUG
 	#include <assert.h>
@@ -126,7 +128,7 @@ typedef struct freestyle_ctx {
 
 	u16		num_rounds_possible;
 
-	u8 		init_hash [NUM_INIT_HASHES];
+	u16 		init_hash [NUM_INIT_HASHES];
 
 	u8 		hash_complexity;
 	u8 		init_complexity;
@@ -178,7 +180,7 @@ void freestyle_init_decrypt (
 	const 	u8 		hash_complexity,
 	const 	u16 		hash_interval,
 	const 	u8 		init_complexity,
-	const	u8 		*init_hash
+	const	u16 		*init_hash
 );
 
 void freestyle_keysetup (
@@ -214,10 +216,10 @@ void freestyle_randomsetup_decrypt (
 		freestyle_ctx 	*x
 );
 
-u8 freestyle_hash (
+u16 freestyle_hash (
 		freestyle_ctx 	*x,
 	const 	u32 		output [16],
-	const 	u8 		previous_double_round_hash,
+	const 	u16 		previous_hash,
 	const 	u16 		rounds
 );
 
@@ -226,7 +228,7 @@ int freestyle_process (
 	const 	u8 		*input,
 		u8 		*output,
 		u32 		bytes,
-		u8 		*hash,
+		u16 		*hash,
 	const 	bool 		do_encryption
 );
 
@@ -235,7 +237,7 @@ u16 freestyle_process_block (
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
 		u8 		bytes,
-		u8		*expected_hash,	
+		u16		*expected_hash,	
 	const	bool 		do_encryption
 );
 

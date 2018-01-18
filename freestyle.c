@@ -42,6 +42,8 @@ void freestyle_init_common (
 	assert (min_rounds % hash_interval == 0);
 	assert (max_rounds % hash_interval == 0);
 
+	assert ((max_rounds - min_rounds)/hash_interval <= 255);
+
 	assert (hash_complexity >= 1);
 	assert (hash_complexity <= 3);
 
@@ -79,13 +81,13 @@ void freestyle_init_decrypt (
 	const	u8 		hash_complexity,
 	const	u16 		hash_interval,
 	const	u8 		init_complexity,
-	const	u8 		*init_hash)
+	const	u16 		*init_hash)
 {	
 	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_complexity, hash_interval, init_complexity);
 	
 	memcpy ( x->init_hash,
 		 init_hash,
-		 NUM_INIT_HASHES * sizeof(u8)
+		 NUM_INIT_HASHES * sizeof(u16)
 	);
 
 	freestyle_randomsetup_decrypt (x);
@@ -116,7 +118,7 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	u32 target = arc4random_uniform (
 		x->init_complexity == 32 ?  -1 : (1 << x->init_complexity)
 	);
-
+	
 #ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
 	u8	random_mask   = arc4random_uniform (32); 
 #else
@@ -187,7 +189,7 @@ continue_loop_encrypt:
 		AXR (temp1, R[7*i + 4], temp2, 16);
 		AXR (temp2, R[7*i + 5], temp1, 12);
 		AXR (temp1, R[7*i + 6], temp2,  8);
-		AXR (temp2, R[7*i + 7], temp1,  7);
+		AXR (temp2, R[7*i + 0], temp1,  7);
 
 		x->random_word[i] = temp1; 
 	}
@@ -228,6 +230,7 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	x->hash_complexity 	= 3;
 
 	u32 target = (u32)(((u64)1 << x->init_complexity) - 1); 
+
 
 #ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
 	u8	random_mask   = arc4random_uniform (32); 
@@ -276,7 +279,7 @@ continue_loop_decrypt:
 		AXR (temp1, R[7*i + 4], temp2, 16);
 		AXR (temp2, R[7*i + 5], temp1, 12);
 		AXR (temp1, R[7*i + 6], temp2,  8);
-		AXR (temp2, R[7*i + 7], temp1,  7);
+		AXR (temp2, R[7*i + 0], temp1,  7);
 
 		x->random_word[i] = temp1; 
 	}
@@ -414,10 +417,10 @@ void freestyle_increment_counter (freestyle_ctx *x)
 	x->input [COUNTER] = PLUSONE (x->input[COUNTER]);
 }
 
-u8 freestyle_hash (
+u16 freestyle_hash (
 		freestyle_ctx	*x,
 	const	u32 		output[16],
-	const 	u8 		previous_hash,
+	const 	u16 		previous_hash,
 	const	u16 		rounds)
 {
 	u8 i;
@@ -442,7 +445,7 @@ u8 freestyle_hash (
 
 	U32TO8_LITTLE (hash, temp1);
 
-	return  (u8)(hash[0] ^ hash[1] ^ hash[2] ^ hash[3]);
+	return  (u16)((hash[0] << 8 | hash[1]) ^ (hash[2] << 8 | hash[3]));
 }
 
 int freestyle_process (
@@ -450,7 +453,7 @@ int freestyle_process (
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
 		u32 		bytes,
-		u8 		*hash,
+		u16 		*hash,
 	const 	bool 		do_encryption)
 {
 	int 	i	= 0;
@@ -489,19 +492,19 @@ u16 freestyle_process_block (
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
 		u8 		bytes,
-		u8 		*expected_hash,
+		u16 		*expected_hash,
 	const 	bool		do_encryption)
 {
 	u16 	i, r;
 
-	u8 	hash = 0;
+	u16 	hash = 0;
 
 	u32 	output32[16];
 
 	bool init = (plaintext == NULL) || (ciphertext == NULL) || (bytes == 0);
 
 #ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
-	u8	random_mask   = arc4random_uniform (256); 
+	u8	random_mask   = arc4random_uniform (MAX_HASH_VALUE); 
 #else
 	u8 	random_mask = 0;
 #endif
@@ -510,9 +513,9 @@ u16 freestyle_process_block (
 
 	bool do_decryption = ! do_encryption;
 
-	bool hash_collided [256];
+	bool hash_collided [MAX_HASH_VALUE];
 
-	memset (hash_collided, false, 256 * sizeof(bool));
+	memset (hash_collided, false, MAX_HASH_VALUE * sizeof(bool));
 
 	for (i = 0; i < 16; ++i) {
 		output32 [i] = x->input [i];
@@ -533,13 +536,12 @@ u16 freestyle_process_block (
 			hash = freestyle_hash (x,output32,hash,r);
 
 			while (hash_collided [hash ^ random_mask]) {
-				hash = (hash + 1) % 256;
+				hash = (hash + 1) % MAX_HASH_VALUE;
 			}
 
 			hash_collided [hash ^ random_mask] = true;
 
-			if (do_decryption && hash == *expected_hash)
-			{
+			if (do_decryption && hash == *expected_hash) {
 				break;
 			}
 		}

@@ -29,7 +29,6 @@ Public domain.
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <err.h>
 
 #include <sys/types.h>
 #include <sys/tree.h>
@@ -38,11 +37,8 @@ Public domain.
 
 #define MAX_HASH_VALUE (65536)
 
-#ifdef FREESTYLE_DEBUG
-	#include <assert.h>
-#else
-	#define assert(x) 
-#endif
+//#include <assert.h>
+#define assert(x)
 
 #ifdef __linux__
 	#include <bsd/stdlib.h>
@@ -73,12 +69,6 @@ typedef unsigned char 	u8;
 typedef unsigned short 	u16;
 typedef unsigned int 	u32;
 typedef uint64_t 	u64;
-
-#define freestyle_encrypt(a,b,c,d,e) freestyle_process(a,b,c,d,e,true)
-#define freestyle_decrypt(a,b,c,d,e) freestyle_process(a,b,c,d,e,false)
-
-#define freestyle_encrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,true)
-#define freestyle_decrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,false)
 
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)
@@ -121,10 +111,30 @@ static const char tau[16] = "expand 16-byte k";
 #define AXR(a,b,c,r) {a = PLUS(a,b); c = ROTATE(XOR(c,a),r);}
 
 typedef struct freestyle_ctx {
-	u32 		input[16];
+
+	u32 		input_00,
+			input_01,
+			input_02,
+			input_03,
+			input_04,
+			input_05,
+			input_06,
+			input_07,
+			input_08,
+			input_09,
+			input_10,
+			input_11,
+			input_12,
+			input_13,
+			input_14,
+			input_15;
 
 	u16		min_rounds;
 	u16		max_rounds;
+
+	u16		min_rounds_by_2;
+
+	bool		min_rounds_is_odd;
 
 	u32 		cipher_parameter[2];
 	u32 		random_word[4];
@@ -138,6 +148,9 @@ typedef struct freestyle_ctx {
 
 	u16 		hash_interval;
 	u8 		num_output_elements_to_hash;
+
+	u16 		(*hash_function)(struct freestyle_ctx*, const u32 *output32[16], const u16 previous_hash, const u16 r);
+
 
 } freestyle_ctx;
 
@@ -219,29 +232,302 @@ void freestyle_randomsetup_decrypt (
 		freestyle_ctx 	*x
 );
 
-u16 freestyle_hash (
-		freestyle_ctx 	*x,
-	const 	u32 		output [16],
-	const 	u16 		previous_hash,
-	const 	u16 		rounds
-);
-
-int freestyle_process (
+int freestyle_encrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*input,
 		u8 		*output,
 		u32 		bytes,
-		u16 		*hash,
-	const 	bool 		do_encryption
+		u16 		*hash
 );
 
-u16 freestyle_process_block (
+int freestyle_decrypt (
+		freestyle_ctx 	*x,
+	const 	u8 		*input,
+		u8 		*output,
+		u32 		bytes,
+		u16 		*hash
+);
+
+u16 freestyle_encrypt_block (
 		freestyle_ctx	*x,	
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
 		u8 		bytes,
-		u16		*expected_hash,	
-	const	bool 		do_encryption
+		u16		*expected_hash
 );
+
+u16 freestyle_decrypt_block (
+		freestyle_ctx	*x,	
+		u8 		*plaintext,
+	const	u8 		*ciphertext,
+		u8 		bytes,
+		u16		*expected_hash
+);
+
+#define HASH(x,output,hash,rounds) {				\
+								\
+	temp1 	= rounds;					\
+	temp2 	= hash;				\
+								\
+	AXR (temp1, x->random_word[0], temp2, 16);		\
+	AXR (temp2, x->random_word[1], temp1, 12);		\
+	AXR (temp1, x->random_word[2], temp2,  8);		\
+	AXR (temp2, x->random_word[3], temp1,  7);		\
+								\
+	AXR (temp1, *output[0], temp2, 16);			\
+	AXR (temp2, *output[1], temp1, 12);			\
+	AXR (temp1, *output[2], temp2,  8);			\
+	AXR (temp2, *output[3], temp1,  7);			\
+								\
+	AXR (temp1, *output[4], temp2, 16);			\
+	AXR (temp2, *output[5], temp1, 12);			\
+	AXR (temp1, *output[6], temp2,  8);			\
+	AXR (temp2, *output[7], temp1,  7);			\
+								\
+	if (x->hash_complexity >= 2)				\
+	{							\
+		AXR (temp1, *output[4], temp2, 16);		\
+		AXR (temp2, *output[5], temp1, 12);		\
+		AXR (temp1, *output[6], temp2,  8);		\
+		AXR (temp2, *output[7], temp1,  7);		\
+								\
+		if (x->hash_complexity >= 3)			\
+		{						\
+			AXR (temp1, *output[4], temp2, 16);	\
+			AXR (temp2, *output[5], temp1, 12);	\
+			AXR (temp1, *output[6], temp2,  8);	\
+			AXR (temp2, *output[7], temp1,  7);	\
+		}						\
+	}							\
+								\
+	U32TO8_LITTLE (hash_array, temp1);			\
+								\
+	hash = (u16)((hash_array[0] << 8 | hash_array[1])	\
+		^ (hash_array[2] << 8 | hash_array[3]));	\
+}
+
+#define RESET_HASH_COLLIDED() 	{    \
+		hash_collided [ 0] = \
+		hash_collided [ 1] = \
+		hash_collided [ 2] = \
+		hash_collided [ 3] = \
+		hash_collided [ 4] = \
+		hash_collided [ 5] = \
+		hash_collided [ 6] = \
+		hash_collided [ 7] = \
+		hash_collided [ 8] = \
+		hash_collided [ 9] = \
+		hash_collided [10] = \
+		hash_collided [11] = \
+		hash_collided [12] = \
+		hash_collided [13] = \
+		hash_collided [14] = \
+		hash_collided [15] = \
+		hash_collided [16] = \
+		hash_collided [17] = \
+		hash_collided [18] = \
+		hash_collided [19] = \
+		hash_collided [20] = \
+		hash_collided [21] = \
+		hash_collided [22] = \
+		hash_collided [23] = \
+		hash_collided [24] = \
+		hash_collided [25] = \
+		hash_collided [26] = \
+		hash_collided [27] = \
+		hash_collided [28] = \
+		hash_collided [29] = \
+		hash_collided [30] = \
+		hash_collided [31] = \
+		hash_collided [32] = \
+		hash_collided [33] = \
+		hash_collided [34] = \
+		hash_collided [35] = \
+		hash_collided [36] = \
+		hash_collided [37] = \
+		hash_collided [38] = \
+		hash_collided [39] = \
+		hash_collided [40] = \
+		hash_collided [41] = \
+		hash_collided [42] = \
+		hash_collided [43] = \
+		hash_collided [44] = \
+		hash_collided [45] = \
+		hash_collided [46] = \
+		hash_collided [47] = \
+		hash_collided [48] = \
+		hash_collided [49] = \
+		hash_collided [50] = \
+		hash_collided [51] = \
+		hash_collided [52] = \
+		hash_collided [53] = \
+		hash_collided [54] = \
+		hash_collided [55] = \
+		hash_collided [56] = \
+		hash_collided [57] = \
+		hash_collided [58] = \
+		hash_collided [59] = \
+		hash_collided [60] = \
+		hash_collided [61] = \
+		hash_collided [62] = \
+		hash_collided [63] = \
+		hash_collided [64] = \
+		hash_collided [65] = \
+		hash_collided [66] = \
+		hash_collided [67] = \
+		hash_collided [68] = \
+		hash_collided [69] = \
+		hash_collided [70] = \
+		hash_collided [71] = \
+		hash_collided [72] = \
+		hash_collided [73] = \
+		hash_collided [74] = \
+		hash_collided [75] = \
+		hash_collided [76] = \
+		hash_collided [77] = \
+		hash_collided [78] = \
+		hash_collided [79] = \
+		hash_collided [80] = \
+		hash_collided [81] = \
+		hash_collided [82] = \
+		hash_collided [83] = \
+		hash_collided [84] = \
+		hash_collided [85] = \
+		hash_collided [86] = \
+		hash_collided [87] = \
+		hash_collided [88] = \
+		hash_collided [89] = \
+		hash_collided [90] = \
+		hash_collided [91] = \
+		hash_collided [92] = \
+		hash_collided [93] = \
+		hash_collided [94] = \
+		hash_collided [95] = \
+		hash_collided [96] = \
+		hash_collided [97] = \
+		hash_collided [98] = \
+		hash_collided [99] = \
+		hash_collided [100] = \
+		hash_collided [101] = \
+		hash_collided [102] = \
+		hash_collided [103] = \
+		hash_collided [104] = \
+		hash_collided [105] = \
+		hash_collided [106] = \
+		hash_collided [107] = \
+		hash_collided [108] = \
+		hash_collided [109] = \
+		hash_collided [110] = \
+		hash_collided [111] = \
+		hash_collided [112] = \
+		hash_collided [113] = \
+		hash_collided [114] = \
+		hash_collided [115] = \
+		hash_collided [116] = \
+		hash_collided [117] = \
+		hash_collided [118] = \
+		hash_collided [119] = \
+		hash_collided [120] = \
+		hash_collided [121] = \
+		hash_collided [122] = \
+		hash_collided [123] = \
+		hash_collided [124] = \
+		hash_collided [125] = \
+		hash_collided [126] = \
+		hash_collided [127] = 0;\
+}
+
+#define FREESTYLE_DOUBLE_ROUND() {				\
+	QR (output32_00, output32_04, output32_08, output32_12)	\
+	QR (output32_01, output32_05, output32_09, output32_13)	\
+	QR (output32_02, output32_06, output32_10, output32_14)	\
+	QR (output32_03, output32_07, output32_11, output32_15)	\
+								\
+	QR (output32_00, output32_05, output32_10, output32_15)	\
+	QR (output32_01, output32_06, output32_11, output32_12)	\
+	QR (output32_02, output32_07, output32_08, output32_13)	\
+	QR (output32_03, output32_04, output32_09, output32_14)	\
+}
+
+#define FREESTYLE_COLUMN_ROUND() {				\
+	QR (output32_00, output32_04, output32_08, output32_12)	\
+	QR (output32_01, output32_05, output32_09, output32_13)	\
+	QR (output32_02, output32_06, output32_10, output32_14)	\
+	QR (output32_03, output32_07, output32_11, output32_15)	\
+}
+
+#define FREESTYLE_DIAGONAL_ROUND() {				\
+	QR (output32_00, output32_05, output32_10, output32_15)	\
+	QR (output32_01, output32_06, output32_11, output32_12)	\
+	QR (output32_02, output32_07, output32_08, output32_13)	\
+	QR (output32_03, output32_04, output32_09, output32_14)	\
+}
+
+#define FREESTYLE_XOR_64(input,output,keystream) {					\
+	output[ 0] = XOR (input[ 0], keystream[ 0]);	\
+	output[ 1] = XOR (input[ 1], keystream[ 1]);	\
+	output[ 2] = XOR (input[ 2], keystream[ 2]);	\
+	output[ 3] = XOR (input[ 3], keystream[ 3]);	\
+	output[ 4] = XOR (input[ 4], keystream[ 4]);	\
+	output[ 5] = XOR (input[ 5], keystream[ 5]);	\
+	output[ 6] = XOR (input[ 6], keystream[ 6]);	\
+	output[ 7] = XOR (input[ 7], keystream[ 7]);	\
+	output[ 8] = XOR (input[ 8], keystream[ 8]);	\
+	output[ 9] = XOR (input[ 9], keystream[ 9]);	\
+	output[10] = XOR (input[10], keystream[10]);	\
+	output[11] = XOR (input[11], keystream[11]);	\
+	output[12] = XOR (input[12], keystream[12]);	\
+	output[13] = XOR (input[13], keystream[13]);	\
+	output[14] = XOR (input[14], keystream[14]);	\
+	output[15] = XOR (input[15], keystream[15]);	\
+	output[16] = XOR (input[16], keystream[16]);	\
+	output[17] = XOR (input[17], keystream[17]);	\
+	output[18] = XOR (input[18], keystream[18]);	\
+	output[19] = XOR (input[19], keystream[19]);	\
+	output[20] = XOR (input[20], keystream[20]);	\
+	output[21] = XOR (input[21], keystream[21]);	\
+	output[22] = XOR (input[22], keystream[22]);	\
+	output[23] = XOR (input[23], keystream[23]);	\
+	output[24] = XOR (input[24], keystream[24]);	\
+	output[25] = XOR (input[25], keystream[25]);	\
+	output[26] = XOR (input[26], keystream[26]);	\
+	output[27] = XOR (input[27], keystream[27]);	\
+	output[28] = XOR (input[28], keystream[28]);	\
+	output[29] = XOR (input[29], keystream[29]);	\
+	output[30] = XOR (input[30], keystream[30]);	\
+	output[31] = XOR (input[31], keystream[31]);	\
+	output[32] = XOR (input[32], keystream[32]);	\
+	output[33] = XOR (input[33], keystream[33]);	\
+	output[34] = XOR (input[34], keystream[34]);	\
+	output[35] = XOR (input[35], keystream[35]);	\
+	output[36] = XOR (input[36], keystream[36]);	\
+	output[37] = XOR (input[37], keystream[37]);	\
+	output[38] = XOR (input[38], keystream[38]);	\
+	output[39] = XOR (input[39], keystream[39]);	\
+	output[40] = XOR (input[40], keystream[40]);	\
+	output[41] = XOR (input[41], keystream[41]);	\
+	output[42] = XOR (input[42], keystream[42]);	\
+	output[43] = XOR (input[43], keystream[43]);	\
+	output[44] = XOR (input[44], keystream[44]);	\
+	output[45] = XOR (input[45], keystream[45]);	\
+	output[46] = XOR (input[46], keystream[46]);	\
+	output[47] = XOR (input[47], keystream[47]);	\
+	output[48] = XOR (input[48], keystream[48]);	\
+	output[49] = XOR (input[49], keystream[49]);	\
+	output[50] = XOR (input[50], keystream[50]);	\
+	output[51] = XOR (input[51], keystream[51]);	\
+	output[52] = XOR (input[52], keystream[52]);	\
+	output[53] = XOR (input[53], keystream[53]);	\
+	output[54] = XOR (input[54], keystream[54]);	\
+	output[55] = XOR (input[55], keystream[55]);	\
+	output[56] = XOR (input[56], keystream[56]);	\
+	output[57] = XOR (input[57], keystream[57]);	\
+	output[58] = XOR (input[58], keystream[58]);	\
+	output[59] = XOR (input[59], keystream[59]);	\
+	output[60] = XOR (input[60], keystream[60]);	\
+	output[61] = XOR (input[61], keystream[61]);	\
+	output[62] = XOR (input[62], keystream[62]);	\
+	output[63] = XOR (input[63], keystream[63]);	\
+}
 
 #endif	/* FREESTYLE_H */

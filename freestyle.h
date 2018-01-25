@@ -24,12 +24,15 @@ Public domain.
 #ifndef FREESTYLE_H
 #define FREESTYLE_H
 
-#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <err.h>
+
+#include <sys/types.h>
+#include <sys/tree.h>
 
 #define NUM_INIT_HASHES (28)
 

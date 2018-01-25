@@ -151,19 +151,17 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	{
 		for (i = 0; i < NUM_INIT_HASHES; ++i)
 		{
-			index = i ^ random_mask;
+			x->input[COUNTER] = i;
 
-			x->input[COUNTER] = index;
-
-			CR[index] = freestyle_decrypt_block (
+			CR[i] = freestyle_decrypt_block (
 				x,
 				NULL,
 				NULL,
 				0,
-				&x->init_hash [index]
+				&x->init_hash [i]
 			);
 
-			if (CR[index] == 0) {
+			if (CR[i] == 0) {
 				goto continue_loop_encrypt;	
 			}
 		}
@@ -231,29 +229,21 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 	u32 target = (u32)(((u64)1 << x->init_complexity) - 1); 
 
-
-#ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
-	u8	random_mask   = arc4random_uniform (32); 
-#else
-	u8 	random_mask = 0;
-#endif
 	for (t = 0; t <= target; ++t)
 	{
 		for (i = 0; i < NUM_INIT_HASHES; ++i)
 		{
-			index = i ^ random_mask;
-
-			x->input[COUNTER] = index;
+			x->input[COUNTER] = i;
 			
-			R[index] = freestyle_decrypt_block (
+			R[i] = freestyle_decrypt_block (
 				x,
 				NULL,
 				NULL,
 				0,
-				&x->init_hash [index]
+				&x->init_hash [i]
 			);
 
-			if (R[index] == 0) {
+			if (R[i] == 0) {
 				goto continue_loop_decrypt;
 			}
 
@@ -504,9 +494,9 @@ u16 freestyle_process_block (
 	bool init = (plaintext == NULL) || (ciphertext == NULL) || (bytes == 0);
 
 #ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
-	u8	random_mask   = arc4random_uniform (MAX_HASH_VALUE); 
+	u16	random_mask   = arc4random_uniform (MAX_HASH_VALUE); 
 #else
-	u8 	random_mask = 0;
+	u16 	random_mask = 0;
 #endif
 
 	u16 rounds = do_encryption ? freestyle_random_round_number (x) : x->max_rounds;

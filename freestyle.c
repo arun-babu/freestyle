@@ -97,8 +97,6 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 {
 	u32 	i, t;
 
-	u8 	index;
-
 	u32 	R [NUM_INIT_HASHES]; /* actual random rounds */
 	u32 	CR[NUM_INIT_HASHES]; /* collided random rounds */
 
@@ -203,8 +201,6 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 {
 	u32 	i, t;
 	u32 	R [NUM_INIT_HASHES]; /* random rounds */
-
-	u8 	index;
 
 	u32	temp1;
 	u32	temp2;

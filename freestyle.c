@@ -119,27 +119,19 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 		x->init_complexity == 32 ?  -1 : (1 << x->init_complexity)
 	);
 	
-#ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
-	u8	random_mask   = arc4random_uniform (32); 
-#else
-	u8 	random_mask = 0;
-#endif
-
 	/* add a random number (target) to key[0] */
 	x->input[KEY0] = PLUS(x->input[KEY0],target); 
 
 	for (i = 0; i < NUM_INIT_HASHES; ++i)
 	{
-		index = i ^ random_mask; 
+		x->input[COUNTER] = i;
 
-		x->input[COUNTER] = index;
-
-		R[index] = freestyle_encrypt_block (
+		R[i] = freestyle_encrypt_block (
 			x,
 			NULL,
 			NULL,
 			0,
-			&x->init_hash [index]
+			&x->init_hash [i]
 		);
 	}
 

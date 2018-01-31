@@ -95,7 +95,7 @@ void freestyle_init_decrypt (
 	
 void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 {
-	u32 	i, t;
+	u32 	i, p;
 
 	u32 	R [NUM_INIT_HASHES]; /* actual random rounds */
 	u32 	CR[NUM_INIT_HASHES]; /* collided random rounds */
@@ -108,17 +108,17 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	u16 saved_hash_interval   	= x->hash_interval;
 	u8  saved_hash_complexity 	= x->hash_complexity;
 
+	u32 pepper = arc4random_uniform (
+		x->init_complexity == 32 ?  -1 : (1 << x->init_complexity)
+	);
+
 	x->min_rounds 		= 12;
 	x->max_rounds 		= 36;
 	x->hash_interval 	= 1;
 	x->hash_complexity 	= 3;
-	
-	u32 target = arc4random_uniform (
-		x->init_complexity == 32 ?  -1 : (1 << x->init_complexity)
-	);
-	
-	/* add a random number (target) to key[0] */
-	x->input[KEY0] = PLUS(x->input[KEY0],target); 
+
+	/* add a random number (pepper) to key[0] */
+	x->input[KEY0] = PLUS(x->input[KEY0],pepper); 
 
 	for (i = 0; i < NUM_INIT_HASHES; ++i)
 	{
@@ -134,10 +134,10 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	}
 
 	/* set it back to its previous value */
-	x->input[KEY0] = MINUS(x->input[KEY0],target); 
+	x->input[KEY0] = MINUS(x->input[KEY0],pepper); 
 
-	/* check for any collisions between 0 and target */
-	for (t = 0; t < target; ++t)
+	/* check for any collisions between 0 and pepper */
+	for (p = 0; p < pepper; ++p)
 	{
 		for (i = 0; i < NUM_INIT_HASHES; ++i)
 		{
@@ -199,7 +199,7 @@ continue_loop_encrypt:
 
 void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 {
-	u32 	i, t;
+	u32 	i, pepper;
 	u32 	R [NUM_INIT_HASHES]; /* random rounds */
 
 	u32	temp1;
@@ -210,14 +210,14 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	u16 saved_hash_interval   	= x->hash_interval;
 	u8  saved_hash_complexity 	= x->hash_complexity;
 
+	u32 max_pepper = (u32)(((u64)1 << x->init_complexity) - 1); 
+
 	x->min_rounds 		= 12;
 	x->max_rounds 		= 36;
 	x->hash_interval 	= 1;
 	x->hash_complexity 	= 3;
 
-	u32 target = (u32)(((u64)1 << x->init_complexity) - 1); 
-
-	for (t = 0; t <= target; ++t)
+	for (pepper = 0; pepper <= max_pepper; ++pepper)
 	{
 		for (i = 0; i < NUM_INIT_HASHES; ++i)
 		{

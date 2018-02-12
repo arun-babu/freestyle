@@ -6,4 +6,4 @@ Tested on Linux and OpenBSD
 
 Released in ISC licence.
 
-**A paper describing the algorithm will be uploaded soon.
+[A paper on Freestyle (arXiv.org)](https://arxiv.org/abs/1802.03201)

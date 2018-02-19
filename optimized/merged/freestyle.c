@@ -151,7 +151,7 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 				goto continue_loop_encrypt;	
 			}
 		}
-		
+
 		/* found a collision. use the collided rounds */ 
 		memcpy(R, CR, NUM_INIT_HASHES*sizeof(u32));
 		break;

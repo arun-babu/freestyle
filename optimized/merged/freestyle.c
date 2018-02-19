@@ -117,8 +117,8 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	x->hash_interval 	= 1;
 	x->hash_complexity 	= 3;
 
-	/* add a random number (pepper) to key[0] */
-	x->input_04 = PLUS(x->input_04,pepper); 
+	/* add a random number (pepper) to constant[3] */
+	x->input_03 = PLUS(x->input_03,pepper); 
 
 	for (x->input_12 = 0; x->input_12 < NUM_INIT_HASHES; ++(x->input_12))
 	{
@@ -132,7 +132,7 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	}
 
 	/* set it back to its previous value */
-	x->input_04 = MINUS(x->input_04,pepper); 
+	x->input_03 = MINUS(x->input_03,pepper); 
 
 	/* check for any collisions between 0 and pepper */
 	for (p = 0; p < pepper; ++p)
@@ -151,13 +151,13 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 				goto continue_loop_encrypt;	
 			}
 		}
-
+		
 		/* found a collision. use the collided rounds */ 
 		memcpy(R, CR, NUM_INIT_HASHES*sizeof(u32));
 		break;
 
 continue_loop_encrypt:
-		x->input_04 = PLUSONE(x->input_04);
+		x->input_03 = PLUSONE(x->input_03);
 	}
 
 	for (i = 0; i < 4; ++i)
@@ -235,7 +235,7 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 		break;
 
 continue_loop_decrypt:
-		x->input_04 = PLUSONE(x->input_04);
+		x->input_03 = PLUSONE(x->input_03);
 	}
 
 	for (i = 0; i < 4; ++i)

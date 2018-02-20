@@ -32,17 +32,12 @@ Public domain.
 #include <err.h>
 
 #include <sys/types.h>
-#include <sys/tree.h>
 
 #define NUM_INIT_HASHES (28)
 
 #define MAX_HASH_VALUE (65536)
 
-#ifdef FREESTYLE_DEBUG
-	#include <assert.h>
-#else
-	#define assert(x) 
-#endif
+#include <assert.h>
 
 #ifdef __linux__
 	#include <bsd/stdlib.h>

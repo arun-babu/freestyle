@@ -85,6 +85,7 @@ int main (int argc, char **argv)
 	fflush(stdout);
                 
 
+	// Try with a wrong key !
 	key[0] = ~key[0];
 
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);

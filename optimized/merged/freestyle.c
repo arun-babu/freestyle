@@ -660,7 +660,6 @@ int freestyle_decrypt (
 		}
 
 decryption:
-		assert (r <= x->max_rounds);
 
 	    	U32TO8_LITTLE (output8 + 4 * 0,  PLUS(output32_00, x->input_00));
 	   	U32TO8_LITTLE (output8 + 4 * 1,  PLUS(output32_01, x->input_01));

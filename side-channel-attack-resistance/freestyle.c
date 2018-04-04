@@ -130,7 +130,7 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	u8 random_indices [NUM_INIT_HASHES];
 
-	u8 index;
+	u8 random_index;
 
 	freestyle_init_random_indices (random_indices);
 
@@ -144,16 +144,16 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	for (i = 0; i < NUM_INIT_HASHES; ++i)
 	{
-		index = random_indices[i];
+		random_index = random_indices[i];
 
-		x->input[COUNTER] = index; 
+		x->input[COUNTER] = random_index; 
 
-		R[index] = freestyle_encrypt_block (
+		R[random_index] = freestyle_encrypt_block (
 			x,
 			NULL,
 			NULL,
 			0,
-			&x->init_hash [index]
+			&x->init_hash [random_index]
 		);
 	}
 
@@ -165,19 +165,19 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	{
 		for (i = 0; i < NUM_INIT_HASHES; ++i)
 		{
-			index = random_indices[i];
+			random_index = random_indices[i];
 
-			x->input[COUNTER] = index; 
+			x->input[COUNTER] = random_index; 
 
-			CR[index] = freestyle_decrypt_block (
+			CR[random_index] = freestyle_decrypt_block (
 				x,
 				NULL,
 				NULL,
 				0,
-				&x->init_hash [index]
+				&x->init_hash [random_index]
 			);
 
-			if (CR[index] == 0) {
+			if (CR[random_index] == 0) {
 				goto continue_loop_encrypt;	
 			}
 		}
@@ -240,7 +240,7 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 	u8 random_indices [NUM_INIT_HASHES];
 
-	u8 index;
+	u8 random_index;
 
 	freestyle_init_random_indices (random_indices);
 
@@ -253,19 +253,19 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	{
 		for (i = 0; i < NUM_INIT_HASHES; ++i)
 		{
-			index = random_indices[i];
+			random_index = random_indices[i];
 
-			x->input[COUNTER] = index;
+			x->input[COUNTER] = random_index;
 			
-			R[index] = freestyle_decrypt_block (
+			R[random_index] = freestyle_decrypt_block (
 				x,
 				NULL,
 				NULL,
 				0,
-				&x->init_hash [index]
+				&x->init_hash [random_index]
 			);
 
-			if (R[index] == 0) {
+			if (R[random_index] == 0) {
 				goto continue_loop_decrypt;
 			}
 

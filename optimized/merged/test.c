@@ -107,7 +107,7 @@ int main (int argc, char **argv)
 	t_kw = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-	printf ("Time taken to decrypt using the WRONG key = %f nano seconds\n",t_kw);
+	printf ("Time taken to attempt decryption using the WRONG key = %f nano seconds\n",t_kw);
 
 	printf("Key guessing penalty (using uniform random number generator) = %f\n",t_kw/t_kc);
 }

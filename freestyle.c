@@ -481,12 +481,6 @@ u16 freestyle_process_block (
 
 	bool init = (plaintext == NULL) || (ciphertext == NULL) || (bytes == 0);
 
-#ifdef FREESTYLE_RANDOMIZE_ARRAY_INDICES
-	u16	random_mask   = arc4random_uniform (MAX_HASH_VALUE); 
-#else
-	u16 	random_mask = 0;
-#endif
-
 	u16 rounds = do_encryption ? freestyle_random_round_number (x) : x->max_rounds;
 
 	bool do_decryption = ! do_encryption;
@@ -513,11 +507,11 @@ u16 freestyle_process_block (
 		{
 			hash = freestyle_hash (x,output32,hash,r);
 
-			while (hash_collided [hash ^ random_mask]) {
+			while (hash_collided [hash]) {
 				hash = (hash + 1) % MAX_HASH_VALUE;
 			}
 
-			hash_collided [hash ^ random_mask] = true;
+			hash_collided [hash] = true;
 
 			if (do_decryption && hash == *expected_hash) {
 				break;

@@ -1,3 +1,13 @@
 gcc -c freestyle.c
-gcc -o test test.c freestyle.o
+
+LFLAGS=""
+OS=`uname`
+
+if [ $OS == "Linux" ]
+then 
+	LFLAGS="-lbsd"	
+fi
+
+gcc -o test test.c freestyle.o $LFLAGS 
+
 ./test

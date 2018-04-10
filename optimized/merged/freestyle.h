@@ -31,7 +31,6 @@ Public domain.
 #include <stdint.h>
 
 #include <sys/types.h>
-#include <sys/tree.h>
 
 #define NUM_INIT_HASHES (28)
 

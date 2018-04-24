@@ -6,4 +6,4 @@ Freestyle is a randomized version of ChaCha cipher to resist brute-force and dic
 
 On Linux, you need to install libbsd-dev package for arc4random() and arc4random_uniform() functions.
 
-Released in ISC LicenseISC License
+Released in ISC License

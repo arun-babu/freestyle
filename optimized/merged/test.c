@@ -30,10 +30,9 @@ int main (int argc, char **argv)
 	u16 min_rounds 	= 8;
 	u16 max_rounds 	= 32;
 
-	u8 hash_complexity = 3;
 	u16 hash_interval   = 1;
 
-	u8 initalization_complexity = 16;
+	u8 pepper_bits = 16;
 
 	for (i = 0; i < 32; ++i) {
 		key[i] = (u8)arc4random();
@@ -53,9 +52,8 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
-			hash_complexity,
 			hash_interval,
-			initalization_complexity	
+			pepper_bits	
 	);
 
 	freestyle_encrypt (&encrypt, message, ciphertext, MSG_LEN, expected_hash);
@@ -68,9 +66,8 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
-			hash_complexity,
 			hash_interval,
-			initalization_complexity,
+			pepper_bits,
 			encrypt.init_hash	
 	);
 	freestyle_decrypt (&decrypt_correct, ciphertext, plaintext, MSG_LEN, expected_hash);
@@ -96,13 +93,12 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
-			hash_complexity,
 			hash_interval,
-			initalization_complexity,
+			pepper_bits,
 			encrypt.init_hash	
 	);
-	freestyle_decrypt (&decrypt_wrong, ciphertext, plaintext, MSG_LEN, expected_hash);
 	clock_gettime(CLOCK_MONOTONIC, &ts_end);
+	freestyle_decrypt (&decrypt_wrong, ciphertext, plaintext, MSG_LEN, expected_hash);
 
 	t_kw = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;

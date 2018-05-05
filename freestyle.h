@@ -121,15 +121,14 @@ typedef struct freestyle_ctx {
 	u16		min_rounds;
 	u16		max_rounds;
 
-	u32 		cipher_parameter[2];
-	u32 		random_word[4];
+	u32 		cipher_parameter;
+	u32 		rand[4];
 
 	u16		num_rounds_possible;
 
 	u16 		init_hash [NUM_INIT_HASHES];
 
-	u8 		hash_complexity;
-	u8 		init_complexity;
+	u8 		pepper_bits;
 
 	u16 		hash_interval;
 	u8 		num_output_elements_to_hash;
@@ -151,9 +150,8 @@ void freestyle_init_common (
 	const 	u8 		*iv,
 	const 	u16 		min_rounds,
 	const	u16		max_rounds,
-	const	u8 		hash_complexity,
 	const	u16 		hash_interval,
-	const	u8 		init_complexity
+	const	u8 		pepper_bits
 );
 
 void freestyle_init_encrypt (
@@ -163,9 +161,8 @@ void freestyle_init_encrypt (
 	const 	u8 		*iv,
 	const 	u16 		min_rounds,
 	const 	u16		max_rounds,
-	const 	u8 		hash_complexity,
 	const 	u16 		hash_interval,
-	const 	u8 		init_complexity
+	const 	u8 		pepper_bits
 );
 
 void freestyle_init_decrypt (
@@ -175,9 +172,8 @@ void freestyle_init_decrypt (
 	const 	u8 		*iv,
 	const 	u16 		min_rounds,
 	const 	u16		max_rounds,
-	const 	u8 		hash_complexity,
 	const 	u16 		hash_interval,
-	const 	u8 		init_complexity,
+	const 	u8 		pepper_bits,
 	const	u16 		*init_hash
 );
 
@@ -195,7 +191,6 @@ void freestyle_ivsetup (
 
 void freestyle_hashsetup (
 		freestyle_ctx 	*x,
-	const 	u8 		hash_complexity,
 	const 	u16 		hash_interval
 );
 
@@ -203,7 +198,7 @@ void freestyle_roundsetup (
 		freestyle_ctx 	*x,
 	const	u16 		min_rounds,
 	const	u16 		max_rounds,
-	const	u8 		init_complexity
+	const	u8 		pepper_bits
 );
 
 void freestyle_randomsetup_encrypt (

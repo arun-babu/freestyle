@@ -37,7 +37,6 @@ Public domain.
 #define MAX_HASH_VALUE (65536)
 
 #include <assert.h>
-//#define assert(x)
 
 #ifdef __linux__
 	#include <bsd/stdlib.h>
@@ -135,15 +134,14 @@ typedef struct freestyle_ctx {
 
 	bool		min_rounds_is_odd;
 
-	u32 		cipher_parameter[2];
-	u32 		random_word[4];
+	u32 		cipher_parameter;
+	u32 		rand[4];
 
 	u16		num_rounds_possible;
 
 	u16 		init_hash [NUM_INIT_HASHES];
 
-	u8 		hash_complexity;
-	u8 		init_complexity;
+	u8 		pepper_bits;
 
 	u16 		hash_interval;
 	u8 		num_output_elements_to_hash;
@@ -165,9 +163,8 @@ void freestyle_init_common (
 	const 	u8 		*iv,
 	const 	u16 		min_rounds,
 	const	u16		max_rounds,
-	const	u8 		hash_complexity,
 	const	u16 		hash_interval,
-	const	u8 		init_complexity
+	const	u8 		pepper_bits
 );
 
 void freestyle_init_encrypt (
@@ -177,9 +174,8 @@ void freestyle_init_encrypt (
 	const 	u8 		*iv,
 	const 	u16 		min_rounds,
 	const 	u16		max_rounds,
-	const 	u8 		hash_complexity,
 	const 	u16 		hash_interval,
-	const 	u8 		init_complexity
+	const 	u8 		pepper_bits
 );
 
 void freestyle_init_decrypt (
@@ -189,9 +185,8 @@ void freestyle_init_decrypt (
 	const 	u8 		*iv,
 	const 	u16 		min_rounds,
 	const 	u16		max_rounds,
-	const 	u8 		hash_complexity,
 	const 	u16 		hash_interval,
-	const 	u8 		init_complexity,
+	const 	u8 		pepper_bits,
 	const	u16 		*init_hash
 );
 
@@ -209,7 +204,6 @@ void freestyle_ivsetup (
 
 void freestyle_hashsetup (
 		freestyle_ctx 	*x,
-	const 	u8 		hash_complexity,
 	const 	u16 		hash_interval
 );
 
@@ -217,7 +211,7 @@ void freestyle_roundsetup (
 		freestyle_ctx 	*x,
 	const	u16 		min_rounds,
 	const	u16 		max_rounds,
-	const	u8 		init_complexity
+	const	u8 		pepper_bits
 );
 
 void freestyle_randomsetup_encrypt (
@@ -260,46 +254,18 @@ u16 freestyle_decrypt_block (
 		u16		*expected_hash
 );
 
-#define HASH(x,output,hash,rounds)  do {			\
+#define COMPUTE_HASH(x,hash,rounds)  do {			\
 								\
 	temp1 	= rounds;					\
 	temp2 	= hash;						\
 								\
-	AXR (temp1, x->random_word[0], temp2, 16);		\
-	AXR (temp2, x->random_word[1], temp1, 12);		\
-	AXR (temp1, x->random_word[2], temp2,  8);		\
-	AXR (temp2, x->random_word[3], temp1,  7);		\
+	AXR (temp1, output32_03, temp2, 16);			\
+	AXR (temp2, output32_06, temp1, 12);			\
+	AXR (temp1, output32_09, temp2,  8);			\
+	AXR (temp2, output32_12, temp1,  7);			\
 								\
-	AXR (temp1, *output[0], temp2, 16);			\
-	AXR (temp2, *output[1], temp1, 12);			\
-	AXR (temp1, *output[2], temp2,  8);			\
-	AXR (temp2, *output[3], temp1,  7);			\
+	hash = (u16) XOR(temp1 & 0xFFFF, temp1 >> 16);		\
 								\
-	AXR (temp1, *output[4], temp2, 16);			\
-	AXR (temp2, *output[5], temp1, 12);			\
-	AXR (temp1, *output[6], temp2,  8);			\
-	AXR (temp2, *output[7], temp1,  7);			\
-								\
-	if (x->hash_complexity >= 2)				\
-	{							\
-		AXR (temp1, *output[ 8], temp2, 16);		\
-		AXR (temp2, *output[ 9], temp1, 12);		\
-		AXR (temp1, *output[10], temp2,  8);		\
-		AXR (temp2, *output[11], temp1,  7);		\
-								\
-		if (x->hash_complexity >= 3)			\
-		{						\
-			AXR (temp1, *output[12], temp2, 16);	\
-			AXR (temp2, *output[13], temp1, 12);	\
-			AXR (temp1, *output[14], temp2,  8);	\
-			AXR (temp2, *output[15], temp1,  7);	\
-		}						\
-	}							\
-								\
-	U32TO8_LITTLE (hash_array, temp1);			\
-								\
-	hash = (u16)((hash_array[0] << 8 | hash_array[1])	\
-		   ^ (hash_array[2] << 8 | hash_array[3]));	\
 } while(0)
 
 #define RESET_HASH_COLLIDED() 	do {  \

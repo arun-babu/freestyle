@@ -1,3 +1,5 @@
+rm -rf test 2>/dev/null
+
 gcc -c freestyle.c
 
 LFLAGS=""

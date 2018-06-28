@@ -69,8 +69,8 @@ typedef unsigned short 	u16;
 typedef unsigned int 	u32;
 typedef uint64_t 	u64;
 
-#define freestyle_encrypt(a,b,c,d,e) freestyle_process(a,b,c,d,e,true)
-#define freestyle_decrypt(a,b,c,d,e) freestyle_process(a,b,c,d,e,false)
+#define freestyle_encrypt(...) freestyle_process(__VA_ARGS__,true)
+#define freestyle_decrypt(...) freestyle_process(__VA_ARGS__,false)
 
 #define freestyle_encrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,true)
 #define freestyle_decrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,false)

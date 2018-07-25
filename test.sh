@@ -1,4 +1,5 @@
 rm -rf test 2>/dev/null
+rm -rf freestyle.o 2>/dev/null
 
 gcc -c freestyle.c
 

@@ -129,6 +129,9 @@ typedef struct freestyle_ctx {
 	u16 		init_hash [NUM_INIT_HASHES];
 
 	u8 		pepper_bits;
+	u32 		pepper;
+
+	bool 		is_pepper_set;
 
 	u16 		hash_interval;
 	u8 		num_output_elements_to_hash;
@@ -165,6 +168,18 @@ void freestyle_init_encrypt (
 	const 	u8 		pepper_bits
 );
 
+void freestyle_init_encrypt_with_pepper (
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u32 		key_length_bits,
+	const 	u8 		*iv,
+	const 	u16 		min_rounds,
+	const 	u16		max_rounds,
+	const 	u16 		hash_interval,
+	const 	u8 		pepper_bits,
+	const 	u32 		pepper_set	
+);
+
 void freestyle_init_decrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
@@ -174,6 +189,19 @@ void freestyle_init_decrypt (
 	const 	u16		max_rounds,
 	const 	u16 		hash_interval,
 	const 	u8 		pepper_bits,
+	const	u16 		*init_hash
+);
+
+void freestyle_init_decrypt_with_pepper (
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u32 		key_length_bits,
+	const 	u8 		*iv,
+	const 	u16 		min_rounds,
+	const 	u16		max_rounds,
+	const 	u16 		hash_interval,
+	const 	u8 		pepper_bits,
+	const 	u32 		pepper_set,
 	const	u16 		*init_hash
 );
 
@@ -200,7 +228,6 @@ void freestyle_roundsetup (
 	const	u16 		max_rounds,
 	const	u8 		pepper_bits
 );
-
 
 void freestyle_init_random_indices (u8 *random_indices);
 

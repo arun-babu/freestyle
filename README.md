@@ -8,7 +8,13 @@ Freestyle provides the possibility of generating 2^128 different ciphertexts for
 
 On the other hand, Freestyle has costlier cipher initialization process, typically generates 3.125% larger ciphertext, and was found to be 1.6 to 3.2 times slower than ChaCha20. Freestyle is suitable for applications that favor ciphertext randomization and resistance to key-guessing and key reuse attacks over performance and ciphertext size. Freestyle is ideal for applications where ciphertext can be assumed to be in full control of an adversary, and an offline key-guessing attack can be carried out. 
 
-[A paper on Freestyle (arXiv.org)](https://arxiv.org/abs/1802.03201)
+The main aim of Freestyle is to improve the Key Guessing Penalty (KGP), which is defined as:
+
+	      Time taken to attempt decryption using an incorrect key
+KGP =  ----------------------------------------------------------
+	 	       Time taken to decrypt using the correct key
+
+More information on Freestyle can be found at [(arXiv.org)](https://arxiv.org/abs/1802.03201)
 
 On Linux, you need to install libbsd-dev package for arc4random() and arc4random_uniform() functions.
 

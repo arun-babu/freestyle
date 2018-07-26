@@ -12,7 +12,7 @@ The main aim of Freestyle is to improve the Key Guessing Penalty (KGP), which is
 
 ```
 	    Time taken to attempt decryption using an incorrect key
-KGP =  ----------------------------------------------------------
+KGP =     -----------------------------------------------------------
 	       Time taken to decrypt using the correct key
 ```
 

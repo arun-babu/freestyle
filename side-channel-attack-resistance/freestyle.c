@@ -47,7 +47,7 @@ void freestyle_init_common (
 	assert (pepper_bits <= 32);
 
 	freestyle_keysetup 		(x, key, key_length_bits);
-	freestyle_ivsetup 		(x, iv,  NULL);
+	freestyle_ivsetup 		(x, iv, 0);
 	freestyle_hashsetup 		(x, hash_interval);
 	freestyle_roundsetup 		(x, min_rounds, max_rounds, pepper_bits);
 }
@@ -397,9 +397,9 @@ void freestyle_keysetup (
 void freestyle_ivsetup (
 		freestyle_ctx 	*x,
 	const 	u8 		*iv,
-	const	u8 		*counter)
+	const	u32 		counter)
 {
-	x->input[COUNTER] = counter == NULL ? 0 : U8TO32_LITTLE(counter + 0);
+	x->input[COUNTER] = counter;
 
 	x->input[IV0] = U8TO32_LITTLE(iv + 0);
 	x->input[IV1] = U8TO32_LITTLE(iv + 4);

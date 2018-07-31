@@ -227,7 +227,7 @@ void freestyle_keysetup (
 void freestyle_ivsetup (
 		freestyle_ctx 	*x,
 	const 	u8 		*iv,
-	const 	u8 		*counter
+	const 	u32 		counter
 ); 
 
 void freestyle_hashsetup (

@@ -79,7 +79,7 @@ int main (int argc, char **argv)
 	t_kc = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-	printf ("Time taken to decrypt using the CORRECT key = %f nano seconds\n",t_kc);
+	printf ("Time taken to decrypt using the CORRECT key                      = %f nano seconds\n",t_kc);
 	fflush(stdout);
 
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
@@ -123,11 +123,11 @@ int main (int argc, char **argv)
 	t_kw = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-	printf ("Time taken to attempt decryption using the WRONG key = %f nano seconds\n",t_kw);
-	printf("Key guessing penalty (using uniform random number generator) = %f\n",t_kw/t_kc);
+	printf ("Time taken to attempt decryption using the WRONG key             = %f nano seconds\n",t_kw);
+	printf("Key guessing penalty (using uniform random number generator)     = %f\n",t_kw/t_kc);
 
 	printf("\n\n");
 
 	printf ("Time taken to decrypt using the CORRECT key (using known pepper) = %f nano seconds\n",t_kp);
-	printf("Key guessing penalty (when the pepper is known to the reciever) = %f\n",t_kw/t_kp);
+	printf("Key guessing penalty (when the pepper is known to the reciever)  = %f\n",t_kw/t_kp);
 }

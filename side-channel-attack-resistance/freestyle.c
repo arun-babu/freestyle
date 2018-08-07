@@ -571,7 +571,7 @@ u16 freestyle_process_block (
 			hash = freestyle_hash (x,output32,hash,r);
 
 			while (hash_collided [hash ^ random_mask]) {
-				hash = (hash + 1) % MAX_HASH_VALUE;
+				++hash;
 			}
 
 			hash_collided [hash ^ random_mask] = true;

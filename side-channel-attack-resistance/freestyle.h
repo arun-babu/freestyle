@@ -72,8 +72,8 @@ typedef uint64_t 	u64;
 #define freestyle_encrypt(...) freestyle_process(__VA_ARGS__,true)
 #define freestyle_decrypt(...) freestyle_process(__VA_ARGS__,false)
 
-#define freestyle_encrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,true)
-#define freestyle_decrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,false)
+#define freestyle_encrypt_block(...) freestyle_process_block(__VA_ARGS__,true)
+#define freestyle_decrypt_block(...) freestyle_process_block(__VA_ARGS__,false)
 
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)
@@ -229,8 +229,6 @@ void freestyle_roundsetup (
 	const	u8 		pepper_bits
 );
 
-void freestyle_init_random_indices (u8 *random_indices);
-
 void freestyle_randomsetup_encrypt (
 		freestyle_ctx 	*x
 );
@@ -264,4 +262,7 @@ u16 freestyle_process_block (
 	const	bool 		do_encryption
 );
 
+void freestyle_init_random_indices (u8 *random_indices);
+
 #endif	/* FREESTYLE_H */
+

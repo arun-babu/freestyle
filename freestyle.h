@@ -72,8 +72,8 @@ typedef uint64_t 	u64;
 #define freestyle_encrypt(...) freestyle_process(__VA_ARGS__,true)
 #define freestyle_decrypt(...) freestyle_process(__VA_ARGS__,false)
 
-#define freestyle_encrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,true)
-#define freestyle_decrypt_block(a,b,c,d,e) freestyle_process_block(a,b,c,d,e,false)
+#define freestyle_encrypt_block(...) freestyle_process_block(__VA_ARGS__,true)
+#define freestyle_decrypt_block(...) freestyle_process_block(__VA_ARGS__,false)
 
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)

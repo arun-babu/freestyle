@@ -16,7 +16,8 @@ KGP =     -----------------------------------------------------------
 	       Time taken to decrypt using the correct key
 ```
 
-*This is still work in progress.* An old version of paper on Freestyle can be found at [(arXiv.org)](https://arxiv.org/abs/1802.03201)
+**Freestyle is still work in progress.** 
+An old version of paper on Freestyle can be found at [(arXiv.org)](https://arxiv.org/abs/1802.03201)
 
 On Linux, you need to install libbsd-dev package for arc4random() and arc4random_uniform() functions.
 

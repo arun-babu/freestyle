@@ -334,7 +334,6 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 			if (R[random_index] == 0) {
 				goto continue_loop_decrypt;
 			}
-
 		}
 
 		/* found all valid R[i]s */
@@ -452,7 +451,6 @@ void freestyle_roundsetup (
 				| ((x->pepper_bits     	& 0x003F) << 10) 	//  6 bits
 				| ((x->num_init_hashes 	& 0x003F) <<  4);	//  6 bits
 										//  4 LSBs are 0
-
 	x->rand[0] = 0; 
 	x->rand[1] = 0; 
 	x->rand[2] = 0; 

@@ -26,43 +26,46 @@ Public domain.
 void freestyle_init_common (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const	u16		max_rounds,
-	const	u16 		hash_interval,
-	const	u8 		pepper_bits)
+	const 	u32 		min_rounds,
+	const	u32		max_rounds,
+	const	u32 		hash_interval,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes)
 {	
 	assert (min_rounds >= 1);
-	assert (max_rounds <= 512);
+	assert (max_rounds <= 65536);
 
 	assert (min_rounds <= max_rounds);
 
 	assert (min_rounds % hash_interval == 0);
 	assert (max_rounds % hash_interval == 0);
 
-	assert ((max_rounds - min_rounds)/hash_interval < 512);
-
 	assert (pepper_bits >= 8);
 	assert (pepper_bits <= 32);
 
-	freestyle_keysetup 		(x, key, key_length_bits);
-	freestyle_ivsetup 		(x, iv, 0);
-	freestyle_hashsetup 		(x, hash_interval);
-	freestyle_roundsetup 		(x, min_rounds, max_rounds, pepper_bits);
+	assert (num_init_hashes >= 7);
+	assert (num_init_hashes <= 56);
+
+	freestyle_keysetup 	(x, key, key_length_bits);
+	freestyle_ivsetup 	(x, iv, 0);
+	freestyle_hashsetup 	(x, hash_interval);
+	freestyle_roundsetup 	(x, min_rounds, max_rounds, pepper_bits, num_init_hashes);
 }
 
 void freestyle_init_encrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const	u16		max_rounds,
-	const	u16 		hash_interval,
-	const	u8 		pepper_bits)
+	const 	u32 		min_rounds,
+	const	u32		max_rounds,
+	const	u32 		hash_interval,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes)
 {	
-	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_interval, pepper_bits);
+	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_interval, pepper_bits, num_init_hashes);
 
 	x->pepper		= 0;
 	x->is_pepper_set 	= false;
@@ -73,15 +76,16 @@ void freestyle_init_encrypt (
 void freestyle_init_encrypt_with_pepper (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const	u16		max_rounds,
-	const	u16 		hash_interval,
+	const 	u32 		min_rounds,
+	const	u32		max_rounds,
+	const	u32 		hash_interval,
 	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
 	const	u32 		pepper)
 {	
-	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_interval, pepper_bits);
+	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_interval, pepper_bits, num_init_hashes);
 
 	x->pepper 		= pepper;
 	x->is_pepper_set 	= true;
@@ -92,22 +96,23 @@ void freestyle_init_encrypt_with_pepper (
 void freestyle_init_decrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const	u16		max_rounds,
-	const	u16 		hash_interval,
+	const 	u32 		min_rounds,
+	const	u32		max_rounds,
+	const	u32 		hash_interval,
 	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
 	const	u16 		*init_hash)
 {	
-	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_interval, pepper_bits);
+	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_interval, pepper_bits, num_init_hashes);
 
 	x->pepper		= 0;
 	x->is_pepper_set 	= false;
 
 	memcpy ( x->init_hash,
 		 init_hash,
-		 NUM_INIT_HASHES * sizeof(u16)
+		 MAX_INIT_HASHES * sizeof(u16)
 	);
 
 	freestyle_randomsetup_decrypt(x);
@@ -116,23 +121,24 @@ void freestyle_init_decrypt (
 void freestyle_init_decrypt_with_pepper (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const	u16		max_rounds,
-	const	u16 		hash_interval,
+	const 	u32 		min_rounds,
+	const	u32		max_rounds,
+	const	u32 		hash_interval,
 	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
 	const	u32 		pepper,
 	const	u16 		*init_hash)
 {	
-	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_interval, pepper_bits);
+	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, max_rounds, hash_interval, pepper_bits, num_init_hashes);
 
 	x->pepper 		= pepper;
 	x->is_pepper_set 	= true;
 	
 	memcpy ( x->init_hash,
 		 init_hash,
-		 NUM_INIT_HASHES * sizeof(u16)
+		 MAX_INIT_HASHES * sizeof(u16)
 	);
 
 	freestyle_randomsetup_decrypt(x);
@@ -140,17 +146,19 @@ void freestyle_init_decrypt_with_pepper (
 	
 void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 {
-	u32 	i, p;
+	u32 	i;
 
-	u32 	R [NUM_INIT_HASHES]; /* actual random rounds */
-	u32 	CR[NUM_INIT_HASHES]; /* collided random rounds */
+	u32 	R [MAX_INIT_HASHES]; /* actual random rounds */
+	u32 	CR[MAX_INIT_HASHES]; /* collided random rounds */
 
 	u32	temp1;
 	u32	temp2;
 
-	u16 saved_min_rounds		= x->min_rounds;
-	u16 saved_max_rounds		= x->max_rounds;
-	u16 saved_hash_interval   	= x->hash_interval;
+	u32 saved_min_rounds		= x->min_rounds;
+	u32 saved_max_rounds		= x->max_rounds;
+	u32 saved_hash_interval   	= x->hash_interval;
+
+	u32 p;
 
 	if (! x->is_pepper_set)
 	{
@@ -163,53 +171,57 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	x->max_rounds 		= 36;
 	x->hash_interval 	= 1;
 
-	/* add a random number (pepper) to constant[3] */
-	x->input_03 = PLUS(x->input_03,x->pepper); 
+	for (i = 0; i < MAX_INIT_HASHES; ++i) {
+		R [i] = CR[i] = 0;
+	}
 
-	for (x->input_12 = 0; x->input_12 < NUM_INIT_HASHES; ++(x->input_12))
+	/* add a random/user-set pepper to constant[3] */
+	x->input_CONSTANT_3 = PLUS(x->input_CONSTANT_3,x->pepper); 
+
+	for (x->input_COUNTER = 0; x->input_COUNTER < x->num_init_hashes; ++(x->input_COUNTER))
 	{
-		R[x->input_12] = freestyle_encrypt_block (
+		R[x->input_COUNTER] = freestyle_encrypt_block (
 			x,
 			NULL,
 			NULL,
 			0,
-			&x->init_hash [x->input_12]
+			&x->init_hash [x->input_COUNTER]
 		);
 	}
 
 	if (! x->is_pepper_set)
 	{
 		/* set it back to its previous value */
-		x->input_03 = MINUS(x->input_03,x->pepper); 
+		x->input_CONSTANT_3 = MINUS(x->input_CONSTANT_3,x->pepper); 
 
 		/* check for any collisions between 0 and pepper */
 		for (p = 0; p < x->pepper; ++p)
 		{
-			for (x->input_12 = 0; x->input_12 < NUM_INIT_HASHES; ++(x->input_12))
+			for (x->input_COUNTER = 0; x->input_COUNTER < x->num_init_hashes; ++(x->input_COUNTER))
 			{
-				CR[x->input_12] = freestyle_decrypt_block (
+				CR[x->input_COUNTER] = freestyle_decrypt_block (
 					x,
 					NULL,
 					NULL,
 					0,
-					&x->init_hash [x->input_12]
+					&x->init_hash [x->input_COUNTER]
 				);
 
-				if (CR[x->input_12] == 0) {
+				if (CR[x->input_COUNTER] == 0) {
 					goto continue_loop_encrypt;	
 				}
 			}
 
 			/* found a collision. use the collided rounds */ 
-			memcpy(R, CR, NUM_INIT_HASHES*sizeof(u32));
+			memcpy(R, CR, MAX_INIT_HASHES*sizeof(u32));
 			break;
 
 	continue_loop_encrypt:
-			x->input_03 = PLUSONE(x->input_03);
+			x->input_CONSTANT_3 = PLUSONE(x->input_CONSTANT_3);
 		}
 	}
 
-	for (i = 0; i < 4; ++i)
+	for (i = 0; i < 8; ++i)
 	{
 		temp1 = 0;
 		temp2 = 0;
@@ -232,26 +244,32 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	x->max_rounds 		= saved_max_rounds;
 	x->hash_interval 	= saved_hash_interval; 
 
-	/* modify constant[0], constant[1], constant[2] */
-	x->input_00 ^= x->rand[0]; 
-	x->input_01 ^= x->rand[1]; 
-	x->input_02 ^= x->rand[2]; 
+	/* modify nonce[0], nonce[1], and nonce[2] */
+	x->input_IV_0 ^= x->rand[1]; 
+	x->input_IV_1 ^= x->rand[2]; 
+	x->input_IV_2 ^= x->rand[3]; 
+
+	/* modify constant[0], constant[1], constant[2], and constant[3] */
+	x->input_CONSTANT_0 ^= x->rand[4]; 
+	x->input_CONSTANT_1 ^= x->rand[5]; 
+	x->input_CONSTANT_2 ^= x->rand[6]; 
+	x->input_CONSTANT_3 ^= x->rand[7]; 
 
 	/* set counter back to 0 */
-	x->input_12 = 0;
+	x->input_COUNTER = 0;
 }
 
 void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 {
 	u32 	i;
-	u32 	R [NUM_INIT_HASHES]; /* random rounds */
+	u32 	R [MAX_INIT_HASHES]; /* random rounds */
 
 	u32	temp1;
 	u32	temp2;
 
-	u16 saved_min_rounds		= x->min_rounds;
-	u16 saved_max_rounds		= x->max_rounds;
-	u16 saved_hash_interval   	= x->hash_interval;
+	u32 saved_min_rounds		= x->min_rounds;
+	u32 saved_max_rounds		= x->max_rounds;
+	u32 saved_hash_interval   	= x->hash_interval;
 
 	u32 pepper;
 	u32 max_pepper = (u32)(((u64)1 << x->pepper_bits) - 1); 
@@ -260,21 +278,26 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	x->max_rounds 		= 36;
 	x->hash_interval 	= 1;
 
-	x->input_03 = PLUS(x->input_03, x->pepper);
+	for (i = 0; i < MAX_INIT_HASHES; ++i) {
+		R[i] = 0;
+	}
 
-	for (pepper = 0; pepper <= max_pepper; ++pepper)
+	/* if initial pepper is set, then add it to constant[3] */
+	x->input_CONSTANT_3 = PLUS(x->input_CONSTANT_3, x->pepper);
+
+	for (pepper = x->pepper; pepper <= max_pepper; ++pepper)
 	{
-		for (x->input_12 = 0; x->input_12 < NUM_INIT_HASHES; ++(x->input_12))
+		for (x->input_COUNTER = 0; x->input_COUNTER < x->num_init_hashes; ++(x->input_COUNTER))
 		{
-			R[x->input_12] = freestyle_decrypt_block (
+			R[x->input_COUNTER] = freestyle_decrypt_block (
 				x,
 				NULL,
 				NULL,
 				0,
-				&x->init_hash [x->input_12]
+				&x->init_hash [x->input_COUNTER]
 			);
 
-			if (R[x->input_12] == 0) {
+			if (R[x->input_COUNTER] == 0) {
 				goto continue_loop_decrypt;
 			}
 
@@ -284,10 +307,10 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 		break;
 
 continue_loop_decrypt:
-		x->input_03 = PLUSONE(x->input_03);
+		x->input_CONSTANT_3 = PLUSONE(x->input_CONSTANT_3);
 	}
 
-	for (i = 0; i < 4; ++i)
+	for (i = 0; i < 8; ++i)
 	{
 		temp1 = 0;
 		temp2 = 0;
@@ -310,18 +333,24 @@ continue_loop_decrypt:
 	x->max_rounds 		= saved_max_rounds;
 	x->hash_interval 	= saved_hash_interval; 
 
-	/* modify constant[0], constant[1], constant[2] */
-	x->input_00 ^= x->rand[0]; 
-	x->input_01 ^= x->rand[1]; 
-	x->input_02 ^= x->rand[2]; 
+	/* modify nonce[0], nonce[1], and nonce[2] */
+	x->input_IV_0 ^= x->rand[1]; 
+	x->input_IV_1 ^= x->rand[2]; 
+	x->input_IV_2 ^= x->rand[3]; 
+
+	/* modify constant[0], constant[1], constant[2], and constant[3] */
+	x->input_CONSTANT_0 ^= x->rand[4]; 
+	x->input_CONSTANT_1 ^= x->rand[5]; 
+	x->input_CONSTANT_2 ^= x->rand[6]; 
+	x->input_CONSTANT_3 ^= x->rand[7]; 
 
 	/* set counter back to 0 */
-	x->input_12 = 0;
+	x->input_COUNTER = 0;
 }
 
 void freestyle_hashsetup (
 	freestyle_ctx 	*x,
-	u16 		hash_interval)
+	u32 		hash_interval)
 {
 	x->hash_interval = hash_interval;
 }
@@ -329,14 +358,14 @@ void freestyle_hashsetup (
 void freestyle_keysetup (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32 		key_length_bits)
+	const 	u16 		key_length_bits)
 {
 	const char *constants;
 
-	x->input_04 = U8TO32_LITTLE(key +  0);
-	x->input_05 = U8TO32_LITTLE(key +  4);
-	x->input_06 = U8TO32_LITTLE(key +  8);
-	x->input_07 = U8TO32_LITTLE(key + 12);
+	x->input_KEY_0 = U8TO32_LITTLE(key +  0);
+	x->input_KEY_1 = U8TO32_LITTLE(key +  4);
+	x->input_KEY_2 = U8TO32_LITTLE(key +  8);
+	x->input_KEY_3 = U8TO32_LITTLE(key + 12);
 
 	if (key_length_bits == 256) /* recommended */
 	{ 
@@ -347,15 +376,15 @@ void freestyle_keysetup (
 		constants = tau;
 	}
 
-	x->input_08 = U8TO32_LITTLE(key +  0);
-	x->input_09 = U8TO32_LITTLE(key +  4);
-	x->input_10 = U8TO32_LITTLE(key +  8);
-	x->input_11 = U8TO32_LITTLE(key + 12);
+	x->input_KEY_4 = U8TO32_LITTLE(key +  0);
+	x->input_KEY_5 = U8TO32_LITTLE(key +  4);
+	x->input_KEY_6 = U8TO32_LITTLE(key +  8);
+	x->input_KEY_7 = U8TO32_LITTLE(key + 12);
 
-	x->input_00 = U8TO32_LITTLE(constants +  0);
-	x->input_01 = U8TO32_LITTLE(constants +  4);
-	x->input_02 = U8TO32_LITTLE(constants +  8);
-	x->input_03 = U8TO32_LITTLE(constants + 12);
+	x->input_CONSTANT_0 = U8TO32_LITTLE(constants +  0);
+	x->input_CONSTANT_1 = U8TO32_LITTLE(constants +  4);
+	x->input_CONSTANT_2 = U8TO32_LITTLE(constants +  8);
+	x->input_CONSTANT_3 = U8TO32_LITTLE(constants + 12);
 }
 
 void freestyle_ivsetup (
@@ -363,45 +392,55 @@ void freestyle_ivsetup (
 	const 	u8 		*iv,
 	const	u32 		counter)
 {
-	x->input_12 = counter;
+	x->input_COUNTER = counter;
 
-	x->input_13 = U8TO32_LITTLE(iv + 0);
-	x->input_14 = U8TO32_LITTLE(iv + 4);
-	x->input_15 = U8TO32_LITTLE(iv + 8);
+	x->input_IV_0 = U8TO32_LITTLE(iv + 0);
+	x->input_IV_1 = U8TO32_LITTLE(iv + 4);
+	x->input_IV_2 = U8TO32_LITTLE(iv + 8);
 }
 
 void freestyle_roundsetup (
 		freestyle_ctx 	*x,
-	const 	u16 		min_rounds,
-	const 	u16 		max_rounds,
-	const	u8 		pepper_bits)
+	const 	u32 		min_rounds,
+	const 	u32 		max_rounds,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes)
 {
 	x->min_rounds 		= min_rounds;
 	x->max_rounds 		= max_rounds;
 	x->pepper_bits 		= pepper_bits;
+	x->num_init_hashes 	= num_init_hashes;
 
 	x->min_rounds_by_2 	= x->min_rounds/2;
 	x->min_rounds_is_odd 	= (x->min_rounds & 1) == 1;
 
+	x->cipher_parameter[0] 	= ((x->min_rounds    	& 0xFFFF) << 16) 	// 16 bits 
+				| ((x->max_rounds    	& 0xFFFF));		// 16 bits
 
-	x->cipher_parameter = 	  ((x->min_rounds    & 0x1FF) << 23) // 9 bits 
-				| ((x->max_rounds    & 0x1FF) << 14) // 9 bits
-				| ((x->hash_interval & 0x1FF) <<  5) // 9 bits
-				| (x->pepper_bits    & 0x01F);       // 5 bits
+	x->cipher_parameter[1] 	= ((x->hash_interval   	& 0xFFFF) << 16) 	// 16 bits 
+				| ((x->pepper_bits     	& 0x003F) << 10) 	//  6 bits
+				| ((x->num_init_hashes 	& 0x003F) <<  4);	//  6 bits
+										//  4 LSBs are 0
+	x->num_init_hashes 	= num_init_hashes;
 
 	x->rand[0] = 0; 
 	x->rand[1] = 0; 
 	x->rand[2] = 0; 
 	x->rand[3] = 0; 
+	x->rand[4] = 0; 
+	x->rand[5] = 0; 
+	x->rand[6] = 0; 
+	x->rand[7] = 0; 
 
-	/* modify constant[3] */
-	x->input_03 ^= x->cipher_parameter;
+	/* modify constant[0] and constant[1] */
+	x->input_CONSTANT_0 ^= x->cipher_parameter[0];
+	x->input_CONSTANT_1 ^= x->cipher_parameter[1];
 
 	/* the number of ways a block of message can be encrypted */
 	x->num_rounds_possible = 1 + (x->max_rounds - x->min_rounds)/x->hash_interval;
 }
 
-int freestyle_encrypt (
+void freestyle_encrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*full_plaintext,
 		u8 		*full_ciphertext,
@@ -452,22 +491,25 @@ int freestyle_encrypt (
 		plaintext  = (u8*)(full_plaintext  + i);
 		ciphertext = (u8*)(full_ciphertext + i);
 
-		output32_00 = x->input_00;
-		output32_01 = x->input_01;
-		output32_02 = x->input_02;
-		output32_03 = x->input_03;
-		output32_04 = x->input_04;
-		output32_05 = x->input_05;
-		output32_06 = x->input_06;
-		output32_07 = x->input_07;
-		output32_08 = x->input_08;
-		output32_09 = x->input_09;
-		output32_10 = x->input_10;
-		output32_11 = x->input_11;
-		output32_12 = x->input_12 ^ x->rand[3];
-		output32_13 = x->input_13;
-		output32_14 = x->input_14;
-		output32_15 = x->input_15;
+		output32_00 = x->input_CONSTANT_0;
+		output32_01 = x->input_CONSTANT_1;
+		output32_02 = x->input_CONSTANT_2;
+		output32_03 = x->input_CONSTANT_3;
+
+		output32_04 = x->input_KEY_0;
+		output32_05 = x->input_KEY_1;
+		output32_06 = x->input_KEY_2;
+		output32_07 = x->input_KEY_3;
+		output32_08 = x->input_KEY_4;
+		output32_09 = x->input_KEY_5;
+		output32_10 = x->input_KEY_6;
+		output32_11 = x->input_KEY_7;
+
+		output32_12 = x->input_COUNTER ^ x->rand[0];
+
+		output32_13 = x->input_IV_0;
+		output32_14 = x->input_IV_1;
+		output32_15 = x->input_IV_2;
 
 		/* Generate a random no. of round */ 
 		rounds = x->min_rounds + arc4random_uniform (x->max_rounds - x->min_rounds + x->hash_interval);
@@ -513,22 +555,25 @@ int freestyle_encrypt (
 
 	    	expected_hash[block] = hash; 
 
-		output32_00 = PLUS(output32_00, x->input_00);
-		output32_01 = PLUS(output32_01, x->input_01);
-		output32_02 = PLUS(output32_02, x->input_02);
-		output32_03 = PLUS(output32_03, x->input_03);
-		output32_04 = PLUS(output32_04, x->input_04);
-		output32_05 = PLUS(output32_05, x->input_05);
-		output32_06 = PLUS(output32_06, x->input_06);
-		output32_07 = PLUS(output32_07, x->input_07);
-		output32_08 = PLUS(output32_08, x->input_08);
-		output32_09 = PLUS(output32_09, x->input_09);
-		output32_10 = PLUS(output32_10, x->input_10);
-		output32_11 = PLUS(output32_11, x->input_11);
-		output32_12 = PLUS(output32_12, x->input_12);
-		output32_13 = PLUS(output32_13, x->input_13);
-		output32_14 = PLUS(output32_14, x->input_14);
-		output32_15 = PLUS(output32_15, x->input_15);
+		output32_00 = PLUS(output32_00, x->input_CONSTANT_0);
+		output32_01 = PLUS(output32_01, x->input_CONSTANT_1);
+		output32_02 = PLUS(output32_02, x->input_CONSTANT_2);
+		output32_03 = PLUS(output32_03, x->input_CONSTANT_3);
+
+		output32_04 = PLUS(output32_04, x->input_KEY_0);
+		output32_05 = PLUS(output32_05, x->input_KEY_1);
+		output32_06 = PLUS(output32_06, x->input_KEY_2);
+		output32_07 = PLUS(output32_07, x->input_KEY_3);
+		output32_08 = PLUS(output32_08, x->input_KEY_4);
+		output32_09 = PLUS(output32_09, x->input_KEY_5);
+		output32_10 = PLUS(output32_10, x->input_KEY_6);
+		output32_11 = PLUS(output32_11, x->input_KEY_7);
+
+		output32_12 = PLUS(output32_12, x->input_COUNTER);
+
+		output32_13 = PLUS(output32_13, x->input_IV_0);
+		output32_14 = PLUS(output32_14, x->input_IV_1);
+		output32_15 = PLUS(output32_15, x->input_IV_2);
 
 	    	U32TO8_LITTLE (output8 + 4 * 0,  output32_00);
 	   	U32TO8_LITTLE (output8 + 4 * 1,  output32_01);
@@ -561,13 +606,11 @@ int freestyle_encrypt (
 	
         	++block;
 
-		x->input_12 = PLUSONE (x->input_12);
+		x->input_COUNTER = PLUSONE (x->input_COUNTER);
 	}
-
-	return 0;
 }
 
-int freestyle_decrypt (
+void freestyle_decrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*full_ciphertext,
 		u8 		*full_plaintext,
@@ -618,22 +661,25 @@ int freestyle_decrypt (
 		plaintext  = (u8*)(full_plaintext  + i);
 		ciphertext = (u8*)(full_ciphertext + i);
 
-		output32_00 = x->input_00;
-		output32_01 = x->input_01;
-		output32_02 = x->input_02;
-		output32_03 = x->input_03;
-		output32_04 = x->input_04;
-		output32_05 = x->input_05;
-		output32_06 = x->input_06;
-		output32_07 = x->input_07;
-		output32_08 = x->input_08;
-		output32_09 = x->input_09;
-		output32_10 = x->input_10;
-		output32_11 = x->input_11;
-		output32_12 = x->input_12 ^ x->rand[3];
-		output32_13 = x->input_13;
-		output32_14 = x->input_14;
-		output32_15 = x->input_15;
+		output32_00 = x->input_CONSTANT_0;
+		output32_01 = x->input_CONSTANT_1;
+		output32_02 = x->input_CONSTANT_2;
+		output32_03 = x->input_CONSTANT_3;
+
+		output32_04 = x->input_KEY_0;
+		output32_05 = x->input_KEY_1;
+		output32_06 = x->input_KEY_2;
+		output32_07 = x->input_KEY_3;
+		output32_08 = x->input_KEY_4;
+		output32_09 = x->input_KEY_5;
+		output32_10 = x->input_KEY_6;
+		output32_11 = x->input_KEY_7;
+
+		output32_12 = x->input_COUNTER ^ x->rand[0];
+
+		output32_13 = x->input_IV_0;
+		output32_14 = x->input_IV_1;
+		output32_15 = x->input_IV_2;
 
 		for (r = 1; r <= x->min_rounds_by_2; ++r) {
 			FREESTYLE_DOUBLE_ROUND();
@@ -674,22 +720,22 @@ int freestyle_decrypt (
 		}
 
 decryption:
-		output32_00 = PLUS(output32_00, x->input_00);
-		output32_01 = PLUS(output32_01, x->input_01);
-		output32_02 = PLUS(output32_02, x->input_02);
-		output32_03 = PLUS(output32_03, x->input_03);
-		output32_04 = PLUS(output32_04, x->input_04);
-		output32_05 = PLUS(output32_05, x->input_05);
-		output32_06 = PLUS(output32_06, x->input_06);
-		output32_07 = PLUS(output32_07, x->input_07);
-		output32_08 = PLUS(output32_08, x->input_08);
-		output32_09 = PLUS(output32_09, x->input_09);
-		output32_10 = PLUS(output32_10, x->input_10);
-		output32_11 = PLUS(output32_11, x->input_11);
-		output32_12 = PLUS(output32_12, x->input_12);
-		output32_13 = PLUS(output32_13, x->input_13);
-		output32_14 = PLUS(output32_14, x->input_14);
-		output32_15 = PLUS(output32_15, x->input_15);
+		output32_00 = PLUS(output32_00, x->input_CONSTANT_0);
+		output32_01 = PLUS(output32_01, x->input_CONSTANT_1);
+		output32_02 = PLUS(output32_02, x->input_CONSTANT_2);
+		output32_03 = PLUS(output32_03, x->input_CONSTANT_3);
+		output32_04 = PLUS(output32_04, x->input_KEY_0);
+		output32_05 = PLUS(output32_05, x->input_KEY_1);
+		output32_06 = PLUS(output32_06, x->input_KEY_2);
+		output32_07 = PLUS(output32_07, x->input_KEY_3);
+		output32_08 = PLUS(output32_08, x->input_KEY_4);
+		output32_09 = PLUS(output32_09, x->input_KEY_5);
+		output32_10 = PLUS(output32_10, x->input_KEY_6);
+		output32_11 = PLUS(output32_11, x->input_KEY_7);
+		output32_12 = PLUS(output32_12, x->input_COUNTER);
+		output32_13 = PLUS(output32_13, x->input_IV_0);
+		output32_14 = PLUS(output32_14, x->input_IV_1);
+		output32_15 = PLUS(output32_15, x->input_IV_2);
 
 	    	U32TO8_LITTLE (output8 + 4 * 0,  output32_00);
 	   	U32TO8_LITTLE (output8 + 4 * 1,  output32_01);
@@ -722,20 +768,18 @@ decryption:
 	
             ++block;
 
-	    x->input_12 = PLUSONE (x->input_12);
+	    x->input_COUNTER = PLUSONE (x->input_COUNTER);
 	}
-
-	return 0;
 }
 
-u16 freestyle_encrypt_block (
+u32 freestyle_encrypt_block (
 		freestyle_ctx	*x,	
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
 		u8 		bytes,
 		u16 		*expected_hash)
 {
-	u16 	i, r;
+	u32 	i, r;
 
 	u16 	hash = 0;
 
@@ -744,7 +788,7 @@ u16 freestyle_encrypt_block (
 
 	bool init = (plaintext == NULL) || (ciphertext == NULL) || (bytes == 0);
 
-	u16 rounds = x->min_rounds + arc4random_uniform (x->max_rounds - x->min_rounds + x->hash_interval);
+	u32 rounds = x->min_rounds + arc4random_uniform (x->max_rounds - x->min_rounds + x->hash_interval);
 
 	rounds = x->hash_interval * (u16)(rounds/x->hash_interval);
 
@@ -752,22 +796,22 @@ u16 freestyle_encrypt_block (
 
 	u64 hash_collided [128] = {0};
 
-	u32 	output32_00 = x->input_00,
-		output32_01 = x->input_01,
-		output32_02 = x->input_02,
-		output32_03 = x->input_03,
-		output32_04 = x->input_04,
-		output32_05 = x->input_05,
-		output32_06 = x->input_06,
-		output32_07 = x->input_07,
-		output32_08 = x->input_08,
-		output32_09 = x->input_09,
-		output32_10 = x->input_10,
-		output32_11 = x->input_11,
-		output32_12 = x->input_12 ^ x->rand[3],
-		output32_13 = x->input_13,
-		output32_14 = x->input_14,
-		output32_15 = x->input_15;
+	u32 	output32_00 = x->input_CONSTANT_0,
+		output32_01 = x->input_CONSTANT_1,
+		output32_02 = x->input_CONSTANT_2,
+		output32_03 = x->input_CONSTANT_3,
+		output32_04 = x->input_KEY_0,
+		output32_05 = x->input_KEY_1,
+		output32_06 = x->input_KEY_2,
+		output32_07 = x->input_KEY_3,
+		output32_08 = x->input_KEY_4,
+		output32_09 = x->input_KEY_5,
+		output32_10 = x->input_KEY_6,
+		output32_11 = x->input_KEY_7,
+		output32_12 = x->input_COUNTER ^ x->rand[0],
+		output32_13 = x->input_IV_0,
+		output32_14 = x->input_IV_1,
+		output32_15 = x->input_IV_2;
 
 	for (r = 1; r <= rounds; ++r)
 	{
@@ -792,22 +836,22 @@ u16 freestyle_encrypt_block (
 
 	if (! init)
 	{
-	     	U32TO8_LITTLE (output8 + 4 * 0,  PLUS(output32_00, x->input_00));
-	     	U32TO8_LITTLE (output8 + 4 * 1,  PLUS(output32_01, x->input_01));
-	     	U32TO8_LITTLE (output8 + 4 * 2,  PLUS(output32_02, x->input_02));
-	     	U32TO8_LITTLE (output8 + 4 * 3,  PLUS(output32_03, x->input_03));
-	     	U32TO8_LITTLE (output8 + 4 * 4,  PLUS(output32_04, x->input_04));
-	     	U32TO8_LITTLE (output8 + 4 * 5,  PLUS(output32_05, x->input_05));
-	     	U32TO8_LITTLE (output8 + 4 * 6,  PLUS(output32_06, x->input_06));
-	     	U32TO8_LITTLE (output8 + 4 * 7,  PLUS(output32_07, x->input_07));
-	     	U32TO8_LITTLE (output8 + 4 * 8,  PLUS(output32_08, x->input_08));
-	     	U32TO8_LITTLE (output8 + 4 * 9,  PLUS(output32_09, x->input_09));
-	     	U32TO8_LITTLE (output8 + 4 * 10, PLUS(output32_10, x->input_10));
-	     	U32TO8_LITTLE (output8 + 4 * 11, PLUS(output32_11, x->input_11));
-	     	U32TO8_LITTLE (output8 + 4 * 12, PLUS(output32_12, x->input_12));
-	     	U32TO8_LITTLE (output8 + 4 * 13, PLUS(output32_13, x->input_13));
-	     	U32TO8_LITTLE (output8 + 4 * 14, PLUS(output32_14, x->input_14));
-	     	U32TO8_LITTLE (output8 + 4 * 15, PLUS(output32_15, x->input_15));
+	     	U32TO8_LITTLE (output8 + 4 * 0,  PLUS(output32_00, x->input_CONSTANT_0));
+	     	U32TO8_LITTLE (output8 + 4 * 1,  PLUS(output32_01, x->input_CONSTANT_1));
+	     	U32TO8_LITTLE (output8 + 4 * 2,  PLUS(output32_02, x->input_CONSTANT_2));
+	     	U32TO8_LITTLE (output8 + 4 * 3,  PLUS(output32_03, x->input_CONSTANT_3));
+	     	U32TO8_LITTLE (output8 + 4 * 4,  PLUS(output32_04, x->input_KEY_0));
+	     	U32TO8_LITTLE (output8 + 4 * 5,  PLUS(output32_05, x->input_KEY_1));
+	     	U32TO8_LITTLE (output8 + 4 * 6,  PLUS(output32_06, x->input_KEY_2));
+	     	U32TO8_LITTLE (output8 + 4 * 7,  PLUS(output32_07, x->input_KEY_3));
+	     	U32TO8_LITTLE (output8 + 4 * 8,  PLUS(output32_08, x->input_KEY_4));
+	     	U32TO8_LITTLE (output8 + 4 * 9,  PLUS(output32_09, x->input_KEY_5));
+	     	U32TO8_LITTLE (output8 + 4 * 10, PLUS(output32_10, x->input_KEY_6));
+	     	U32TO8_LITTLE (output8 + 4 * 11, PLUS(output32_11, x->input_KEY_7));
+	     	U32TO8_LITTLE (output8 + 4 * 12, PLUS(output32_12, x->input_COUNTER));
+	     	U32TO8_LITTLE (output8 + 4 * 13, PLUS(output32_13, x->input_IV_0));
+	     	U32TO8_LITTLE (output8 + 4 * 14, PLUS(output32_14, x->input_IV_1));
+	     	U32TO8_LITTLE (output8 + 4 * 15, PLUS(output32_15, x->input_IV_2));
                                                  
 		if (bytes == 64)                 
 		{                                
@@ -824,14 +868,14 @@ u16 freestyle_encrypt_block (
 	return rounds;
 }
 
-u16 freestyle_decrypt_block (
+u32 freestyle_decrypt_block (
 		freestyle_ctx	*x,	
 		u8 		*plaintext,
 	const	u8 		*ciphertext,
 		u8 		bytes,
 		u16 		*expected_hash)
 {
-	u16 	i, r;
+	u32 	i, r;
 
 	u16 	hash = 0;
 
@@ -843,22 +887,25 @@ u16 freestyle_decrypt_block (
 
 	u8 output8 [64];
 
-	u32 	output32_00 = x->input_00,
-		output32_01 = x->input_01,
-		output32_02 = x->input_02,
-		output32_03 = x->input_03,
-		output32_04 = x->input_04,
-		output32_05 = x->input_05,
-		output32_06 = x->input_06,
-		output32_07 = x->input_07,
-		output32_08 = x->input_08,
-		output32_09 = x->input_09,
-		output32_10 = x->input_10,
-		output32_11 = x->input_11,
-		output32_12 = x->input_12 ^ x->rand[3],
-		output32_13 = x->input_13,
-		output32_14 = x->input_14,
-		output32_15 = x->input_15;
+	u32 	output32_00 = x->input_CONSTANT_0,
+		output32_01 = x->input_CONSTANT_1,
+		output32_02 = x->input_CONSTANT_2,
+		output32_03 = x->input_CONSTANT_3,
+
+		output32_04 = x->input_KEY_0,
+		output32_05 = x->input_KEY_1,
+		output32_06 = x->input_KEY_2,
+		output32_07 = x->input_KEY_3,
+		output32_08 = x->input_KEY_4,
+		output32_09 = x->input_KEY_5,
+		output32_10 = x->input_KEY_6,
+		output32_11 = x->input_KEY_7,
+
+		output32_12 = x->input_COUNTER ^ x->rand[0],
+
+		output32_13 = x->input_IV_0,
+		output32_14 = x->input_IV_1,
+		output32_15 = x->input_IV_2;
 
 	for (r = 1; r <= x->max_rounds; ++r)
 	{
@@ -888,22 +935,25 @@ u16 freestyle_decrypt_block (
 
 	if (! init)
 	{
-	     	U32TO8_LITTLE (output8 + 4 * 0,  PLUS(output32_00, x->input_00));
-	     	U32TO8_LITTLE (output8 + 4 * 1,  PLUS(output32_01, x->input_01));
-	     	U32TO8_LITTLE (output8 + 4 * 2,  PLUS(output32_02, x->input_02));
-	     	U32TO8_LITTLE (output8 + 4 * 3,  PLUS(output32_03, x->input_03));
-	     	U32TO8_LITTLE (output8 + 4 * 4,  PLUS(output32_04, x->input_04));
-	     	U32TO8_LITTLE (output8 + 4 * 5,  PLUS(output32_05, x->input_05));
-	     	U32TO8_LITTLE (output8 + 4 * 6,  PLUS(output32_06, x->input_06));
-	     	U32TO8_LITTLE (output8 + 4 * 7,  PLUS(output32_07, x->input_07));
-	     	U32TO8_LITTLE (output8 + 4 * 8,  PLUS(output32_08, x->input_08));
-	     	U32TO8_LITTLE (output8 + 4 * 9,  PLUS(output32_09, x->input_09));
-	     	U32TO8_LITTLE (output8 + 4 * 10, PLUS(output32_10, x->input_10));
-	     	U32TO8_LITTLE (output8 + 4 * 11, PLUS(output32_11, x->input_11));
-	     	U32TO8_LITTLE (output8 + 4 * 12, PLUS(output32_12, x->input_12));
-	     	U32TO8_LITTLE (output8 + 4 * 13, PLUS(output32_13, x->input_13));
-	     	U32TO8_LITTLE (output8 + 4 * 14, PLUS(output32_14, x->input_14));
-	     	U32TO8_LITTLE (output8 + 4 * 15, PLUS(output32_15, x->input_15));
+	     	U32TO8_LITTLE (output8 + 4 * 0,  PLUS(output32_00, x->input_CONSTANT_0));
+	     	U32TO8_LITTLE (output8 + 4 * 1,  PLUS(output32_01, x->input_CONSTANT_1));
+	     	U32TO8_LITTLE (output8 + 4 * 2,  PLUS(output32_02, x->input_CONSTANT_2));
+	     	U32TO8_LITTLE (output8 + 4 * 3,  PLUS(output32_03, x->input_CONSTANT_3));
+
+	     	U32TO8_LITTLE (output8 + 4 * 4,  PLUS(output32_04, x->input_KEY_0));
+	     	U32TO8_LITTLE (output8 + 4 * 5,  PLUS(output32_05, x->input_KEY_1));
+	     	U32TO8_LITTLE (output8 + 4 * 6,  PLUS(output32_06, x->input_KEY_2));
+	     	U32TO8_LITTLE (output8 + 4 * 7,  PLUS(output32_07, x->input_KEY_3));
+	     	U32TO8_LITTLE (output8 + 4 * 8,  PLUS(output32_08, x->input_KEY_4));
+	     	U32TO8_LITTLE (output8 + 4 * 9,  PLUS(output32_09, x->input_KEY_5));
+	     	U32TO8_LITTLE (output8 + 4 * 10, PLUS(output32_10, x->input_KEY_6));
+	     	U32TO8_LITTLE (output8 + 4 * 11, PLUS(output32_11, x->input_KEY_7));
+
+	     	U32TO8_LITTLE (output8 + 4 * 12, PLUS(output32_12, x->input_COUNTER));
+
+	     	U32TO8_LITTLE (output8 + 4 * 13, PLUS(output32_13, x->input_IV_0));
+	     	U32TO8_LITTLE (output8 + 4 * 14, PLUS(output32_14, x->input_IV_1));
+	     	U32TO8_LITTLE (output8 + 4 * 15, PLUS(output32_15, x->input_IV_2));
          
 		if (bytes == 64)
 			FREESTYLE_XOR_64(ciphertext,plaintext,output8);

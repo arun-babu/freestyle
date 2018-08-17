@@ -32,9 +32,8 @@ Public domain.
 
 #include <sys/types.h>
 
-#define NUM_INIT_HASHES (28)
-
-#define MAX_HASH_VALUE (65536)
+#define MAX_HASH_VALUE 	(65536)
+#define MAX_INIT_HASHES (56)
 
 #include <assert.h>
 
@@ -44,22 +43,22 @@ Public domain.
 
 /*--- Elements of the cipher state --- */
 
-#define CONSTANT0 	(0)
-#define CONSTANT1 	(1)
-#define CONSTANT2 	(2)
-#define CONSTANT3 	(3)
-#define KEY0 		(4)
-#define KEY1 		(5)
-#define KEY2 		(6)
-#define KEY3 		(7)
-#define KEY4 		(8)
-#define KEY5 		(9)
-#define KEY6 		(10)
-#define KEY7 		(11)
+#define CONSTANT_0 	(0)
+#define CONSTANT_1 	(1)
+#define CONSTANT_2 	(2)
+#define CONSTANT_3 	(3)
+#define KEY_0 		(4)
+#define KEY_1 		(5)
+#define KEY_2 		(6)
+#define KEY_3 		(7)
+#define KEY_4 		(8)
+#define KEY_5 		(9)
+#define KEY_6 		(10)
+#define KEY_7 		(11)
 #define COUNTER 	(12)
-#define IV0 		(13)
-#define IV1 		(14)	
-#define IV2 		(15)
+#define IV_0 		(13)
+#define IV_1 		(14)	
+#define IV_2 		(15)
 
 /*------*/
 
@@ -110,43 +109,44 @@ static const char tau[16] = "expand 16-byte k";
 
 typedef struct freestyle_ctx {
 
-	u32 		input_00,
-			input_01,
-			input_02,
-			input_03,
-			input_04,
-			input_05,
-			input_06,
-			input_07,
-			input_08,
-			input_09,
-			input_10,
-			input_11,
-			input_12,
-			input_13,
-			input_14,
-			input_15;
+	u32 		input_CONSTANT_0,
+			input_CONSTANT_1,
+			input_CONSTANT_2,
+			input_CONSTANT_3,
+			input_KEY_0,
+			input_KEY_1,
+			input_KEY_2,
+			input_KEY_3,
+			input_KEY_4,
+			input_KEY_5,
+			input_KEY_6,
+			input_KEY_7,
+			input_COUNTER,
+			input_IV_0,
+			input_IV_1,
+			input_IV_2;
 
-	u16		min_rounds;
-	u16		max_rounds;
+	u32		min_rounds;
+	u32		max_rounds;
 
-	u16		min_rounds_by_2;
+	u32		min_rounds_by_2;
 
 	bool		min_rounds_is_odd;
 
-	u32 		cipher_parameter;
-	u32 		rand[4];
+	u32 		cipher_parameter[2];
+	u32 		rand[8];
 
-	u16		num_rounds_possible;
+	u32		num_rounds_possible;
 
-	u16 		init_hash [NUM_INIT_HASHES];
+	u8		num_init_hashes;
+	u16 		init_hash [MAX_INIT_HASHES];
 
 	u8 		pepper_bits;
 	u32 		pepper;
 
 	bool 		is_pepper_set;
 
-	u16 		hash_interval;
+	u32 		hash_interval;
 	u8 		num_output_elements_to_hash;
 
 } freestyle_ctx;
@@ -155,65 +155,70 @@ void freestyle_increment_counter (
 	freestyle_ctx *x
 );
 
-u16 random_round_number (
+u32 random_round_number (
 	const freestyle_ctx *x
 );
 
 void freestyle_init_common (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const	u16		max_rounds,
-	const	u16 		hash_interval,
-	const	u8 		pepper_bits
+	const 	u32 		min_rounds,
+	const	u32		max_rounds,
+	const	u32 		hash_interval,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes	
 );
 
 void freestyle_init_encrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32 		key_length_bits,
+	const 	u16 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const 	u16		max_rounds,
-	const 	u16 		hash_interval,
-	const 	u8 		pepper_bits
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const 	u32 		hash_interval,
+	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes	
 );
 
 void freestyle_init_encrypt_with_pepper (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32 		key_length_bits,
+	const 	u16 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const 	u16		max_rounds,
-	const 	u16 		hash_interval,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
 	const 	u32 		pepper_set	
 );
 
 void freestyle_init_decrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32 		key_length_bits,
+	const 	u16 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const 	u16		max_rounds,
-	const 	u16 		hash_interval,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
 	const	u16 		*init_hash
 );
 
 void freestyle_init_decrypt_with_pepper (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32 		key_length_bits,
+	const 	u16 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const 	u16		max_rounds,
-	const 	u16 		hash_interval,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
 	const 	u32 		pepper_set,
 	const	u16 		*init_hash
 );
@@ -221,7 +226,7 @@ void freestyle_init_decrypt_with_pepper (
 void freestyle_keysetup (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32 		key_length_bits
+	const 	u16 		key_length_bits
 );
 
 void freestyle_ivsetup (
@@ -232,14 +237,15 @@ void freestyle_ivsetup (
 
 void freestyle_hashsetup (
 		freestyle_ctx 	*x,
-	const 	u16 		hash_interval
+	const 	u32 		hash_interval
 );
 
 void freestyle_roundsetup (
 		freestyle_ctx 	*x,
-	const	u16 		min_rounds,
-	const	u16 		max_rounds,
-	const	u8 		pepper_bits
+	const	u32 		min_rounds,
+	const	u32 		max_rounds,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes	
 );
 
 void freestyle_randomsetup_encrypt (
@@ -250,7 +256,7 @@ void freestyle_randomsetup_decrypt (
 		freestyle_ctx 	*x
 );
 
-int freestyle_encrypt (
+void freestyle_encrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*input,
 		u8 		*output,
@@ -258,7 +264,7 @@ int freestyle_encrypt (
 		u16 		*hash
 );
 
-int freestyle_decrypt (
+void freestyle_decrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*input,
 		u8 		*output,
@@ -266,7 +272,7 @@ int freestyle_decrypt (
 		u16 		*hash
 );
 
-u16 freestyle_encrypt_block (
+u32 freestyle_encrypt_block (
 		freestyle_ctx	*x,	
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
@@ -274,7 +280,7 @@ u16 freestyle_encrypt_block (
 		u16		*expected_hash
 );
 
-u16 freestyle_decrypt_block (
+u32 freestyle_decrypt_block (
 		freestyle_ctx	*x,	
 		u8 		*plaintext,
 	const	u8 		*ciphertext,

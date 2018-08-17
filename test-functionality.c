@@ -15,7 +15,7 @@ int main (int argc, char **argv)
 	freestyle_ctx encrypt;
 	freestyle_ctx decrypt;
 
-	u8 plaintext [MSG_LEN+1];
+	u8 plaintext [MSG_LEN];
 	u8 ciphertext[MSG_LEN];
 
 	u16 expected_hash [MSG_LEN/64 + 1];
@@ -64,11 +64,7 @@ int main (int argc, char **argv)
 		);
 		freestyle_decrypt (&decrypt, test_ciphertext[i], plaintext, MSG_LEN, test_expected_hash[i]);
 
-		if (0 != strncmp(plaintext,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@",64))
-		{
-			printf("%d Failed '%s'\n",i,plaintext);
-		}
-		//assert(0 == strncmp(plaintext,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@",64));
+		assert(0 == memcmp(plaintext,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@",64));
 
 		printf("Known ciphertext test %d OK\n",i);
 	}

@@ -26,7 +26,7 @@ Public domain.
 void freestyle_init_common (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
 	const 	u32 		min_rounds,
 	const	u32		max_rounds,
@@ -57,7 +57,7 @@ void freestyle_init_common (
 void freestyle_init_encrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
 	const 	u32 		min_rounds,
 	const	u32		max_rounds,
@@ -76,7 +76,7 @@ void freestyle_init_encrypt (
 void freestyle_init_encrypt_with_pepper (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
 	const 	u32 		min_rounds,
 	const	u32		max_rounds,
@@ -96,7 +96,7 @@ void freestyle_init_encrypt_with_pepper (
 void freestyle_init_decrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
 	const 	u32 		min_rounds,
 	const	u32		max_rounds,
@@ -121,7 +121,7 @@ void freestyle_init_decrypt (
 void freestyle_init_decrypt_with_pepper (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32		key_length_bits,
+	const 	u16		key_length_bits,
 	const 	u8 		*iv,
 	const 	u32 		min_rounds,
 	const	u32		max_rounds,
@@ -392,7 +392,7 @@ void freestyle_hashsetup (
 void freestyle_keysetup (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
-	const 	u32 		key_length_bits)
+	const 	u16 		key_length_bits)
 {
 	const char *constants;
 

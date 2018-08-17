@@ -1,7 +1,11 @@
-rm -rf test 2>/dev/null
+CC="gcc"
+
+rm -rf test-functionality 2>/dev/null
+rm -rf test-timing 2>/dev/null
+
 rm -rf freestyle.o 2>/dev/null
 
-gcc -c freestyle.c
+$CC -c -Wall freestyle.c
 
 LFLAGS=""
 OS=`uname`
@@ -11,6 +15,8 @@ then
 	LFLAGS="-lbsd"	
 fi
 
-gcc -o test test.c freestyle.o $LFLAGS 
+$CC -Wall -o test-functionality test-functionality.c freestyle.o $LFLAGS
+$CC -Wall -o test-timing test-timing.c freestyle.o $LFLAGS
 
-./test
+./test-functionality
+./test-timing

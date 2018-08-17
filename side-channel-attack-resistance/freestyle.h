@@ -33,9 +33,8 @@ Public domain.
 
 #include <sys/types.h>
 
-#define NUM_INIT_HASHES (28)
-
-#define MAX_HASH_VALUE (65536)
+#define MAX_HASH_VALUE 	(65536)
+#define MAX_INIT_HASHES (56)
 
 #include <assert.h>
 
@@ -118,22 +117,23 @@ static const char tau[16] = "expand 16-byte k";
 typedef struct freestyle_ctx {
 	u32 		input[16];
 
-	u16		min_rounds;
-	u16		max_rounds;
+	u32		min_rounds;
+	u32		max_rounds;
 
-	u32 		cipher_parameter;
-	u32 		rand[4];
+	u32 		cipher_parameter[2];
+	u32 		rand[8];
 
-	u16		num_rounds_possible;
+	u32		num_rounds_possible;
 
-	u16 		init_hash [NUM_INIT_HASHES];
+	u8		num_init_hashes;
+	u16 		init_hash [MAX_INIT_HASHES];
 
 	u8 		pepper_bits;
 	u32 		pepper;
 
 	bool 		is_pepper_set;
 
-	u16 		hash_interval;
+	u32 		hash_interval;
 	u8 		num_output_elements_to_hash;
 
 } freestyle_ctx;
@@ -142,7 +142,7 @@ void freestyle_increment_counter (
 	freestyle_ctx *x
 );
 
-u16 random_round_number (
+u32 random_round_number (
 	const freestyle_ctx *x
 );
 
@@ -151,10 +151,11 @@ void freestyle_init_common (
 	const 	u8 		*key,
 	const 	u32		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const	u16		max_rounds,
-	const	u16 		hash_interval,
-	const	u8 		pepper_bits
+	const 	u32 		min_rounds,
+	const	u32		max_rounds,
+	const	u32 		hash_interval,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes	
 );
 
 void freestyle_init_encrypt (
@@ -162,10 +163,11 @@ void freestyle_init_encrypt (
 	const 	u8 		*key,
 	const 	u32 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const 	u16		max_rounds,
-	const 	u16 		hash_interval,
-	const 	u8 		pepper_bits
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const 	u32 		hash_interval,
+	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes	
 );
 
 void freestyle_init_encrypt_with_pepper (
@@ -173,10 +175,11 @@ void freestyle_init_encrypt_with_pepper (
 	const 	u8 		*key,
 	const 	u32 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const 	u16		max_rounds,
-	const 	u16 		hash_interval,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
 	const 	u32 		pepper_set	
 );
 
@@ -185,10 +188,11 @@ void freestyle_init_decrypt (
 	const 	u8 		*key,
 	const 	u32 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const 	u16		max_rounds,
-	const 	u16 		hash_interval,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
 	const	u16 		*init_hash
 );
 
@@ -197,10 +201,11 @@ void freestyle_init_decrypt_with_pepper (
 	const 	u8 		*key,
 	const 	u32 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u16 		min_rounds,
-	const 	u16		max_rounds,
-	const 	u16 		hash_interval,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
 	const 	u32 		pepper_set,
 	const	u16 		*init_hash
 );
@@ -219,14 +224,15 @@ void freestyle_ivsetup (
 
 void freestyle_hashsetup (
 		freestyle_ctx 	*x,
-	const 	u16 		hash_interval
+	const 	u32 		hash_interval
 );
 
 void freestyle_roundsetup (
 		freestyle_ctx 	*x,
-	const	u16 		min_rounds,
-	const	u16 		max_rounds,
-	const	u8 		pepper_bits
+	const	u32 		min_rounds,
+	const	u32 		max_rounds,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes	
 );
 
 void freestyle_randomsetup_encrypt (
@@ -241,7 +247,7 @@ u16 freestyle_hash (
 		freestyle_ctx 	*x,
 	const 	u32 		output [16],
 	const 	u16 		previous_hash,
-	const 	u16 		rounds
+	const 	u32 		rounds
 );
 
 int freestyle_process (
@@ -253,7 +259,7 @@ int freestyle_process (
 	const 	bool 		do_encryption
 );
 
-u16 freestyle_process_block (
+u32 freestyle_process_block (
 		freestyle_ctx	*x,	
 	const 	u8 		*input,
 		u8 		*output,
@@ -262,7 +268,9 @@ u16 freestyle_process_block (
 	const	bool 		do_encryption
 );
 
-void freestyle_init_random_indices (u8 *random_indices);
+void freestyle_init_random_indices (
+		freestyle_ctx 	*x,
+		u8 		*random_indices
+);
 
 #endif	/* FREESTYLE_H */
-

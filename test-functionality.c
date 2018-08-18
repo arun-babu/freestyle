@@ -86,6 +86,8 @@ int main (int argc, char **argv)
 			message[j] = arc4random(); 
 		}
 
+		num_init_hashes = 7 + arc4random_uniform (56 - 7);
+
 		freestyle_init_encrypt (
 			&encrypt,
 			key,

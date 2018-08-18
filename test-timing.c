@@ -34,7 +34,7 @@ int main (int argc, char **argv)
 	u32 hash_interval   = 1;
 
 	u8 pepper_bits = 16;
-	u8 num_init_hashes = 7;
+	u8 num_init_hashes = 28;
 
 	for (i = 0; i < 32; ++i) {
 		key[i] = (u8)arc4random();

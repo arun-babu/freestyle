@@ -7,7 +7,7 @@ echo
 echo "======================================================"
 echo "[ Side channel attack resistance implementation ]" 
 echo "======================================================"
-cd side=channel=attack=resistance
+cd side-channel-attack-resistance
 ./test.sh
 
 echo

@@ -146,17 +146,21 @@ void freestyle_init_decrypt_with_pepper (
 
 void freestyle_init_random_indices (freestyle_ctx *x, u8 *random_indices)
 {
-	u8 random_mask = arc4random_uniform (32);
-
 	u8 i, j = 0;
 
-	for (i = 0; i < 32; ++i)
+	u8 tmp;
+
+	for (i = 0; i < x->num_init_hashes; ++i) {
+		random_indices [i] = i;			
+	}
+
+	for (i = 0; i < x->num_init_hashes/2; ++i)
 	{
-		if ( (random_mask ^ i) < x->num_init_hashes)
-		{
-			random_indices [j] = random_mask ^ i;			
-			++j;
-		}
+		j = arc4random_uniform (x->num_init_hashes);
+
+		tmp 			= random_indices [i];
+		random_indices [i] 	= random_indices [j];
+		random_indices [j] 	= tmp;
 	}
 }
 	

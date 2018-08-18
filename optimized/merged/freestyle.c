@@ -421,8 +421,6 @@ void freestyle_roundsetup (
 				| ((x->pepper_bits     	& 0x003F) << 10) 	//  6 bits
 				| ((x->num_init_hashes 	& 0x003F) <<  4);	//  6 bits
 										//  4 LSBs are 0
-	x->num_init_hashes 	= num_init_hashes;
-
 	x->rand[0] = 0; 
 	x->rand[1] = 0; 
 	x->rand[2] = 0; 
@@ -479,14 +477,14 @@ void freestyle_encrypt (
 		output32_14,
 		output32_15;
 
-	u64 hash_collided [128];
+	u64 hash_collided [1024];
 
 	while (bytes > 0)
 	{
 		hash = 0;
 		bytes_to_process = bytes >= 64 ? 64 : bytes;
 		
-		RESET_HASH_COLLIDED();
+		memset (hash_collided, 0,sizeof(hash_collided));
 	
 		plaintext  = (u8*)(full_plaintext  + i);
 		ciphertext = (u8*)(full_ciphertext + i);
@@ -530,7 +528,7 @@ void freestyle_encrypt (
 
 		COMPUTE_HASH(x,hash,x->min_rounds);
 
-		hash_collided [hash >> 9] |= ((u64)1 << (hash & 0x3F));
+		hash_collided [hash >> 6] |= ((u64)1 << (hash & 0x3F));
 
 		for (r = x->min_rounds + 1; r <= rounds; ++r)
 		{
@@ -543,11 +541,11 @@ void freestyle_encrypt (
 			{
 				COMPUTE_HASH(x,hash,r);
 
-				while ((hash_collided [hash >> 9] & ((u64)1 << (hash & 0x3F))) > 0) {
+				while ((hash_collided [hash >> 6] & ((u64)1 << (hash & 0x3F))) > 0) {
 					++hash;
 				}
 
-				hash_collided [hash >> 9] |= ((u64)1 << (hash & 0x3F));
+				hash_collided [hash >> 6] |= ((u64)1 << (hash & 0x3F));
 			}
 		}
 
@@ -649,14 +647,14 @@ void freestyle_decrypt (
 		output32_14,
 		output32_15;
 
-	u64 hash_collided [128];
+	u64 hash_collided [1024];
 
 	while (bytes > 0)
 	{
 		hash = 0;
 		bytes_to_process = bytes >= 64 ? 64 : bytes;
 
-		RESET_HASH_COLLIDED();
+		memset (hash_collided, 0, sizeof(hash_collided));
 
 		plaintext  = (u8*)(full_plaintext  + i);
 		ciphertext = (u8*)(full_ciphertext + i);
@@ -694,7 +692,7 @@ void freestyle_decrypt (
 		if (hash == expected_hash[block])
 			goto decryption;
 
-		hash_collided [hash >> 9] |= ((u64)1 << (hash & 0x3F));
+		hash_collided [hash >> 6] |= ((u64)1 << (hash & 0x3F));
 
 		for (r = x->min_rounds + 1; r <= x->max_rounds; ++r)
 		{
@@ -707,11 +705,11 @@ void freestyle_decrypt (
 			{
 				COMPUTE_HASH(x,hash,r);
 
-				while ((hash_collided [hash >> 9] & ((u64)1 << (hash & 0x3F))) > 0) {
+				while ((hash_collided [hash >> 6] & ((u64)1 << (hash & 0x3F))) > 0) {
 					++hash;
 				}
 
-				hash_collided [hash >> 9] |= ((u64)1 << (hash & 0x3F));
+				hash_collided [hash >> 6] |= ((u64)1 << (hash & 0x3F));
 
 				if (hash == expected_hash[block]) {
 					break;
@@ -724,6 +722,7 @@ decryption:
 		output32_01 = PLUS(output32_01, x->input_CONSTANT_1);
 		output32_02 = PLUS(output32_02, x->input_CONSTANT_2);
 		output32_03 = PLUS(output32_03, x->input_CONSTANT_3);
+
 		output32_04 = PLUS(output32_04, x->input_KEY_0);
 		output32_05 = PLUS(output32_05, x->input_KEY_1);
 		output32_06 = PLUS(output32_06, x->input_KEY_2);
@@ -732,7 +731,9 @@ decryption:
 		output32_09 = PLUS(output32_09, x->input_KEY_5);
 		output32_10 = PLUS(output32_10, x->input_KEY_6);
 		output32_11 = PLUS(output32_11, x->input_KEY_7);
+
 		output32_12 = PLUS(output32_12, x->input_COUNTER);
+
 		output32_13 = PLUS(output32_13, x->input_IV_0);
 		output32_14 = PLUS(output32_14, x->input_IV_1);
 		output32_15 = PLUS(output32_15, x->input_IV_2);
@@ -794,12 +795,13 @@ u32 freestyle_encrypt_block (
 
 	u8 output8 [64];
 
-	u64 hash_collided [128] = {0};
+	u64 hash_collided [1024];
 
 	u32 	output32_00 = x->input_CONSTANT_0,
 		output32_01 = x->input_CONSTANT_1,
 		output32_02 = x->input_CONSTANT_2,
 		output32_03 = x->input_CONSTANT_3,
+
 		output32_04 = x->input_KEY_0,
 		output32_05 = x->input_KEY_1,
 		output32_06 = x->input_KEY_2,
@@ -808,10 +810,14 @@ u32 freestyle_encrypt_block (
 		output32_09 = x->input_KEY_5,
 		output32_10 = x->input_KEY_6,
 		output32_11 = x->input_KEY_7,
+
 		output32_12 = x->input_COUNTER ^ x->rand[0],
+
 		output32_13 = x->input_IV_0,
 		output32_14 = x->input_IV_1,
 		output32_15 = x->input_IV_2;
+	
+	memset (hash_collided, 0,sizeof(hash_collided));
 
 	for (r = 1; r <= rounds; ++r)
 	{
@@ -824,11 +830,11 @@ u32 freestyle_encrypt_block (
 		{
 			COMPUTE_HASH(x,hash,r);
 
-			while ((hash_collided [hash >> 9] & ((u64)1 << (hash & 0x3F))) > 0) {
+			while ((hash_collided [hash >> 6] & ((u64)1 << (hash & 0x3F))) > 0) {
 				++hash;
 			}
 
-			hash_collided [hash >> 9] |= ((u64)1 << (hash & 0x3F));
+			hash_collided [hash >> 6] |= ((u64)1 << (hash & 0x3F));
 		}
 	}
 
@@ -840,6 +846,7 @@ u32 freestyle_encrypt_block (
 	     	U32TO8_LITTLE (output8 + 4 * 1,  PLUS(output32_01, x->input_CONSTANT_1));
 	     	U32TO8_LITTLE (output8 + 4 * 2,  PLUS(output32_02, x->input_CONSTANT_2));
 	     	U32TO8_LITTLE (output8 + 4 * 3,  PLUS(output32_03, x->input_CONSTANT_3));
+
 	     	U32TO8_LITTLE (output8 + 4 * 4,  PLUS(output32_04, x->input_KEY_0));
 	     	U32TO8_LITTLE (output8 + 4 * 5,  PLUS(output32_05, x->input_KEY_1));
 	     	U32TO8_LITTLE (output8 + 4 * 6,  PLUS(output32_06, x->input_KEY_2));
@@ -848,7 +855,9 @@ u32 freestyle_encrypt_block (
 	     	U32TO8_LITTLE (output8 + 4 * 9,  PLUS(output32_09, x->input_KEY_5));
 	     	U32TO8_LITTLE (output8 + 4 * 10, PLUS(output32_10, x->input_KEY_6));
 	     	U32TO8_LITTLE (output8 + 4 * 11, PLUS(output32_11, x->input_KEY_7));
+
 	     	U32TO8_LITTLE (output8 + 4 * 12, PLUS(output32_12, x->input_COUNTER));
+
 	     	U32TO8_LITTLE (output8 + 4 * 13, PLUS(output32_13, x->input_IV_0));
 	     	U32TO8_LITTLE (output8 + 4 * 14, PLUS(output32_14, x->input_IV_1));
 	     	U32TO8_LITTLE (output8 + 4 * 15, PLUS(output32_15, x->input_IV_2));
@@ -883,7 +892,7 @@ u32 freestyle_decrypt_block (
 
 	bool init = (plaintext == NULL) || (ciphertext == NULL) || (bytes == 0);
 
-	u64 hash_collided [128] = {0};
+	u64 hash_collided [1024];
 
 	u8 output8 [64];
 
@@ -907,6 +916,8 @@ u32 freestyle_decrypt_block (
 		output32_14 = x->input_IV_1,
 		output32_15 = x->input_IV_2;
 
+	memset (hash_collided, 0,sizeof(hash_collided));
+
 	for (r = 1; r <= x->max_rounds; ++r)
 	{
 		if (r & 1)
@@ -918,11 +929,11 @@ u32 freestyle_decrypt_block (
 		{
 			COMPUTE_HASH(x,hash,r);
 
-			while ((hash_collided [hash >> 9] & ((u64)1 << (hash & 0x3F))) > 0) {
+			while ((hash_collided [hash >> 6] & ((u64)1 << (hash & 0x3F))) > 0) {
 				++hash;
 			}
 
-			hash_collided [hash >> 9 ] |= ((u64)1 << (hash & 0x3F));
+			hash_collided [hash >> 6] |= ((u64)1 << (hash & 0x3F));
 
 			if (hash == *expected_hash) {
 				break;

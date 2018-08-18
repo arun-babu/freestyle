@@ -59,11 +59,12 @@ int main (int argc, char **argv)
 			max_rounds,
 			hash_interval,
 			pepper_bits,
-			num_init_hashes,	
+			num_init_hashes,
 			test_init_hash[i]
 		);
 		freestyle_decrypt (&decrypt, test_ciphertext[i], plaintext, MSG_LEN, test_expected_hash[i]);
 
+		fflush(stdout);
 		assert(0 == memcmp(plaintext,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@",64));
 
 		printf("Known ciphertext test %d OK\n",i);
@@ -71,7 +72,7 @@ int main (int argc, char **argv)
 
 	printf("--------------------------\n");
 
-	for (i = 0; i < 10; ++i)
+	for (i = 0; i < 30; ++i)
 	{
 		for (j = 0; j < 32; ++j) {
 			key[j] = arc4random(); 

@@ -29,7 +29,6 @@ Public domain.
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <err.h>
 
 #include <sys/types.h>
 

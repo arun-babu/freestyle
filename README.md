@@ -1,3 +1,8 @@
+
+ * Authors :
+ * P. Arun Babu <arun.hbni@gmail.com> and 
+ * Jithin Jose Thomas <jithinjosethomas@gmail.com>
+
 # Freestyle
 
 Freestyle is a randomized and variable round version of the ChaCha cipher.

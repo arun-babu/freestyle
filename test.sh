@@ -18,5 +18,5 @@ fi
 $CC -Wall -o test-functionality test-functionality.c freestyle.o $LFLAGS
 $CC -Wall -o test-timing test-timing.c freestyle.o $LFLAGS
 
-./test-functionality
-./test-timing
+time ./test-functionality
+time ./test-timing

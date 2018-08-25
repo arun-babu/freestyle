@@ -143,6 +143,26 @@ void freestyle_init_decrypt_with_pepper (
 
 	freestyle_randomsetup_decrypt(x);
 }
+
+void freestyle_init_random_indices (freestyle_ctx *x, u8 *random_indices)
+{
+	u8 i, j = 0;
+
+	u8 tmp;
+
+	for (i = 0; i < x->num_init_hashes; ++i) {
+		random_indices [i] = i;			
+	}
+
+	for (i = 0; i < x->num_init_hashes/2; ++i)
+	{
+		j = arc4random_uniform (x->num_init_hashes);
+
+		tmp 			= random_indices [i];
+		random_indices [i] 	= random_indices [j];
+		random_indices [j] 	= tmp;
+	}
+}
 	
 void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 {
@@ -167,6 +187,12 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 		);
 	}
 
+	u8 random_indices [MAX_INIT_HASHES];
+
+	u8 random_index;
+
+	freestyle_init_random_indices (x, random_indices);
+
 	x->min_rounds 		= 12;
 	x->max_rounds 		= 36;
 	x->hash_interval 	= 1;
@@ -180,14 +206,14 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	for (i = 0; i < x->num_init_hashes; ++i)
 	{
-		x->input[COUNTER] = i;
+		x->input[COUNTER] = random_index = random_indices[i];
 
-		R[i] = freestyle_encrypt_block (
+		R[random_index] = freestyle_encrypt_block (
 			x,
 			NULL,
 			NULL,
 			0,
-			&x->init_hash [i]
+			&x->init_hash [random_index]
 		);
 	}
 
@@ -201,17 +227,17 @@ void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 		{
 			for (i = 0; i < x->num_init_hashes; ++i)
 			{
-				x->input[COUNTER] = i;
+				x->input[COUNTER] = random_index = random_indices[i];
 
-				CR[i] = freestyle_decrypt_block (
+				CR[random_index] = freestyle_decrypt_block (
 					x,
 					NULL,
 					NULL,
 					0,
-					&x->init_hash [i]
+					&x->init_hash [random_index]
 				);
 
-				if (CR[i] == 0) {
+				if (CR[random_index] == 0) {
 					goto continue_loop_encrypt;	
 				}
 			}
@@ -278,6 +304,12 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	u32 pepper;
 	u32 max_pepper = (u32)(((u64)1 << x->pepper_bits) - 1); 
 
+	u8 random_indices [MAX_INIT_HASHES];
+
+	u8 random_index;
+
+	freestyle_init_random_indices (x, random_indices);
+
 	x->min_rounds 		= 12;
 	x->max_rounds 		= 36;
 	x->hash_interval 	= 1;
@@ -293,17 +325,17 @@ void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	{
 		for (i = 0; i < x->num_init_hashes; ++i)
 		{
-			x->input[COUNTER] = i;
+			x->input[COUNTER] = random_index = random_indices[i]; 
 			
-			R[i] = freestyle_decrypt_block (
+			R[random_index] = freestyle_decrypt_block (
 				x,
 				NULL,
 				NULL,
 				0,
-				&x->init_hash [i]
+				&x->init_hash [random_index]
 			);
 
-			if (R[i] == 0) {
+			if (R[random_index] == 0) {
 				goto continue_loop_decrypt;
 			}
 		}
@@ -551,6 +583,8 @@ u32 freestyle_process_block (
 
 	u32 rounds = do_encryption ? freestyle_random_round_number (x) : x->max_rounds;
 
+	u16 random_mask = arc4random_uniform (MAX_HASH_VALUE); 
+
 	bool do_decryption = ! do_encryption;
 
 	bool hash_collided [MAX_HASH_VALUE];
@@ -575,11 +609,11 @@ u32 freestyle_process_block (
 		{
 			hash = freestyle_hash (x,output32,hash,r);
 
-			while (hash_collided [hash]) {
+			while (hash_collided [hash ^ random_mask]) {
 				++hash;
 			}
 
-			hash_collided [hash] = true;
+			hash_collided [hash ^ random_mask] = true;
 
 			if (do_decryption && hash == *expected_hash) {
 				break;

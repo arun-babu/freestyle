@@ -267,4 +267,9 @@ u32 freestyle_process_block (
 	const	bool 		do_encryption
 );
 
+void freestyle_init_random_indices (
+		freestyle_ctx 	*x,
+		u8 		*random_indices
+);
+
 #endif	/* FREESTYLE_H */

@@ -115,6 +115,7 @@ int main (int argc, char **argv)
 		);
 		freestyle_decrypt (&decrypt, ciphertext, plaintext, MSG_LEN, expected_hash);
 
+		fflush(stdout);
 		assert (0 == memcmp (plaintext, message, MSG_LEN));
 
 		printf("Encrypt-Decrypt test %d OK\n",i);

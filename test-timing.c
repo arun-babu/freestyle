@@ -78,7 +78,6 @@ int main (int argc, char **argv)
 	clock_gettime(CLOCK_MONOTONIC, &ts_end);
 
 	fflush(stdout);
-
 	assert (0 == memcmp (plaintext, message, MSG_LEN));
 
 	t_kc = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +

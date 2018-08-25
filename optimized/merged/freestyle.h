@@ -288,7 +288,7 @@ u32 freestyle_decrypt_block (
 		u16		*expected_hash
 );
 
-#define COMPUTE_HASH(x,hash,rounds)  do {			\
+#define COMPUTE_HASH(x,hash,rounds) {				\
 								\
 	temp1 	= rounds;					\
 	temp2 	= hash;						\
@@ -300,9 +300,9 @@ u32 freestyle_decrypt_block (
 								\
 	hash = (u16) XOR(temp1 & 0xFFFF, temp1 >> 16);		\
 								\
-} while(0)
+} 
 
-#define FREESTYLE_DOUBLE_ROUND() do {				\
+#define FREESTYLE_DOUBLE_ROUND() {				\
 	QR (output32_00, output32_04, output32_08, output32_12)	\
 	QR (output32_01, output32_05, output32_09, output32_13)	\
 	QR (output32_02, output32_06, output32_10, output32_14)	\
@@ -312,23 +312,23 @@ u32 freestyle_decrypt_block (
 	QR (output32_01, output32_06, output32_11, output32_12)	\
 	QR (output32_02, output32_07, output32_08, output32_13)	\
 	QR (output32_03, output32_04, output32_09, output32_14)	\
-} while(0)
+}
 
-#define FREESTYLE_COLUMN_ROUND() do {				\
+#define FREESTYLE_COLUMN_ROUND() {				\
 	QR (output32_00, output32_04, output32_08, output32_12)	\
 	QR (output32_01, output32_05, output32_09, output32_13)	\
 	QR (output32_02, output32_06, output32_10, output32_14)	\
 	QR (output32_03, output32_07, output32_11, output32_15)	\
-} while(0)
+}
 
-#define FREESTYLE_DIAGONAL_ROUND() do {				\
+#define FREESTYLE_DIAGONAL_ROUND() {				\
 	QR (output32_00, output32_05, output32_10, output32_15)	\
 	QR (output32_01, output32_06, output32_11, output32_12)	\
 	QR (output32_02, output32_07, output32_08, output32_13)	\
 	QR (output32_03, output32_04, output32_09, output32_14)	\
-} while(0)
+}
 
-#define FREESTYLE_XOR_64(input,output,keystream) do {	\
+#define FREESTYLE_XOR_64(input,output,keystream) {	\
 	output[ 0] = XOR (input[ 0], keystream[ 0]);	\
 	output[ 1] = XOR (input[ 1], keystream[ 1]);	\
 	output[ 2] = XOR (input[ 2], keystream[ 2]);	\
@@ -393,6 +393,6 @@ u32 freestyle_decrypt_block (
 	output[61] = XOR (input[61], keystream[61]);	\
 	output[62] = XOR (input[62], keystream[62]);	\
 	output[63] = XOR (input[63], keystream[63]);	\
-} while(0)
+}
 
 #endif	/* FREESTYLE_H */

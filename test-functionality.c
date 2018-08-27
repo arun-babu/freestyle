@@ -23,10 +23,13 @@ int main (int argc, char **argv)
 	u32 min_rounds 	= 8;
 	u32 max_rounds 	= 32;
 
-	u32 hash_interval   = 1;
+	u32 hash_interval = 1;
 
 	u8 pepper_bits = 16;
+	u32 pepper;
 	u8 num_init_hashes = 7;
+
+	u8 num_precomputed_rounds = 4;
 
 	u16 total_tests = sizeof(test_init_hash)/sizeof(test_init_hash[0]);
 
@@ -38,7 +41,7 @@ int main (int argc, char **argv)
 		iv[i] = 0xF; 
 	}
 
-	for (i = 0; i < 64; ++i) {
+	for (i = 0; i < MSG_LEN; ++i) {
 		ciphertext[i] = i; 
 	}
 
@@ -48,7 +51,7 @@ int main (int argc, char **argv)
 
 	for (i = 0; i < total_tests; ++i)
 	{
-		memset(plaintext,0,65);
+		memset(plaintext,0,MSG_LEN);
 
 		freestyle_init_decrypt (
 			&decrypt,
@@ -57,6 +60,7 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
+			num_precomputed_rounds,
 			hash_interval,
 			pepper_bits,
 			num_init_hashes,
@@ -70,9 +74,9 @@ int main (int argc, char **argv)
 		printf("Known ciphertext test %d OK\n",i);
 	}
 
-	printf("--------------------------\n");
+	printf("----------------------------------------------\n");
 
-	for (i = 0; i < 30; ++i)
+	for (i = 0; i < 15; ++i)
 	{
 		for (j = 0; j < 32; ++j) {
 			key[j] = arc4random(); 
@@ -82,7 +86,7 @@ int main (int argc, char **argv)
 			iv[j] = arc4random(); 
 		}
 
-		for (j = 0; j < 64; ++j) {
+		for (j = 0; j < MSG_LEN; ++j) {
 			message[j] = arc4random(); 
 		}
 
@@ -95,6 +99,7 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
+			num_precomputed_rounds,
 			hash_interval,
 			pepper_bits,
 			num_init_hashes	
@@ -108,6 +113,7 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
+			num_precomputed_rounds,
 			hash_interval,
 			pepper_bits,
 			num_init_hashes,
@@ -119,6 +125,63 @@ int main (int argc, char **argv)
 		assert (0 == memcmp (plaintext, message, MSG_LEN));
 
 		printf("Encrypt-Decrypt test %d OK\n",i);
+	}
+
+	printf("----------------------------------------------\n");
+
+	for (i = 0; i < 15; ++i)
+	{
+		for (j = 0; j < 32; ++j) {
+			key[j] = arc4random(); 
+		}
+
+		for (j = 0; j < 12; ++j) {
+			iv[j] = arc4random(); 
+		}
+
+		for (j = 0; j < MSG_LEN; ++j) {
+			message[j] = arc4random(); 
+		}
+
+		num_init_hashes = 7 + arc4random_uniform (56 - 7);
+
+		pepper = arc4random_uniform(65536);
+
+		freestyle_init_encrypt_with_pepper (
+			&encrypt,
+			key,
+			256,
+			iv,
+			min_rounds,
+			max_rounds,
+			num_precomputed_rounds,
+			hash_interval,
+			pepper_bits,
+			num_init_hashes,	
+			pepper
+		);
+		freestyle_encrypt (&encrypt, message, ciphertext, MSG_LEN, expected_hash);
+
+		freestyle_init_decrypt_with_pepper (
+			&decrypt,
+			key,
+			256,
+			iv,
+			min_rounds,
+			max_rounds,
+			num_precomputed_rounds,
+			hash_interval,
+			pepper_bits,
+			num_init_hashes,
+			pepper,
+			encrypt.init_hash	
+		);
+		freestyle_decrypt (&decrypt, ciphertext, plaintext, MSG_LEN, expected_hash);
+
+		fflush(stdout);
+		assert (0 == memcmp (plaintext, message, MSG_LEN));
+
+		printf("Encrypt-Decrypt (with known pepper) test %d OK\n",i);
 	}
 
 	printf("\n");

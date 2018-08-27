@@ -30,6 +30,7 @@ int main (int argc, char **argv)
 
 	u32 min_rounds 	= 8;
 	u32 max_rounds 	= 32;
+	u8  num_precomputed_rounds = 4;
 
 	u32 hash_interval   = 1;
 
@@ -55,6 +56,7 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
+			num_precomputed_rounds,
 			hash_interval,
 			pepper_bits,
 			num_init_hashes	
@@ -69,6 +71,7 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
+			num_precomputed_rounds,
 			hash_interval,
 			pepper_bits,
 			num_init_hashes,
@@ -96,6 +99,7 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
+			num_precomputed_rounds,
 			hash_interval,
 			pepper_bits,
 			num_init_hashes,
@@ -120,6 +124,7 @@ int main (int argc, char **argv)
 			iv,
 			min_rounds,
 			max_rounds,
+			num_precomputed_rounds,
 			hash_interval,
 			pepper_bits,
 			num_init_hashes,

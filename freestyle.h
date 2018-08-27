@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017  P. Arun Babu and Jithin Jose Thomas 
+ * Copyright (c) 2018  P. Arun Babu and Jithin Jose Thomas 
  * arun DOT hbni AT gmail DOT com, jithinjosethomas AT gmail DOT com
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -114,10 +114,14 @@ static const char tau[16] = "expand 16-byte k";
 #define AXR(a,b,c,r) {a = PLUS(a,b); c = ROTATE(XOR(c,a),r);}
 
 typedef struct freestyle_ctx {
+
 	u32 		input[16];
+	u32 		initial_counter;
 
 	u32		min_rounds;
 	u32		max_rounds;
+
+	u8		num_precomputed_rounds;
 
 	u32 		cipher_parameter[2];
 	u32 		rand[8];
@@ -137,25 +141,7 @@ typedef struct freestyle_ctx {
 
 } freestyle_ctx;
 
-void freestyle_increment_counter (
-	freestyle_ctx *x
-);
-
-u32 random_round_number (
-	const freestyle_ctx *x
-);
-
-void freestyle_init_common (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16		key_length_bits,
-	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const	u32		max_rounds,
-	const	u32 		hash_interval,
-	const	u8 		pepper_bits,
-	const	u8 		num_init_hashes	
-);
+void freestyle_set_counter (freestyle_ctx *x, u32 counter);
 
 void freestyle_init_encrypt (
 		freestyle_ctx 	*x,
@@ -164,6 +150,7 @@ void freestyle_init_encrypt (
 	const 	u8 		*iv,
 	const 	u32 		min_rounds,
 	const 	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
 	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes	
@@ -176,6 +163,7 @@ void freestyle_init_encrypt_with_pepper (
 	const 	u8 		*iv,
 	const 	u32 		min_rounds,
 	const 	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
 	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
@@ -189,6 +177,7 @@ void freestyle_init_decrypt (
 	const 	u8 		*iv,
 	const 	u32 		min_rounds,
 	const 	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
 	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
@@ -202,51 +191,12 @@ void freestyle_init_decrypt_with_pepper (
 	const 	u8 		*iv,
 	const 	u32 		min_rounds,
 	const 	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
 	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
 	const 	u32 		pepper_set,
 	const	u16 		*init_hash
-);
-
-void freestyle_keysetup (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits
-);
-
-void freestyle_ivsetup (
-		freestyle_ctx 	*x,
-	const 	u8 		*iv,
-	const 	u32 		counter
-); 
-
-void freestyle_hashsetup (
-		freestyle_ctx 	*x,
-	const 	u32 		hash_interval
-);
-
-void freestyle_roundsetup (
-		freestyle_ctx 	*x,
-	const	u32 		min_rounds,
-	const	u32 		max_rounds,
-	const	u8 		pepper_bits,
-	const	u8 		num_init_hashes	
-);
-
-void freestyle_randomsetup_encrypt (
-		freestyle_ctx 	*x
-);
-
-void freestyle_randomsetup_decrypt (
-		freestyle_ctx 	*x
-);
-
-u16 freestyle_hash (
-		freestyle_ctx 	*x,
-	const 	u32 		output [16],
-	const 	u16 		previous_hash,
-	const 	u32 		rounds
 );
 
 int freestyle_process (
@@ -256,15 +206,6 @@ int freestyle_process (
 		u32 		bytes,
 		u16 		*hash,
 	const 	bool 		do_encryption
-);
-
-u32 freestyle_process_block (
-		freestyle_ctx	*x,	
-	const 	u8 		*input,
-		u8 		*output,
-		u8 		bytes,
-		u16		*expected_hash,	
-	const	bool 		do_encryption
 );
 
 #endif	/* FREESTYLE_H */

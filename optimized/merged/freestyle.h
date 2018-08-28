@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017  P. Arun Babu and Jithin Jose Thomas 
+ * Copyright (c) 2018  P. Arun Babu and Jithin Jose Thomas 
  * arun DOT hbni AT gmail DOT com, jithinjosethomas AT gmail DOT com
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -43,22 +43,22 @@ Public domain.
 
 /*--- Elements of the cipher state --- */
 
-#define CONSTANT_0 	(0)
-#define CONSTANT_1 	(1)
-#define CONSTANT_2 	(2)
-#define CONSTANT_3 	(3)
-#define KEY_0 		(4)
-#define KEY_1 		(5)
-#define KEY_2 		(6)
-#define KEY_3 		(7)
-#define KEY_4 		(8)
-#define KEY_5 		(9)
-#define KEY_6 		(10)
-#define KEY_7 		(11)
+#define CONSTANT0 	(0)
+#define CONSTANT1 	(1)
+#define CONSTANT2 	(2)
+#define CONSTANT3 	(3)
+#define KEY0 		(4)
+#define KEY1 		(5)
+#define KEY2 		(6)
+#define KEY3 		(7)
+#define KEY4 		(8)
+#define KEY5 		(9)
+#define KEY6 		(10)
+#define KEY7 		(11)
 #define COUNTER 	(12)
-#define IV_0 		(13)
-#define IV_1 		(14)	
-#define IV_2 		(15)
+#define IV0 		(13)
+#define IV1 		(14)	
+#define IV2 		(15)
 
 /*------*/
 
@@ -109,25 +109,29 @@ static const char tau[16] = "expand 16-byte k";
 
 typedef struct freestyle_ctx {
 
-	u32 		input_CONSTANT_0,
-			input_CONSTANT_1,
-			input_CONSTANT_2,
-			input_CONSTANT_3,
-			input_KEY_0,
-			input_KEY_1,
-			input_KEY_2,
-			input_KEY_3,
-			input_KEY_4,
-			input_KEY_5,
-			input_KEY_6,
-			input_KEY_7,
+	u32 		input_CONSTANT0,
+			input_CONSTANT1,
+			input_CONSTANT2,
+			input_CONSTANT3,
+			input_KEY0,
+			input_KEY1,
+			input_KEY2,
+			input_KEY3,
+			input_KEY4,
+			input_KEY5,
+			input_KEY6,
+			input_KEY7,
 			input_COUNTER,
-			input_IV_0,
-			input_IV_1,
-			input_IV_2;
+			input_IV0,
+			input_IV1,
+			input_IV2;
+
+	u32 		initial_counter;
 
 	u32		min_rounds;
 	u32		max_rounds;
+
+	u8		num_precomputed_rounds;
 
 	u32		min_rounds_by_2;
 
@@ -151,111 +155,6 @@ typedef struct freestyle_ctx {
 
 } freestyle_ctx;
 
-void freestyle_increment_counter (
-	freestyle_ctx *x
-);
-
-u32 random_round_number (
-	const freestyle_ctx *x
-);
-
-void freestyle_init_common (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16		key_length_bits,
-	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const	u32		max_rounds,
-	const	u32 		hash_interval,
-	const	u8 		pepper_bits,
-	const	u8 		num_init_hashes	
-);
-
-void freestyle_init_encrypt (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
-	const 	u32 		hash_interval,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes	
-);
-
-void freestyle_init_encrypt_with_pepper (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
-	const 	u32 		hash_interval,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes,
-	const 	u32 		pepper_set	
-);
-
-void freestyle_init_decrypt (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
-	const 	u32 		hash_interval,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes,
-	const	u16 		*init_hash
-);
-
-void freestyle_init_decrypt_with_pepper (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
-	const 	u32 		hash_interval,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes,
-	const 	u32 		pepper_set,
-	const	u16 		*init_hash
-);
-
-void freestyle_keysetup (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits
-);
-
-void freestyle_ivsetup (
-		freestyle_ctx 	*x,
-	const 	u8 		*iv,
-	const 	u32 		counter
-); 
-
-void freestyle_hashsetup (
-		freestyle_ctx 	*x,
-	const 	u32 		hash_interval
-);
-
-void freestyle_roundsetup (
-		freestyle_ctx 	*x,
-	const	u32 		min_rounds,
-	const	u32 		max_rounds,
-	const	u8 		pepper_bits,
-	const	u8 		num_init_hashes	
-);
-
-void freestyle_randomsetup_encrypt (
-		freestyle_ctx 	*x
-);
-
-void freestyle_randomsetup_decrypt (
-		freestyle_ctx 	*x
-);
-
 void freestyle_encrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*input,
@@ -272,127 +171,65 @@ void freestyle_decrypt (
 		u16 		*hash
 );
 
-u32 freestyle_encrypt_block (
-		freestyle_ctx	*x,	
-	const 	u8 		*plaintext,
-		u8 		*ciphertext,
-		u8 		bytes,
-		u16		*expected_hash
+
+
+void freestyle_set_counter (freestyle_ctx *x, u32 counter);
+
+void freestyle_init_encrypt (
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u16 		key_length_bits,
+	const 	u8 		*iv,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const 	u32 		hash_interval,
+	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes	
 );
 
-u32 freestyle_decrypt_block (
-		freestyle_ctx	*x,	
-		u8 		*plaintext,
-	const	u8 		*ciphertext,
-		u8 		bytes,
-		u16		*expected_hash
+void freestyle_init_encrypt_with_pepper (
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u16 		key_length_bits,
+	const 	u8 		*iv,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const 	u32 		hash_interval,
+	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
+	const 	u32 		pepper_set	
 );
 
-#define COMPUTE_HASH(x,hash,rounds) {				\
-								\
-	temp1 	= rounds;					\
-	temp2 	= hash;						\
-								\
-	AXR (temp1, output32_03, temp2, 16);			\
-	AXR (temp2, output32_06, temp1, 12);			\
-	AXR (temp1, output32_09, temp2,  8);			\
-	AXR (temp2, output32_12, temp1,  7);			\
-								\
-	hash = (u16) XOR(temp1 & 0xFFFF, temp1 >> 16);		\
-								\
-} 
+void freestyle_init_decrypt (
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u16 		key_length_bits,
+	const 	u8 		*iv,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const 	u32 		hash_interval,
+	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
+	const	u16 		*init_hash
+);
 
-#define FREESTYLE_DOUBLE_ROUND() {				\
-	QR (output32_00, output32_04, output32_08, output32_12)	\
-	QR (output32_01, output32_05, output32_09, output32_13)	\
-	QR (output32_02, output32_06, output32_10, output32_14)	\
-	QR (output32_03, output32_07, output32_11, output32_15)	\
-								\
-	QR (output32_00, output32_05, output32_10, output32_15)	\
-	QR (output32_01, output32_06, output32_11, output32_12)	\
-	QR (output32_02, output32_07, output32_08, output32_13)	\
-	QR (output32_03, output32_04, output32_09, output32_14)	\
-}
+void freestyle_init_decrypt_with_pepper (
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u16 		key_length_bits,
+	const 	u8 		*iv,
+	const 	u32 		min_rounds,
+	const 	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const 	u32 		hash_interval,
+	const 	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
+	const 	u32 		pepper_set,
+	const	u16 		*init_hash
+);
 
-#define FREESTYLE_COLUMN_ROUND() {				\
-	QR (output32_00, output32_04, output32_08, output32_12)	\
-	QR (output32_01, output32_05, output32_09, output32_13)	\
-	QR (output32_02, output32_06, output32_10, output32_14)	\
-	QR (output32_03, output32_07, output32_11, output32_15)	\
-}
-
-#define FREESTYLE_DIAGONAL_ROUND() {				\
-	QR (output32_00, output32_05, output32_10, output32_15)	\
-	QR (output32_01, output32_06, output32_11, output32_12)	\
-	QR (output32_02, output32_07, output32_08, output32_13)	\
-	QR (output32_03, output32_04, output32_09, output32_14)	\
-}
-
-#define FREESTYLE_XOR_64(input,output,keystream) {	\
-	output[ 0] = XOR (input[ 0], keystream[ 0]);	\
-	output[ 1] = XOR (input[ 1], keystream[ 1]);	\
-	output[ 2] = XOR (input[ 2], keystream[ 2]);	\
-	output[ 3] = XOR (input[ 3], keystream[ 3]);	\
-	output[ 4] = XOR (input[ 4], keystream[ 4]);	\
-	output[ 5] = XOR (input[ 5], keystream[ 5]);	\
-	output[ 6] = XOR (input[ 6], keystream[ 6]);	\
-	output[ 7] = XOR (input[ 7], keystream[ 7]);	\
-	output[ 8] = XOR (input[ 8], keystream[ 8]);	\
-	output[ 9] = XOR (input[ 9], keystream[ 9]);	\
-	output[10] = XOR (input[10], keystream[10]);	\
-	output[11] = XOR (input[11], keystream[11]);	\
-	output[12] = XOR (input[12], keystream[12]);	\
-	output[13] = XOR (input[13], keystream[13]);	\
-	output[14] = XOR (input[14], keystream[14]);	\
-	output[15] = XOR (input[15], keystream[15]);	\
-	output[16] = XOR (input[16], keystream[16]);	\
-	output[17] = XOR (input[17], keystream[17]);	\
-	output[18] = XOR (input[18], keystream[18]);	\
-	output[19] = XOR (input[19], keystream[19]);	\
-	output[20] = XOR (input[20], keystream[20]);	\
-	output[21] = XOR (input[21], keystream[21]);	\
-	output[22] = XOR (input[22], keystream[22]);	\
-	output[23] = XOR (input[23], keystream[23]);	\
-	output[24] = XOR (input[24], keystream[24]);	\
-	output[25] = XOR (input[25], keystream[25]);	\
-	output[26] = XOR (input[26], keystream[26]);	\
-	output[27] = XOR (input[27], keystream[27]);	\
-	output[28] = XOR (input[28], keystream[28]);	\
-	output[29] = XOR (input[29], keystream[29]);	\
-	output[30] = XOR (input[30], keystream[30]);	\
-	output[31] = XOR (input[31], keystream[31]);	\
-	output[32] = XOR (input[32], keystream[32]);	\
-	output[33] = XOR (input[33], keystream[33]);	\
-	output[34] = XOR (input[34], keystream[34]);	\
-	output[35] = XOR (input[35], keystream[35]);	\
-	output[36] = XOR (input[36], keystream[36]);	\
-	output[37] = XOR (input[37], keystream[37]);	\
-	output[38] = XOR (input[38], keystream[38]);	\
-	output[39] = XOR (input[39], keystream[39]);	\
-	output[40] = XOR (input[40], keystream[40]);	\
-	output[41] = XOR (input[41], keystream[41]);	\
-	output[42] = XOR (input[42], keystream[42]);	\
-	output[43] = XOR (input[43], keystream[43]);	\
-	output[44] = XOR (input[44], keystream[44]);	\
-	output[45] = XOR (input[45], keystream[45]);	\
-	output[46] = XOR (input[46], keystream[46]);	\
-	output[47] = XOR (input[47], keystream[47]);	\
-	output[48] = XOR (input[48], keystream[48]);	\
-	output[49] = XOR (input[49], keystream[49]);	\
-	output[50] = XOR (input[50], keystream[50]);	\
-	output[51] = XOR (input[51], keystream[51]);	\
-	output[52] = XOR (input[52], keystream[52]);	\
-	output[53] = XOR (input[53], keystream[53]);	\
-	output[54] = XOR (input[54], keystream[54]);	\
-	output[55] = XOR (input[55], keystream[55]);	\
-	output[56] = XOR (input[56], keystream[56]);	\
-	output[57] = XOR (input[57], keystream[57]);	\
-	output[58] = XOR (input[58], keystream[58]);	\
-	output[59] = XOR (input[59], keystream[59]);	\
-	output[60] = XOR (input[60], keystream[60]);	\
-	output[61] = XOR (input[61], keystream[61]);	\
-	output[62] = XOR (input[62], keystream[62]);	\
-	output[63] = XOR (input[63], keystream[63]);	\
-}
 
 #endif	/* FREESTYLE_H */

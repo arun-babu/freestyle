@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017  P. Arun Babu and Jithin Jose Thomas 
+ * Copyright (c) 2018  P. Arun Babu and Jithin Jose Thomas 
  * arun DOT hbni AT gmail DOT com, jithinjosethomas AT gmail DOT com
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -114,13 +114,13 @@ static void freestyle_roundsetup (
 	x->pepper_bits 			= pepper_bits;
 	x->num_init_hashes 		= num_init_hashes;
 
-	x->cipher_parameter[0] 	= ((x->min_rounds    	& 0xFFFF) << 16) // 16 bits 
-				| ((x->max_rounds    	& 0xFFFF));	 // 16 bits
+	x->cipher_parameter[0] 	= ((x->min_rounds    	& 0xFFFF) << 16) /* 16 bits */
+				| ((x->max_rounds    	& 0xFFFF));	 /* 16 bits */
 
-	x->cipher_parameter[1] 	= ((x->hash_interval   	& 0xFFFF) << 16) // 16 bits 
-				| ((x->pepper_bits     	& 0x003F) << 10) //  6 bits
-				| ((x->num_init_hashes 	& 0x003F) <<  4) //  6 bits
-				| ((x->num_precomputed_rounds & 0xF));	 //  4 bits
+	x->cipher_parameter[1] 	= ((x->hash_interval   	& 0xFFFF) << 16) /* 16 bits */
+				| ((x->pepper_bits     	& 0x003F) << 10) /*  6 bits */
+				| ((x->num_init_hashes 	& 0x003F) <<  4) /*  6 bits */
+				| ((x->num_precomputed_rounds & 0xF));	 /*  4 bits */
 	x->rand[0] = 0; 
 	x->rand[1] = 0; 
 	x->rand[2] = 0; 
@@ -296,7 +296,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	}
 
 	/* initial pre-computed rounds */
-	freestyle_precompute_rounds (x);
+	freestyle_precompute_rounds(x);
 
 	/* save the counter after pre-computed rounds */
 	x->initial_counter = x->input[COUNTER];
@@ -341,7 +341,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 					goto continue_loop_encrypt;	
 				}
 
-				freestyle_increment_counter (x);
+				freestyle_increment_counter(x);
 			}
 
 			/* found a collision; use the collided rounds */ 
@@ -392,7 +392,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	x->input[CONSTANT3] ^= x->rand[7]; 
 
 	/* Do pre-computation as specified by the user */
-	freestyle_precompute_rounds (x);
+	freestyle_precompute_rounds(x);
 }
 
 static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
@@ -423,7 +423,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	}
 
 	/* initial pre-computed rounds */
-	freestyle_precompute_rounds (x);
+	freestyle_precompute_rounds(x);
 
 	/* save the counter after pre-computed rounds */
 	x->initial_counter = x->input[COUNTER];
@@ -498,7 +498,7 @@ continue_loop_decrypt:
 	x->input[CONSTANT3] ^= x->rand[7]; 
 
 	/* Do pre-computation as specified by the user */
-	freestyle_precompute_rounds (x);
+	freestyle_precompute_rounds(x);
 }
 
 static void freestyle_init_common (
@@ -521,8 +521,7 @@ static void freestyle_init_common (
 	assert (min_rounds % hash_interval == 0);
 	assert (max_rounds % hash_interval == 0);
 
-	assert (num_precomputed_rounds >= 1);
-	assert (num_precomputed_rounds <= 16);
+	assert (num_precomputed_rounds <= 15);
 	assert (num_precomputed_rounds <= (min_rounds - 4));
 
 	assert (pepper_bits >= 8);

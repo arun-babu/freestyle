@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017  P. Arun Babu and Jithin Jose Thomas 
+ * Copyright (c) 2018  P. Arun Babu and Jithin Jose Thomas 
  * arun DOT hbni AT gmail DOT com, jithinjosethomas AT gmail DOT com
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -22,6 +22,26 @@ Public domain.
 */
 
 #include "freestyle.h"
+
+static void freestyle_init_random_indices (freestyle_ctx *x, u8 *random_indices)
+{
+	u8 i, j = 0;
+
+	u8 tmp;
+
+	for (i = 0; i < x->num_init_hashes; ++i) {
+		random_indices [i] = i;			
+	}
+
+	for (i = 0; i < x->num_init_hashes/2; ++i)
+	{
+		j = arc4random_uniform (x->num_init_hashes);
+
+		tmp 			= random_indices [i];
+		random_indices [i] 	= random_indices [j];
+		random_indices [j] 	= tmp;
+	}
+}
 
 static void freestyle_column_round (u32 x[16])
 {
@@ -114,13 +134,13 @@ static void freestyle_roundsetup (
 	x->pepper_bits 			= pepper_bits;
 	x->num_init_hashes 		= num_init_hashes;
 
-	x->cipher_parameter[0] 	= ((x->min_rounds    	& 0xFFFF) << 16) // 16 bits 
-				| ((x->max_rounds    	& 0xFFFF));	 // 16 bits
+	x->cipher_parameter[0] 	= ((x->min_rounds    	& 0xFFFF) << 16) /* 16 bits */
+				| ((x->max_rounds    	& 0xFFFF));	 /* 16 bits */
 
-	x->cipher_parameter[1] 	= ((x->hash_interval   	& 0xFFFF) << 16) // 16 bits 
-				| ((x->pepper_bits     	& 0x003F) << 10) //  6 bits
-				| ((x->num_init_hashes 	& 0x003F) <<  4) //  6 bits
-				| ((x->num_precomputed_rounds & 0xF));	 //  4 bits
+	x->cipher_parameter[1] 	= ((x->hash_interval   	& 0xFFFF) << 16) /* 16 bits */
+				| ((x->pepper_bits     	& 0x003F) << 10) /*  6 bits */
+				| ((x->num_init_hashes 	& 0x003F) <<  4) /*  6 bits */
+				| ((x->num_precomputed_rounds & 0xF));	 /*  4 bits */
 	x->rand[0] = 0; 
 	x->rand[1] = 0; 
 	x->rand[2] = 0; 
@@ -280,6 +300,11 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	u32 p;
 
+	u8 random_index;
+	u8 random_indices [MAX_INIT_HASHES];
+
+	freestyle_init_random_indices (x,random_indices);
+
 	if (! x->is_pepper_set)
 	{
 		x->pepper = arc4random_uniform (
@@ -298,7 +323,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	}
 
 	/* initial pre-computed rounds */
-	freestyle_precompute_rounds (x);
+	freestyle_precompute_rounds(x);
 
 	/* save the counter after pre-computed rounds */
 	x->initial_counter = x->input[COUNTER];
@@ -327,23 +352,24 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 		/* check for any collisions between 0 and pepper */
 		for (p = 0; p < x->pepper; ++p)
 		{
-			x->input[COUNTER] = x->initial_counter;
-
 			for (i = 0; i < x->num_init_hashes; ++i)
 			{
-				CR[i] = freestyle_decrypt_block (
+				random_index = random_indices[i];
+
+				x->input[COUNTER] = PLUS(x->initial_counter,random_index);
+
+				CR[random_index] = freestyle_decrypt_block (
 					x,
 					NULL,
 					NULL,
 					0,
-					&x->init_hash [i]
+					&x->init_hash [random_index]
 				);
 
-				if (CR[i] == 0) {
+				if (CR[random_index] == 0) {
 					goto continue_loop_encrypt;	
 				}
 
-				freestyle_increment_counter (x);
 			}
 
 			/* found a collision; use the collided rounds */ 
@@ -394,7 +420,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	x->input[CONSTANT3] ^= x->rand[7]; 
 
 	/* Do pre-computation as specified by the user */
-	freestyle_precompute_rounds (x);
+	freestyle_precompute_rounds(x);
 }
 
 static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
@@ -414,6 +440,11 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	u32 pepper;
 	u32 max_pepper = (u32)(((u64)1 << x->pepper_bits) - 1); 
 
+	u8 random_index;
+	u8 random_indices[MAX_INIT_HASHES];
+
+	freestyle_init_random_indices (x,random_indices);
+
 	/* set sane values for initalization */
 	x->min_rounds 			= 12;
 	x->max_rounds 			= 36;
@@ -425,7 +456,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	}
 
 	/* initial pre-computed rounds */
-	freestyle_precompute_rounds (x);
+	freestyle_precompute_rounds(x);
 
 	/* save the counter after pre-computed rounds */
 	x->initial_counter = x->input[COUNTER];
@@ -435,23 +466,24 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 	for (pepper = x->pepper; pepper <= max_pepper; ++pepper)
 	{
-		x->input[COUNTER] = x->initial_counter;
 
 		for (i = 0; i < x->num_init_hashes; ++i)
 		{
-			R[i] = freestyle_decrypt_block (
+			random_index = random_indices [i];
+
+			x->input[COUNTER] = PLUS(x->initial_counter,random_index);
+
+			R[random_index] = freestyle_decrypt_block (
 				x,
 				NULL,
 				NULL,
 				0,
-				&x->init_hash [i]
+				&x->init_hash [random_index]
 			);
 
-			if (R[i] == 0) {
+			if (R[random_index] == 0) {
 				goto continue_loop_decrypt;
 			}
-			
-			freestyle_increment_counter (x);
 		}
 
 		/* found all valid R[i]s */
@@ -500,7 +532,7 @@ continue_loop_decrypt:
 	x->input[CONSTANT3] ^= x->rand[7]; 
 
 	/* Do pre-computation as specified by the user */
-	freestyle_precompute_rounds (x);
+	freestyle_precompute_rounds(x);
 }
 
 static void freestyle_init_common (
@@ -523,8 +555,7 @@ static void freestyle_init_common (
 	assert (min_rounds % hash_interval == 0);
 	assert (max_rounds % hash_interval == 0);
 
-	assert (num_precomputed_rounds >= 1);
-	assert (num_precomputed_rounds <= 16);
+	assert (num_precomputed_rounds <= 15);
 	assert (num_precomputed_rounds <= (min_rounds - 4));
 
 	assert (pepper_bits >= 8);

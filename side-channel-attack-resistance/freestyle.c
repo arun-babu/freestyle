@@ -69,6 +69,9 @@ static void freestyle_precompute_rounds (freestyle_ctx *x)
 		else
 			freestyle_diagonal_round (x->input);
 	}
+
+	/* update the counter after pre-computed rounds */
+	x->initial_counter = x->input[COUNTER];
 }
 
 void freestyle_set_counter (freestyle_ctx *x, u32 counter)
@@ -325,9 +328,6 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	/* initial pre-computed rounds */
 	freestyle_precompute_rounds(x);
 
-	/* save the counter after pre-computed rounds */
-	x->initial_counter = x->input[COUNTER];
-
 	/* add a random/user-set pepper to constant[0] */
 	x->input[CONSTANT0] = PLUS(x->input[CONSTANT0], x->pepper); 
 
@@ -457,9 +457,6 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 	/* initial pre-computed rounds */
 	freestyle_precompute_rounds(x);
-
-	/* save the counter after pre-computed rounds */
-	x->initial_counter = x->input[COUNTER];
 
 	/* if initial pepper is set, then add it to constant[3] */
 	x->input [CONSTANT0] = PLUS(x->input[CONSTANT0], x->pepper);

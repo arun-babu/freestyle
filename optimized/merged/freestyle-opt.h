@@ -150,6 +150,7 @@ Public domain.
 			QR (x->input_CONSTANT2, x->input_KEY3, x->input_KEY4, x->input_IV0)	\
 			QR (x->input_CONSTANT3, x->input_KEY0, x->input_KEY5, x->input_IV1)	\
 		}										\
+		x->initial_counter = x->input_COUNTER;						\
 	}											\
 }
 

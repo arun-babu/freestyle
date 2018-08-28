@@ -77,7 +77,7 @@ static void freestyle_roundsetup (
 		freestyle_ctx 	*x,
 	const 	u32 		min_rounds,
 	const 	u32 		max_rounds,
-	const 	u8		num_precomputed_rounds,
+	const	u8		num_precomputed_rounds,
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes)
 {
@@ -115,8 +115,8 @@ static void freestyle_roundsetup (
 }
 
 static void freestyle_hashsetup (
-	freestyle_ctx 	*x,
-	u32 		hash_interval)
+		freestyle_ctx 	*x,
+	const 	u32 		hash_interval)
 {
 	x->hash_interval = hash_interval;
 }
@@ -305,8 +305,8 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	/* save the counter after pre-computed rounds */
 	x->initial_counter = x->input_COUNTER;
 
-	/* add a random/user-set pepper to constant[3] */
-	x->input_CONSTANT3 = PLUS(x->input_CONSTANT3,x->pepper); 
+	/* add a random/user-set pepper to constant[0] */
+	x->input_CONSTANT0 = PLUS(x->input_CONSTANT0,x->pepper); 
 
 	for (i = 0; i < x->num_init_hashes; ++i)
 	{
@@ -324,7 +324,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	if (! x->is_pepper_set)
 	{
 		/* set it back to its previous value */
-		x->input_CONSTANT3 = MINUS(x->input_CONSTANT3,x->pepper); 
+		x->input_CONSTANT0 = MINUS(x->input_CONSTANT0,x->pepper); 
 
 		/* check for any collisions between 0 and pepper */
 		for (p = 0; p < x->pepper; ++p)
@@ -353,7 +353,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 			break;
 
 	continue_loop_encrypt:
-			x->input_CONSTANT3 = PLUSONE(x->input_CONSTANT3);
+			x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
 		}
 	}
 
@@ -384,16 +384,16 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	/* set counter to the value that was after pre-computed rounds */
 	x->input_COUNTER = x->initial_counter;
 
-	/* modify nonce[0], nonce[1], and nonce[2] */
-	x->input_IV0 ^= x->rand[1]; 
-	x->input_IV1 ^= x->rand[2]; 
-	x->input_IV2 ^= x->rand[3]; 
+	/* modify constant[1], constant[2], and constant[3] */
+	x->input_CONSTANT1 ^= x->rand[1]; 
+	x->input_CONSTANT2 ^= x->rand[2]; 
+	x->input_CONSTANT3 ^= x->rand[3]; 
 
-	/* modify constant[0], constant[1], constant[2], and constant[3] */
-	x->input_CONSTANT0 ^= x->rand[4]; 
-	x->input_CONSTANT1 ^= x->rand[5]; 
-	x->input_CONSTANT2 ^= x->rand[6]; 
-	x->input_CONSTANT3 ^= x->rand[7]; 
+	/* modify key[0], key[1], key[2], and key[3] */
+	x->input_KEY0 ^= x->rand[4]; 
+	x->input_KEY1 ^= x->rand[5]; 
+	x->input_KEY2 ^= x->rand[6]; 
+	x->input_KEY3 ^= x->rand[7]; 
 
 	/* Do pre-computation as specified by the user */
 	freestyle_precompute_rounds(x);
@@ -429,8 +429,8 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	/* save the counter after pre-computed rounds */
 	x->initial_counter = x->input_COUNTER;
 
-	/* if initial pepper is set, then add it to constant[3] */
-	x->input_CONSTANT3 = PLUS(x->input_CONSTANT3, x->pepper);
+	/* if initial pepper is set, then add it to constant[0] */
+	x->input_CONSTANT0 = PLUS(x->input_CONSTANT0, x->pepper);
 
 	for (pepper = x->pepper; pepper <= max_pepper; ++pepper)
 	{
@@ -457,7 +457,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 		break;
 
 continue_loop_decrypt:
-		x->input_CONSTANT3 = PLUSONE(x->input_CONSTANT3);
+		x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
 	}
 
 	for (i = 0; i < 8; ++i)
@@ -487,16 +487,16 @@ continue_loop_decrypt:
 	/* set counter to the value that was after pre-computed rounds */
 	x->input_COUNTER = x->initial_counter;
 
-	/* modify nonce[0], nonce[1], and nonce[2] */
-	x->input_IV0 ^= x->rand[1]; 
-	x->input_IV1 ^= x->rand[2]; 
-	x->input_IV2 ^= x->rand[3]; 
+	/* modify constant[1], constant[2], and constant[3] */
+	x->input_CONSTANT1 ^= x->rand[1]; 
+	x->input_CONSTANT2 ^= x->rand[2]; 
+	x->input_CONSTANT3 ^= x->rand[3]; 
 
-	/* modify constant[0], constant[1], constant[2], and constant[3] */
-	x->input_CONSTANT0 ^= x->rand[4]; 
-	x->input_CONSTANT1 ^= x->rand[5]; 
-	x->input_CONSTANT2 ^= x->rand[6]; 
-	x->input_CONSTANT3 ^= x->rand[7]; 
+	/* modify key[0], key[1], key[2], and key[3] */
+	x->input_KEY0 ^= x->rand[4]; 
+	x->input_KEY1 ^= x->rand[5]; 
+	x->input_KEY2 ^= x->rand[6]; 
+	x->input_KEY3 ^= x->rand[7]; 
 
 	/* Do pre-computation as specified by the user */
 	freestyle_precompute_rounds(x);

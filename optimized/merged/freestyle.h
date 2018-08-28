@@ -35,7 +35,11 @@ Public domain.
 #define MAX_HASH_VALUE 	(65536)
 #define MAX_INIT_HASHES (56)
 
-#include <assert.h>
+#if 1
+	#include <assert.h>
+#else
+	#define assert(x)
+#endif
 
 #ifdef __linux__
 	#include <bsd/stdlib.h>

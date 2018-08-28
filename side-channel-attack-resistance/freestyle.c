@@ -328,8 +328,8 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	/* save the counter after pre-computed rounds */
 	x->initial_counter = x->input[COUNTER];
 
-	/* add a random/user-set pepper to constant[3] */
-	x->input[CONSTANT3] = PLUS(x->input[CONSTANT3], x->pepper); 
+	/* add a random/user-set pepper to constant[0] */
+	x->input[CONSTANT0] = PLUS(x->input[CONSTANT0], x->pepper); 
 
 	for (i = 0; i < x->num_init_hashes; ++i)
 	{
@@ -346,8 +346,8 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	if (! x->is_pepper_set)
 	{
-		/* set it back to its previous value */
-		x->input[CONSTANT3] = MINUS(x->input[CONSTANT3], x->pepper); 
+		/* set constant[0] back to its previous value */
+		x->input[CONSTANT0] = MINUS(x->input[CONSTANT0], x->pepper); 
 
 		/* check for any collisions between 0 and pepper */
 		for (p = 0; p < x->pepper; ++p)
@@ -377,7 +377,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 			break;
 
 	continue_loop_encrypt:
-			x->input[CONSTANT3] = PLUSONE(x->input[CONSTANT3]);
+			x->input[CONSTANT0] = PLUSONE(x->input[CONSTANT0]);
 		}
 	}
 
@@ -408,16 +408,16 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	/* set counter to the value that was after pre-computed rounds */
 	x->input[COUNTER] = x->initial_counter;
 
-	/* modify nonce[0], nonce[1], and nonce[2] */
-	x->input[IV0] ^= x->rand[1]; 
-	x->input[IV1] ^= x->rand[2]; 
-	x->input[IV2] ^= x->rand[3]; 
+	/* modify constant[1], constant[2], and constant[3] */
+	x->input[CONSTANT1] ^= x->rand[1]; 
+	x->input[CONSTANT2] ^= x->rand[2]; 
+	x->input[CONSTANT3] ^= x->rand[3]; 
 
-	/* modify constant[0], constant[1], constant[2], and constant[3] */
-	x->input[CONSTANT0] ^= x->rand[4]; 
-	x->input[CONSTANT1] ^= x->rand[5]; 
-	x->input[CONSTANT2] ^= x->rand[6]; 
-	x->input[CONSTANT3] ^= x->rand[7]; 
+	/* modify key[0], key[1], key[2], and key[3] */
+	x->input[KEY0] ^= x->rand[4]; 
+	x->input[KEY1] ^= x->rand[5]; 
+	x->input[KEY2] ^= x->rand[6]; 
+	x->input[KEY3] ^= x->rand[7]; 
 
 	/* Do pre-computation as specified by the user */
 	freestyle_precompute_rounds(x);
@@ -462,7 +462,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	x->initial_counter = x->input[COUNTER];
 
 	/* if initial pepper is set, then add it to constant[3] */
-	x->input [CONSTANT3] = PLUS(x->input[CONSTANT3], x->pepper);
+	x->input [CONSTANT0] = PLUS(x->input[CONSTANT0], x->pepper);
 
 	for (pepper = x->pepper; pepper <= max_pepper; ++pepper)
 	{
@@ -490,7 +490,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 		break;
 
 continue_loop_decrypt:
-		x->input[CONSTANT3] = PLUSONE(x->input[CONSTANT3]);
+		x->input[CONSTANT0] = PLUSONE(x->input[CONSTANT0]);
 	}
 
 	for (i = 0; i < 8; ++i)
@@ -520,16 +520,16 @@ continue_loop_decrypt:
 	/* set counter to the value that was after pre-computed rounds */
 	x->input[COUNTER] = x->initial_counter;
 
-	/* modify nonce[0], nonce[1], and nonce[2] */
-	x->input[IV0] ^= x->rand[1]; 
-	x->input[IV1] ^= x->rand[2]; 
-	x->input[IV2] ^= x->rand[3]; 
+	/* modify constant[1], constant[2], and constant[3] */
+	x->input[CONSTANT1] ^= x->rand[1]; 
+	x->input[CONSTANT2] ^= x->rand[2]; 
+	x->input[CONSTANT3] ^= x->rand[3]; 
 
-	/* modify constant[0], constant[1], constant[2], and constant[3] */
-	x->input[CONSTANT0] ^= x->rand[4]; 
-	x->input[CONSTANT1] ^= x->rand[5]; 
-	x->input[CONSTANT2] ^= x->rand[6]; 
-	x->input[CONSTANT3] ^= x->rand[7]; 
+	/* modify key[0], key[1], key[2], and key[3] */
+	x->input[KEY0] ^= x->rand[4]; 
+	x->input[KEY1] ^= x->rand[5]; 
+	x->input[KEY2] ^= x->rand[6]; 
+	x->input[KEY3] ^= x->rand[7]; 
 
 	/* Do pre-computation as specified by the user */
 	freestyle_precompute_rounds(x);

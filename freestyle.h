@@ -16,10 +16,10 @@
  */
 
 /*
-Some code is taken from D. J. Bernstein's
-chacha-merged.c version 20080118
-Public domain.
-*/
+ * Some code is taken from D. J. Bernstein's
+ * chacha-merged.c version 20080118
+ * Public domain.
+ */
 
 #ifndef FREESTYLE_H
 #define FREESTYLE_H
@@ -125,8 +125,6 @@ typedef struct freestyle_ctx {
 
 	u32 		cipher_parameter[2];
 	u32 		rand[8];
-
-	u32		num_rounds_possible;
 
 	u8		num_init_hashes;
 	u16 		init_hash [MAX_INIT_HASHES];

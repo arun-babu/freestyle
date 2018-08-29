@@ -16,10 +16,10 @@
  */
 
 /*
-Some code is taken from D. J. Bernstein's
-chacha-merged.c version 20080118
-Public domain.
-*/
+ * Some code is taken from D. J. Bernstein's
+ * chacha-merged.c version 20080118
+ * Public domain.
+ */
 
 #ifndef FREESTYLE_H
 #define FREESTYLE_H
@@ -138,13 +138,10 @@ typedef struct freestyle_ctx {
 	u8		num_precomputed_rounds;
 
 	u32		min_rounds_by_2;
-
 	bool		min_rounds_is_odd;
 
 	u32 		cipher_parameter[2];
 	u32 		rand[8];
-
-	u32		num_rounds_possible;
 
 	u8		num_init_hashes;
 	u16 		init_hash [MAX_INIT_HASHES];
@@ -174,8 +171,6 @@ void freestyle_decrypt (
 		u32 		bytes,
 		u16 		*hash
 );
-
-
 
 void freestyle_set_counter (freestyle_ctx *x, u32 counter);
 
@@ -234,6 +229,5 @@ void freestyle_init_decrypt_with_pepper (
 	const 	u32 		pepper_set,
 	const	u16 		*init_hash
 );
-
 
 #endif	/* FREESTYLE_H */

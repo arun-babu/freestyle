@@ -16,13 +16,19 @@
  */
 
 /*
-Some code is taken from D. J. Bernstein's
-chacha-merged.c version 20080118
-Public domain.
-*/
+ * Some code is taken from D. J. Bernstein's
+ * chacha-merged.c version 20080118
+ * Public domain.
+ */
 
 #ifndef FREESTYLE_OPT_H
 #define FREESTYLE_OPT_H
+
+#define HAS_COLLISION(hash,hash_collided) \
+	(hash_collided[hash >> 6] & ((u64)1 << (hash & 0x3F)))
+
+#define SET_COLLIDED(hash,hash_collided) \
+	hash_collided[hash >> 6] |= ((u64)1 << (hash & 0x3F));
 
 #define COMPUTE_HASH(x,hash,rounds) {				\
 								\
@@ -131,27 +137,26 @@ Public domain.
 	output[63] = XOR (input[63], keystream[63]);	\
 }
 
-#define freestyle_precompute_rounds(x) {							\
-												\
-	for (r = 1; r <= x->num_precomputed_rounds; ++r)					\
-	{											\
-												\
-		if (r & 1)									\
-		{										\
-			QR (x->input_CONSTANT0, x->input_KEY0, x->input_KEY4, x->input_COUNTER)	\
-			QR (x->input_CONSTANT1, x->input_KEY1, x->input_KEY5, x->input_IV0)	\
-			QR (x->input_CONSTANT2, x->input_KEY2, x->input_KEY6, x->input_IV1)	\
-			QR (x->input_CONSTANT3, x->input_KEY3, x->input_KEY7, x->input_IV2)	\
-		}										\
-		else										\
-		{										\
-			QR (x->input_CONSTANT0, x->input_KEY1, x->input_KEY6, x->input_IV2)	\
-			QR (x->input_CONSTANT1, x->input_KEY2, x->input_KEY7, x->input_COUNTER)	\
-			QR (x->input_CONSTANT2, x->input_KEY3, x->input_KEY4, x->input_IV0)	\
-			QR (x->input_CONSTANT3, x->input_KEY0, x->input_KEY5, x->input_IV1)	\
-		}										\
-		x->initial_counter = x->input_COUNTER;						\
-	}											\
+#define freestyle_precompute_rounds(x) {				     \
+									     \
+ for (r = 1; r <= x->num_precomputed_rounds; ++r)			     \
+ {									     \
+   if (r & 1)								     \
+   {									     \
+      QR(x->input_CONSTANT0, x->input_KEY0, x->input_KEY4, x->input_COUNTER) \
+      QR(x->input_CONSTANT1, x->input_KEY1, x->input_KEY5, x->input_IV0)     \
+      QR(x->input_CONSTANT2, x->input_KEY2, x->input_KEY6, x->input_IV1)     \
+      QR(x->input_CONSTANT3, x->input_KEY3, x->input_KEY7, x->input_IV2)     \
+   }									     \
+   else									     \
+   {									     \
+      QR(x->input_CONSTANT0, x->input_KEY1, x->input_KEY6, x->input_IV2)     \
+      QR(x->input_CONSTANT1, x->input_KEY2, x->input_KEY7, x->input_COUNTER) \
+      QR(x->input_CONSTANT2, x->input_KEY3, x->input_KEY4, x->input_IV0)     \
+      QR(x->input_CONSTANT3, x->input_KEY0, x->input_KEY5, x->input_IV1)     \
+   }									     \
+   x->initial_counter = x->input_COUNTER;				     \
+ }									     \
 }
 
 #endif	/* FREESTYLE_OPT_H */

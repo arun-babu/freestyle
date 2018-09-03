@@ -207,7 +207,7 @@ static u32 freestyle_process_block (
 		output32 [i] = x->input [i];
 	}
 
-	/* modify counter[0] */
+	/* modify counter */
 	output32[COUNTER] ^= x->rand[0];
 
 	for (r = x->num_precomputed_rounds + 1; r <= rounds; ++r)

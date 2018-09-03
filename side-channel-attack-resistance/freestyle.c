@@ -465,7 +465,6 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 	for (pepper = x->pepper; pepper <= max_pepper; ++pepper)
 	{
-
 		for (i = 0; i < x->num_init_hashes; ++i)
 		{
 			random_i = random_indices [i];
@@ -587,7 +586,8 @@ void freestyle_init_encrypt (
 {	
 	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, 
 				max_rounds, num_precomputed_rounds, 
-				hash_interval, pepper_bits, num_init_hashes);
+				hash_interval, pepper_bits, num_init_hashes
+	);
 
 	x->pepper		= 0;
 	x->is_pepper_set 	= false;
@@ -610,7 +610,8 @@ void freestyle_init_encrypt_with_pepper (
 {	
 	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, 
 				max_rounds, num_precomputed_rounds, 
-				hash_interval, pepper_bits, num_init_hashes);
+				hash_interval, pepper_bits, num_init_hashes
+	);
 
 	x->pepper 		= pepper;
 	x->is_pepper_set 	= true;
@@ -633,7 +634,8 @@ void freestyle_init_decrypt (
 {	
 	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, 
 				max_rounds, num_precomputed_rounds, 
-				hash_interval, pepper_bits, num_init_hashes);
+				hash_interval, pepper_bits, num_init_hashes
+	);
 
 	x->pepper		= 0;
 	x->is_pepper_set 	= false;
@@ -662,7 +664,8 @@ void freestyle_init_decrypt_with_pepper (
 {	
 	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, 
 				max_rounds, num_precomputed_rounds, 
-				hash_interval, pepper_bits, num_init_hashes);
+				hash_interval, pepper_bits, num_init_hashes
+	);
 
 	x->pepper 		= pepper;
 	x->is_pepper_set 	= true;

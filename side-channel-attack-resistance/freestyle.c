@@ -140,14 +140,14 @@ static void freestyle_roundsetup (
 	x->num_init_hashes 		= num_init_hashes;
 
 	/* 16 + 16 bits */
-	x->cipher_parameter[0] 	= ((x->min_rounds    	& 0xFFFF) << 16)
-				| ((x->max_rounds    	& 0xFFFF));
+	x->cipher_parameter[0] 	= ((x->min_rounds & 0xFFFF) << 16)
+				| ((x->max_rounds & 0xFFFF)      );
 
 	/* 16 + 6 + 6 + 4 bits */
-	x->cipher_parameter[1] 	= ((x->hash_interval   	& 0xFFFF) << 16)
-				| ((x->pepper_bits     	& 0x003F) << 10)
-				| ((x->num_init_hashes 	& 0x003F) <<  4)
-				| ((x->num_precomputed_rounds & 0xF)   );
+	x->cipher_parameter[1] 	= ((x->hash_interval   	      & 0xFFFF) << 16)
+				| ((x->pepper_bits     	      & 0x003F) << 10)
+				| ((x->num_init_hashes 	      & 0x003F) <<  4)
+				| ((x->num_precomputed_rounds & 0x000F)      );
 
 	for (i = 0; i < 8; ++i)
 		x->rand[i] = 0; 

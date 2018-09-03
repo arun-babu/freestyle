@@ -91,14 +91,14 @@ static void freestyle_roundsetup (
 	x->min_rounds_is_odd 	= (x->min_rounds & 1) == 1;
 
 	/* 16 + 16 bits */
-	x->cipher_parameter[0] 	= ((x->min_rounds    	& 0xFFFF) << 16)
-				| ((x->max_rounds    	& 0xFFFF));
+	x->cipher_parameter[0] 	= ((x->min_rounds & 0xFFFF) << 16)
+				| ((x->max_rounds & 0xFFFF)      );
 
 	/* 16 + 6 + 6 + 4 bits */
-	x->cipher_parameter[1] 	= ((x->hash_interval   	& 0xFFFF) << 16)
-				| ((x->pepper_bits     	& 0x003F) << 10)
-				| ((x->num_init_hashes 	& 0x003F) <<  4)
-				| ((x->num_precomputed_rounds & 0xF)   );
+	x->cipher_parameter[1] 	= ((x->hash_interval   	      & 0xFFFF) << 16)
+				| ((x->pepper_bits     	      & 0x003F) << 10)
+				| ((x->num_init_hashes 	      & 0x003F) <<  4)
+				| ((x->num_precomputed_rounds & 0x000F)      );
 	x->rand[0] = 0; 
 	x->rand[1] = 0; 
 	x->rand[2] = 0; 

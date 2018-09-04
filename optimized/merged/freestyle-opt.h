@@ -161,11 +161,12 @@
 
 #define freestyle_random_round_number(x,r) {				\
 	r = (u16) (							\
-		x->min_rounds						\
+		(x->min_rounds						\
 		+ arc4random_uniform (					\
 		       x->max_rounds - x->min_rounds + x->hash_interval	\
 		  )							\
-		) * x->hash_interval; 					\
+		) / x->hash_interval					\
+	) * x->hash_interval; 						\
 }
 
 #endif	/* FREESTYLE_OPT_H */

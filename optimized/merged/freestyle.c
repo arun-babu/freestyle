@@ -643,28 +643,27 @@ void freestyle_init_decrypt_with_pepper (
 }
 
 void freestyle_encrypt (
-		freestyle_ctx 	*x,
-	const 	u8 		*full_plaintext,
-		u8 		*full_ciphertext,
-		u32 		bytes,
-		u16 		*expected_hash)
+		freestyle_ctx* 	restrict 	x,
+	const	u8* 		restrict 	plaintext,
+		u8* 		restrict 	ciphertext,
+		u32 				bytes,
+		u16* 		restrict 	expected_hash)
 {
-	u32 	i	= 0;
+	u32 	i;
 	u32 	block 	= 0;
-
-	u8	*plaintext, *ciphertext;
 
 	u8 	bytes_to_process;
 
 	u16 	hash, rounds;
 
-	u16 	j, r;
+	u16 	r;
 
 	u32 	temp1, temp2;
 
 	u8	output8[64];
 
-	u32 	output32_00, output32_01, output32_02, output32_03,
+	register u32
+		output32_00, output32_01, output32_02, output32_03,
 		output32_04, output32_05, output32_06, output32_07,
 		output32_08, output32_09, output32_10, output32_11,
 		output32_12, output32_13, output32_14, output32_15;
@@ -678,9 +677,6 @@ void freestyle_encrypt (
 		
 		memset (hash_collided, 0, sizeof(hash_collided));
 	
-		plaintext  = (u8*)(full_plaintext  + i);
-		ciphertext = (u8*)(full_ciphertext + i);
-
 		output32_00 = x->input_CONSTANT0;
 		output32_01 = x->input_CONSTANT1;
 		output32_02 = x->input_CONSTANT2;
@@ -702,13 +698,7 @@ void freestyle_encrypt (
 		output32_15 = x->input_IV2;
 
 		/* Generate a random no. of round */ 
-		rounds = x->min_rounds +
-		       + arc4random_uniform (
-			    x->max_rounds - x->min_rounds + x->hash_interval
-			 );
-
-		/* make it a multiple of hash_interval */
-		rounds = x->hash_interval * (u16)(rounds/x->hash_interval);
+		freestyle_random_round_number(x,rounds);
 
 		assert (rounds >= x->min_rounds);
 		assert (rounds <= x->max_rounds);
@@ -783,12 +773,14 @@ void freestyle_encrypt (
 		}
 		else
 		{
-			for (j = 0; j < bytes; ++j) {
-				ciphertext [j] = XOR(plaintext[j],output8[j]);
+			for (i = 0; i < bytes; ++i) {
+				ciphertext [i] = XOR(plaintext[i],output8[i]);
 			}
 		}
 
-		i     += bytes_to_process;
+		plaintext  += bytes_to_process;
+		ciphertext += bytes_to_process;
+
 		bytes -= bytes_to_process;
 	
         	++block;
@@ -798,28 +790,27 @@ void freestyle_encrypt (
 }
 
 void freestyle_decrypt (
-		freestyle_ctx 	*x,
-	const 	u8 		*full_ciphertext,
-		u8 		*full_plaintext,
-		u32 		bytes,
-		u16 		*expected_hash)
+		freestyle_ctx* 	restrict 	x,
+	const 	u8* 		restrict 	ciphertext,
+		u8* 		restrict 	plaintext,
+		u32 				bytes,
+		u16* 		restrict 	expected_hash)
 {
-	u32 	i	= 0;
+	u32	i;
 	u32 	block 	= 0;
-
-	u8	*plaintext, *ciphertext;
 
 	u8 	bytes_to_process;
 
 	u16 	hash;
 
-	u16 	j, r;
+	u16 	r;
 
 	u32 	temp1, temp2;
 
 	u8	output8[64];
 
-	u32 	output32_00, output32_01, output32_02, output32_03,
+	register u32 
+		output32_00, output32_01, output32_02, output32_03,
 		output32_04, output32_05, output32_06, output32_07,
 		output32_08, output32_09, output32_10, output32_11,
 		output32_12, output32_13, output32_14, output32_15;
@@ -832,9 +823,6 @@ void freestyle_decrypt (
 		bytes_to_process = bytes >= 64 ? 64 : bytes;
 
 		memset (hash_collided, 0, sizeof(hash_collided));
-
-		plaintext  = (u8*)(full_plaintext  + i);
-		ciphertext = (u8*)(full_ciphertext + i);
 
 		output32_00 = x->input_CONSTANT0;
 		output32_01 = x->input_CONSTANT1;
@@ -926,16 +914,18 @@ void freestyle_decrypt (
 		}
 		else
 		{
-			for (j = 0; j < bytes; ++j) {
-				plaintext [j] = XOR(ciphertext[j],output8[j]);
+			for (i = 0; i < bytes; ++i) {
+				plaintext [i] = XOR(ciphertext[i],output8[i]);
 			}
 		}
 
-	    i 	  += bytes_to_process;
-	    bytes -= bytes_to_process;
-	
-            ++block;
+		plaintext  += bytes_to_process;
+		ciphertext += bytes_to_process;
 
-	    x->input_COUNTER = PLUSONE (x->input_COUNTER);
+		bytes -= bytes_to_process;
+	
+		++block;
+
+		x->input_COUNTER = PLUSONE (x->input_COUNTER);
 	}
 }

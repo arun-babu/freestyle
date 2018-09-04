@@ -1,4 +1,4 @@
-CC="gcc"
+CC="gcc -O3 "
 
 rm -rf test-functionality 2>/dev/null
 rm -rf test-timing 2>/dev/null

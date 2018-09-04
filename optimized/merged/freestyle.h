@@ -158,8 +158,8 @@ typedef struct freestyle_ctx {
 
 void freestyle_encrypt (
 		freestyle_ctx 	*x,
-	const 	u8 		*input,
-		u8 		*output,
+	const 	u8 		*plaintext,
+		u8 		*ciphertext,
 		u32 		bytes,
 		u16 		*hash
 );

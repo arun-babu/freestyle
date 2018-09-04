@@ -133,10 +133,7 @@ static u32 freestyle_encrypt_block (
 
 	u32 	temp1, temp2;
 
-	u32 rounds = x->min_rounds
-	+ arc4random_uniform(x->max_rounds - x->min_rounds + x->hash_interval);
-
-	rounds = x->hash_interval * (u16)(rounds/x->hash_interval);
+	u32 rounds;
 
 	u64 hash_collided [1024];
 
@@ -161,6 +158,8 @@ static u32 freestyle_encrypt_block (
 		output32_15 = x->input_IV2;
 	
 	memset (hash_collided, 0, sizeof(hash_collided));
+
+	freestyle_random_round_number(x,rounds); 
 
 	for (r = x->num_precomputed_rounds + 1; r <= rounds; ++r)
 	{

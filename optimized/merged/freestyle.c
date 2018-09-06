@@ -156,7 +156,7 @@ static u32 freestyle_encrypt_block (
 	
 	memset (hash_collided, 0, sizeof(hash_collided));
 
-	/* Generate a random no. of round */ 
+	/* Generate a random round */ 
 	freestyle_random_round_number(x,rounds); 
 
 	for (r = x->num_precomputed_rounds + 1; r <= rounds; ++r)
@@ -698,7 +698,7 @@ void freestyle_encrypt (
 		output32_14 = x->input_IV1;
 		output32_15 = x->input_IV2;
 
-		/* Generate a random no. of round */ 
+		/* Generate a random round */ 
 		freestyle_random_round_number(x,rounds);
 
 		assert (rounds >= x->min_rounds);

@@ -24,6 +24,10 @@
 #ifndef FREESTYLE_OPT_H
 #define FREESTYLE_OPT_H
 
+#ifdef __OpenBSD__
+	#define restrict __restrict
+#endif
+
 #define HAS_COLLISION(hash,hash_collided) \
 	(hash_collided[hash >> 6] & ((u64)1 << (hash & 0x3F)))
 

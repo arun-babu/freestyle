@@ -87,9 +87,6 @@ static void freestyle_roundsetup (
 	x->pepper_bits 			= pepper_bits;
 	x->num_init_hashes 		= num_init_hashes;
 
-	x->min_rounds_by_2 	= x->min_rounds/2;
-	x->min_rounds_is_odd 	= (x->min_rounds & 1) == 1;
-
 	/* 16 + 16 bits */
 	x->cipher_parameter[0] 	= ((x->min_rounds & 0xFFFF) << 16)
 				| ((x->max_rounds & 0xFFFF)      );
@@ -159,6 +156,7 @@ static u32 freestyle_encrypt_block (
 	
 	memset (hash_collided, 0, sizeof(hash_collided));
 
+	/* Generate a random no. of round */ 
 	freestyle_random_round_number(x,rounds); 
 
 	for (r = x->num_precomputed_rounds + 1; r <= rounds; ++r)
@@ -289,6 +287,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 		);
 	}
 
+	/* set sane values for initalization */
 	x->min_rounds 			= 12;
 	x->max_rounds 			= 36;
 	x->hash_interval 		= 1;
@@ -409,11 +408,13 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	u8  saved_num_precomputed_rounds 	= x->num_precomputed_rounds;
 
 	u32 pepper;
-	u32 max_pepper = (u32)(((u64)1 << x->pepper_bits) - 1); 
+	u32 max_pepper = x->pepper_bits == 32 ? -1 : (1 << x->pepper_bits) - 1; 
 
-	x->min_rounds 		= 12;
-	x->max_rounds 		= 36;
-	x->hash_interval 	= 1;
+	/* set sane values for initalization */
+	x->min_rounds 			= 12;
+	x->max_rounds 			= 36;
+	x->hash_interval 		= 1;
+	x->num_precomputed_rounds 	= 4;
 
 	for (i = 0; i < MAX_INIT_HASHES; ++i) {
 		R[i] = 0;
@@ -515,8 +516,7 @@ static void freestyle_init_common (
 	assert (min_rounds % hash_interval == 0);
 	assert (max_rounds % hash_interval == 0);
 
-	assert (num_precomputed_rounds >= 1);
-	assert (num_precomputed_rounds <= 16);
+	assert (num_precomputed_rounds <= 15);
 	assert (num_precomputed_rounds <= (min_rounds - 4));
 
 	assert (pepper_bits >= 8);
@@ -605,7 +605,7 @@ void freestyle_init_decrypt (
 
 	memcpy ( x->init_hash,
 		 init_hash,
-		 sizeof(x->init_hash) 
+		 sizeof(x->init_hash)
 	);
 
 	freestyle_randomsetup_decrypt(x);
@@ -649,6 +649,7 @@ void freestyle_encrypt (
 		u16* 		restrict 	expected_hash)
 {
 	u32 	i;
+
 	u32 	block 	= 0;
 
 	u8 	bytes_to_process;
@@ -796,6 +797,7 @@ void freestyle_decrypt (
 		u16* 		restrict 	expected_hash)
 {
 	u32	i;
+
 	u32 	block 	= 0;
 
 	u8 	bytes_to_process;

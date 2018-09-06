@@ -137,9 +137,6 @@ typedef struct freestyle_ctx {
 
 	u8		num_precomputed_rounds;
 
-	u32		min_rounds_by_2;
-	bool		min_rounds_is_odd;
-
 	u32 		cipher_parameter[2];
 	u32 		rand[8];
 
@@ -152,7 +149,6 @@ typedef struct freestyle_ctx {
 	bool 		is_pepper_set;
 
 	u32 		hash_interval;
-	u8 		num_output_elements_to_hash;
 
 } freestyle_ctx;
 

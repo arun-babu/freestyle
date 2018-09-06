@@ -309,7 +309,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	if (! x->is_pepper_set)
 	{
 		x->pepper = arc4random_uniform (
-			x->pepper_bits == 32 ?  -1 : (1 << x->pepper_bits)
+		    x->pepper_bits == 32 ?  UINT32_MAX : (1 << x->pepper_bits)
 		);
 	}
 
@@ -437,7 +437,8 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	const u8  saved_num_precomputed_rounds 	= x->num_precomputed_rounds;
 
 	u32 pepper;
-	u32 max_pepper = x->pepper_bits == 32 ? -1 : (1 << x->pepper_bits) - 1; 
+	u32 max_pepper = x->pepper_bits == 32 ? 
+				UINT32_MAX : (1 << x->pepper_bits) - 1; 
 
 	u8 random_i;
 	u8 random_indices[MAX_INIT_HASHES];

@@ -751,22 +751,22 @@ void freestyle_encrypt (
 		output32_14 = PLUS(output32_14, x->input_IV1);
 		output32_15 = PLUS(output32_15, x->input_IV2);
 
-	    	U32TO8_LITTLE (output8 + 4 * 0,  output32_00);
-	   	U32TO8_LITTLE (output8 + 4 * 1,  output32_01);
-	    	U32TO8_LITTLE (output8 + 4 * 2,  output32_02);
-	    	U32TO8_LITTLE (output8 + 4 * 3,  output32_03);
-	    	U32TO8_LITTLE (output8 + 4 * 4,  output32_04);
-	    	U32TO8_LITTLE (output8 + 4 * 5,  output32_05);
-	    	U32TO8_LITTLE (output8 + 4 * 6,  output32_06);
-	    	U32TO8_LITTLE (output8 + 4 * 7,  output32_07);
-	    	U32TO8_LITTLE (output8 + 4 * 8,  output32_08);
-	    	U32TO8_LITTLE (output8 + 4 * 9,  output32_09);
-	    	U32TO8_LITTLE (output8 + 4 * 10, output32_10);
-	    	U32TO8_LITTLE (output8 + 4 * 11, output32_11);
-	    	U32TO8_LITTLE (output8 + 4 * 12, output32_12);
-	    	U32TO8_LITTLE (output8 + 4 * 13, output32_13);
-	    	U32TO8_LITTLE (output8 + 4 * 14, output32_14);
-	    	U32TO8_LITTLE (output8 + 4 * 15, output32_15);
+		U32TO8_LITTLE (output8 + 4 * 0,  output32_00);
+		U32TO8_LITTLE (output8 + 4 * 1,  output32_01);
+		U32TO8_LITTLE (output8 + 4 * 2,  output32_02);
+		U32TO8_LITTLE (output8 + 4 * 3,  output32_03);
+		U32TO8_LITTLE (output8 + 4 * 4,  output32_04);
+		U32TO8_LITTLE (output8 + 4 * 5,  output32_05);
+		U32TO8_LITTLE (output8 + 4 * 6,  output32_06);
+		U32TO8_LITTLE (output8 + 4 * 7,  output32_07);
+		U32TO8_LITTLE (output8 + 4 * 8,  output32_08);
+		U32TO8_LITTLE (output8 + 4 * 9,  output32_09);
+		U32TO8_LITTLE (output8 + 4 * 10, output32_10);
+		U32TO8_LITTLE (output8 + 4 * 11, output32_11);
+		U32TO8_LITTLE (output8 + 4 * 12, output32_12);
+		U32TO8_LITTLE (output8 + 4 * 13, output32_13);
+		U32TO8_LITTLE (output8 + 4 * 14, output32_14);
+		U32TO8_LITTLE (output8 + 4 * 15, output32_15);
                                          
 		if (bytes_to_process == 64)                 
 		{
@@ -893,22 +893,22 @@ void freestyle_decrypt (
 		output32_14 = PLUS(output32_14, x->input_IV1);
 		output32_15 = PLUS(output32_15, x->input_IV2);
 
-	    	U32TO8_LITTLE (output8 + 4 * 0,  output32_00);
-	   	U32TO8_LITTLE (output8 + 4 * 1,  output32_01);
-	    	U32TO8_LITTLE (output8 + 4 * 2,  output32_02);
-	    	U32TO8_LITTLE (output8 + 4 * 3,  output32_03);
-	    	U32TO8_LITTLE (output8 + 4 * 4,  output32_04);
-	    	U32TO8_LITTLE (output8 + 4 * 5,  output32_05);
-	    	U32TO8_LITTLE (output8 + 4 * 6,  output32_06);
-	    	U32TO8_LITTLE (output8 + 4 * 7,  output32_07);
-	    	U32TO8_LITTLE (output8 + 4 * 8,  output32_08);
-	    	U32TO8_LITTLE (output8 + 4 * 9,  output32_09);
-	    	U32TO8_LITTLE (output8 + 4 * 10, output32_10);
-	    	U32TO8_LITTLE (output8 + 4 * 11, output32_11);
-	    	U32TO8_LITTLE (output8 + 4 * 12, output32_12);
-	    	U32TO8_LITTLE (output8 + 4 * 13, output32_13);
-	    	U32TO8_LITTLE (output8 + 4 * 14, output32_14);
-	    	U32TO8_LITTLE (output8 + 4 * 15, output32_15);
+		U32TO8_LITTLE (output8 + 4 * 0,  output32_00);
+		U32TO8_LITTLE (output8 + 4 * 1,  output32_01);
+		U32TO8_LITTLE (output8 + 4 * 2,  output32_02);
+		U32TO8_LITTLE (output8 + 4 * 3,  output32_03);
+		U32TO8_LITTLE (output8 + 4 * 4,  output32_04);
+		U32TO8_LITTLE (output8 + 4 * 5,  output32_05);
+		U32TO8_LITTLE (output8 + 4 * 6,  output32_06);
+		U32TO8_LITTLE (output8 + 4 * 7,  output32_07);
+		U32TO8_LITTLE (output8 + 4 * 8,  output32_08);
+		U32TO8_LITTLE (output8 + 4 * 9,  output32_09);
+		U32TO8_LITTLE (output8 + 4 * 10, output32_10);
+		U32TO8_LITTLE (output8 + 4 * 11, output32_11);
+		U32TO8_LITTLE (output8 + 4 * 12, output32_12);
+		U32TO8_LITTLE (output8 + 4 * 13, output32_13);
+		U32TO8_LITTLE (output8 + 4 * 14, output32_14);
+		U32TO8_LITTLE (output8 + 4 * 15, output32_15);
 
 		if (bytes_to_process == 64)                 
 		{

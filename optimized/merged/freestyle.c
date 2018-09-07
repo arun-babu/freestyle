@@ -119,9 +119,6 @@ static void freestyle_hashsetup (
 
 static u32 freestyle_encrypt_block (
 		freestyle_ctx	*x,	
-	const 	u8 		*plaintext,
-		u8 		*ciphertext,
-		u8 		bytes,
 		u16 		*expected_hash)
 {
 	u32 	r;
@@ -192,9 +189,6 @@ static u32 freestyle_encrypt_block (
 
 static u32 freestyle_decrypt_block (
 		freestyle_ctx	*x,	
-		u8 		*plaintext,
-	const	u8 		*ciphertext,
-		u8 		bytes,
 		u16 		*expected_hash)
 {
 	u32 	r;
@@ -282,9 +276,12 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	if (! x->is_pepper_set)
 	{
-		x->pepper = arc4random_uniform (
-		    x->pepper_bits == 32 ? UINT32_MAX : (1 << x->pepper_bits)
-		);
+		if (x->pepper_bits == 32)
+			x->pepper = arc4random_uniform (UINT32_MAX);
+		else
+			x->pepper = arc4random_uniform (
+				1 << x->pepper_bits
+			);
 	}
 
 	/* set sane values for initalization */
@@ -307,13 +304,10 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	{
 		R[i] = freestyle_encrypt_block (
 			x,
-			NULL,
-			NULL,
-			0,
 			&x->init_hash [i]
 		);
 
-		x->input_COUNTER = PLUSONE(x->input_COUNTER);
+		freestyle_increment_counter(x);
 	}
 
 	if (! x->is_pepper_set)
@@ -330,9 +324,6 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 			{
 				CR[i] = freestyle_decrypt_block (
 					x,
-					NULL,
-					NULL,
-					0,
 					&x->init_hash [i]
 				);
 
@@ -340,7 +331,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 					goto continue_loop_encrypt;	
 				}
 
-				x->input_COUNTER = PLUSONE(x->input_COUNTER);
+				freestyle_increment_counter(x);
 			}
 
 			/* found a collision. use the collided rounds */ 
@@ -409,7 +400,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 	u32 pepper;
 	u32 max_pepper = x->pepper_bits == 32 ? 
-				UINT32_MAX : (1 << x->pepper_bits) - 1; 
+				UINT32_MAX : (u32) ((1 << x->pepper_bits) - 1); 
 
 	/* set sane values for initalization */
 	x->min_rounds 			= 12;
@@ -422,7 +413,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	}
 
 	/* initial pre-computed rounds */
-	freestyle_precompute_rounds(x)
+	freestyle_precompute_rounds(x);
 
 	/* if initial pepper is set, then add it to constant[0] */
 	x->input_CONSTANT0 = PLUS(x->input_CONSTANT0, x->pepper);
@@ -435,9 +426,6 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 		{
 			R[i] = freestyle_decrypt_block (
 				x,
-				NULL,
-				NULL,
-				0,
 				&x->init_hash [i]
 			);
 
@@ -445,7 +433,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 				goto continue_loop_decrypt;
 			}
 
-			x->input_COUNTER = PLUSONE (x->input_COUNTER);
+			freestyle_increment_counter(x);
 		}
 
 		/* found all valid R[i]s */
@@ -786,7 +774,7 @@ void freestyle_encrypt (
 	
         	++block;
 
-		x->input_COUNTER = PLUSONE (x->input_COUNTER);
+	    	freestyle_increment_counter(x);
 	}
 }
 

@@ -28,6 +28,9 @@
 	#define restrict __restrict
 #endif
 
+#define freestyle_increment_counter(x) \
+	x->input_COUNTER = PLUSONE(x->input_COUNTER);
+
 #define HAS_COLLISION(hash,hash_collided) \
 	(hash_collided[hash >> 6] & ((u64)1 << (hash & 0x3F)))
 

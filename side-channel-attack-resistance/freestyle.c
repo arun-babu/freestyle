@@ -182,10 +182,9 @@ static void freestyle_hashsetup (
 }
 
 static u16 freestyle_hash (
-		freestyle_ctx	*x,
-	const	u32 		output[16],
-	const 	u16 		previous_hash,
-	const	u32 		rounds)
+	const	u32 output[16],
+	const 	u16 previous_hash,
+	const	u32 rounds)
 {
 	u32 temp1 = rounds;
 	u32 temp2 = previous_hash;
@@ -241,7 +240,7 @@ static u32 freestyle_process_block (
 
 		if (r >= x->min_rounds && r % x->hash_interval == 0)
 		{
-			hash = freestyle_hash (x,output32,hash,r);
+			hash = freestyle_hash (output32,hash,r);
 
 			while (hash_collided [hash ^ random_mask]) {
 				++hash;
@@ -308,9 +307,12 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	if (! x->is_pepper_set)
 	{
-		x->pepper = arc4random_uniform (
-		    x->pepper_bits == 32 ?  UINT32_MAX : (1 << x->pepper_bits)
-		);
+		if (x->pepper_bits == 32)
+			x->pepper = arc4random_uniform (UINT32_MAX);
+		else
+			x->pepper = arc4random_uniform (
+				1 << x->pepper_bits
+			);
 	}
 
 	/* set sane values for initalization */
@@ -339,7 +341,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 			&x->init_hash [i]
 		);
 
-		freestyle_increment_counter (x);
+		freestyle_increment_counter(x);
 	}
 
 	if (! x->is_pepper_set)
@@ -371,7 +373,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 			}
 
-			/* found a collision; use the collided rounds */ 
+			/* found a collision. use the collided rounds */ 
 			memcpy(R, CR, sizeof(R));
 			break;
 
@@ -438,7 +440,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 	u32 pepper;
 	u32 max_pepper = x->pepper_bits == 32 ? 
-				UINT32_MAX : (1 << x->pepper_bits) - 1; 
+				UINT32_MAX : (u32) ((1 << x->pepper_bits) - 1); 
 
 	u8 random_i;
 	u8 random_indices[MAX_INIT_HASHES];

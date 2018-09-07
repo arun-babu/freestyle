@@ -37,18 +37,17 @@
 #define SET_COLLIDED(hash,hash_collided) \
 	hash_collided[hash >> 6] |= ((u64)1 << (hash & 0x3F));
 
-#define COMPUTE_HASH(x,hash,rounds) {				\
-								\
-	temp1 	= rounds;					\
-	temp2 	= hash;						\
-								\
-	AXR (temp1, output32_03, temp2, 16);			\
-	AXR (temp2, output32_06, temp1, 12);			\
-	AXR (temp1, output32_09, temp2,  8);			\
-	AXR (temp2, output32_12, temp1,  7);			\
-								\
-	hash = (u16) XOR(temp1 & 0xFFFF, temp1 >> 16);		\
-								\
+#define COMPUTE_HASH(x,hash,rounds) {					\
+									\
+	temp1 	= rounds;						\
+	temp2 	= hash;							\
+									\
+	AXR (temp1, output32_03, temp2, 16);				\
+	AXR (temp2, output32_06, temp1, 12);				\
+	AXR (temp1, output32_09, temp2,  8);				\
+	AXR (temp2, output32_12, temp1,  7);				\
+									\
+	hash = (freestyle_hash_t) XOR(temp1 & 0xFFFF, temp1 >> 16);	\
 } 
 
 #define FREESTYLE_DOUBLE_ROUND() {				\

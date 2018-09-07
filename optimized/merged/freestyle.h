@@ -111,6 +111,8 @@ static const char tau[16] = "expand 16-byte k";
 
 #define AXR(a,b,c,r) {a = PLUS(a,b); c = ROTATE(XOR(c,a),r);}
 
+typedef u16 freestyle_hash_t;
+
 typedef struct freestyle_ctx {
 
 	u32 		input_CONSTANT0,

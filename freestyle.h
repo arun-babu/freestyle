@@ -113,29 +113,30 @@ static const char tau[16] = "expand 16-byte k";
 
 #define AXR(a,b,c,r) {a = PLUS(a,b); c = ROTATE(XOR(c,a),r);}
 
+typedef u16 freestyle_hash_t;
+
 typedef struct freestyle_ctx {
 
-	u32 		input[16];
-	u32 		initial_counter;
+	u32 			input[16];
+	u32 			initial_counter;
 
-	u32		min_rounds;
-	u32		max_rounds;
+	u32			min_rounds;
+	u32			max_rounds;
 
-	u8		num_precomputed_rounds;
+	u8			num_precomputed_rounds;
 
-	u32 		cipher_parameter[2];
-	u32 		rand[8];
+	u32 			cipher_parameter[2];
+	u32 			rand[8];
 
-	u8		num_init_hashes;
-	u16 		init_hash [MAX_INIT_HASHES];
+	u8			num_init_hashes;
+	freestyle_hash_t	init_hash [MAX_INIT_HASHES];
 
-	u8 		pepper_bits;
-	u32 		pepper;
+	u8 			pepper_bits;
+	u32 			pepper;
 
-	bool 		is_pepper_set;
+	bool 			is_pepper_set;
 
-	u32 		hash_interval;
-	u8 		num_output_elements_to_hash;
+	u32 			hash_interval;
 
 } freestyle_ctx;
 
@@ -169,40 +170,40 @@ void freestyle_init_encrypt_with_pepper (
 );
 
 void freestyle_init_decrypt (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
-	const	u8		num_precomputed_rounds,
-	const 	u32 		hash_interval,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes,
-	const	u16 		*init_hash
+		freestyle_ctx 		*x,
+	const 	u8 			*key,
+	const 	u16 			key_length_bits,
+	const 	u8 			*iv,
+	const 	u32 			min_rounds,
+	const 	u32			max_rounds,
+	const	u8			num_precomputed_rounds,
+	const 	u32 			hash_interval,
+	const 	u8 			pepper_bits,
+	const	u8 			num_init_hashes,
+	const	freestyle_hash_t	*init_hash
 );
 
 void freestyle_init_decrypt_with_pepper (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
-	const	u8		num_precomputed_rounds,
-	const 	u32 		hash_interval,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes,
-	const 	u32 		pepper_set,
-	const	u16 		*init_hash
+		freestyle_ctx 		*x,
+	const 	u8 			*key,
+	const 	u16 			key_length_bits,
+	const 	u8 			*iv,
+	const 	u32 			min_rounds,
+	const 	u32			max_rounds,
+	const	u8			num_precomputed_rounds,
+	const 	u32 			hash_interval,
+	const 	u8 			pepper_bits,
+	const	u8 			num_init_hashes,
+	const 	u32 			pepper_set,
+	const	freestyle_hash_t 	*init_hash
 );
 
 int freestyle_process (
-		freestyle_ctx 	*x,
-	const 	u8 		*input,
-		u8 		*output,
-		u32 		bytes,
-		u16 		*hash,
+		freestyle_ctx 		*x,
+	const 	u8 			*input,
+		u8 			*output,
+		u32 			bytes,
+		freestyle_hash_t	*hash,
 	const 	bool 		do_encryption
 );
 

@@ -220,7 +220,7 @@ static u32 freestyle_process_block (
 	u32 rounds = do_encryption ?
 			freestyle_random_round_number (x): x->max_rounds;
 
-	u8	random_mask = arc4random_uniform (MAX_HASH_VALUES); 
+	u8 random_mask = arc4random_uniform (MAX_HASH_VALUES); 
 
 	bool do_decryption = ! do_encryption;
 

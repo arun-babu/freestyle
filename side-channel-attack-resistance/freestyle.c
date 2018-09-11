@@ -23,6 +23,8 @@
 
 #include "freestyle.h"
 
+#define LOOKUP_TABLE_SIZE (65536)
+
 static void freestyle_init_random_indices(freestyle_ctx *x, u8 *random_indices)
 {
 	u8 i, j = 0;
@@ -220,11 +222,11 @@ static u32 freestyle_process_block (
 	u32 rounds = do_encryption ?
 			freestyle_random_round_number (x): x->max_rounds;
 
-	u8 random_mask = arc4random_uniform (MAX_HASH_VALUES); 
+	u16 random_mask = arc4random_uniform (LOOKUP_TABLE_SIZE); 
 
 	bool do_decryption = ! do_encryption;
 
-	bool hash_collided [MAX_HASH_VALUES];
+	bool hash_collided [LOOKUP_TABLE_SIZE];
 
 	memset (hash_collided, false, sizeof(hash_collided));
 

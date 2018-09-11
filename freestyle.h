@@ -30,8 +30,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <sys/types.h>
-
 #define MAX_HASH_VALUES	(256)
 #define MAX_INIT_HASHES (56)
 

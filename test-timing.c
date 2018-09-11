@@ -26,7 +26,7 @@ int main ()
 	u8 plaintext [MSG_LEN];
 	u8 ciphertext[MSG_LEN];
 
-	u16 expected_hash [MSG_LEN/64 + 1];
+	u8 expected_hash [MSG_LEN/64 + 1];
 
 	u32 min_rounds 	= 8;
 	u32 max_rounds 	= 32;

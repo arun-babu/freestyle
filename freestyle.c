@@ -161,11 +161,13 @@ static void freestyle_hashsetup (
 	x->hash_interval = hash_interval;
 }
 
-static freestyle_hash_t freestyle_hash (
-	const	u32 			output[16],
-	const 	freestyle_hash_t 	previous_hash,
-	const	u32			rounds)
+static u8 freestyle_hash (
+	const	u32 	output[16],
+	const 	u8	previous_hash,
+	const	u16	rounds)
 {
+	u8  hash;
+
 	u32 temp1 = rounds;
 	u32 temp2 = previous_hash;
 
@@ -174,20 +176,22 @@ static freestyle_hash_t freestyle_hash (
 	AXR (temp1, output[ 9], temp2,  8);
 	AXR (temp2, output[12], temp1,  7);
 
-	return (freestyle_hash_t) XOR(temp1 & 0xFFFF, temp1 >> 16);
+	hash = temp1 & 0xFF;
+
+	return hash;
 }
 
 static u32 freestyle_process_block (
-		freestyle_ctx		*x,	
-	const 	u8 			*plaintext,
-		u8 			*ciphertext,
-		u8 			bytes,
-		freestyle_hash_t	*expected_hash,
-	const 	bool			do_encryption)
+		freestyle_ctx	*x,	
+	const 	u8 		*plaintext,
+		u8 		*ciphertext,
+		u8 		bytes,
+		u8		*expected_hash,
+	const 	bool		do_encryption)
 {
 	u32 	i, r;
 
-	freestyle_hash_t hash = 0;
+	u8 	hash = 0;
 
 	u32 	output32[16];
 
@@ -198,7 +202,7 @@ static u32 freestyle_process_block (
 
 	bool do_decryption = ! do_encryption;
 
-	bool hash_collided [MAX_HASH_VALUE];
+	bool hash_collided [MAX_HASH_VALUES];
 
 	memset (hash_collided, false, sizeof(hash_collided));
 
@@ -289,8 +293,8 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	}
 
 	/* set sane values for initalization */
-	x->min_rounds 			= 12;
-	x->max_rounds 			= 36;
+	x->min_rounds 			= 8;
+	x->max_rounds 			= 32;
 	x->hash_interval 		= 1;
 	x->num_precomputed_rounds 	= 4;
 
@@ -414,8 +418,8 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 				UINT32_MAX : (u32) ((1 << x->pepper_bits) - 1); 
 
 	/* set sane values for initalization */
-	x->min_rounds 			= 12;
-	x->max_rounds 			= 36;
+	x->min_rounds 			= 8;
+	x->max_rounds 			= 32;
 	x->hash_interval 		= 1;
 	x->num_precomputed_rounds 	= 4;
 
@@ -512,7 +516,7 @@ static void freestyle_init_common (
 	const	u8 		num_init_hashes)
 {	
 	assert (min_rounds >= 1);
-	assert (max_rounds <= 65536);
+	assert (max_rounds <= 256);
 
 	assert (min_rounds <= max_rounds);
 
@@ -586,17 +590,17 @@ void freestyle_init_encrypt_with_pepper (
 }
 
 void freestyle_init_decrypt (
-		freestyle_ctx 		*x,
-	const 	u8 			*key,
-	const 	u16			key_length_bits,
-	const 	u8 			*iv,
-	const 	u32 			min_rounds,
-	const	u32			max_rounds,
-	const	u8			num_precomputed_rounds,
-	const	u32 			hash_interval,
-	const	u8 			pepper_bits,
-	const	u8 			num_init_hashes,
-	const	freestyle_hash_t 	*init_hash)
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u16		key_length_bits,
+	const 	u8 		*iv,
+	const 	u32 		min_rounds,
+	const	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const	u32 		hash_interval,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
+	const	u8 		*init_hash)
 {	
 	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, 
 				max_rounds, num_precomputed_rounds, 
@@ -615,18 +619,18 @@ void freestyle_init_decrypt (
 }
 
 void freestyle_init_decrypt_with_pepper (
-		freestyle_ctx 		*x,
-	const 	u8 			*key,
-	const 	u16			key_length_bits,
-	const 	u8 			*iv,
-	const 	u32 			min_rounds,
-	const	u32			max_rounds,
-	const	u8			num_precomputed_rounds,
-	const	u32 			hash_interval,
-	const	u8 			pepper_bits,
-	const	u8 			num_init_hashes,
-	const	u32 			pepper,
-	const	freestyle_hash_t	*init_hash)
+		freestyle_ctx 	*x,
+	const 	u8 		*key,
+	const 	u16		key_length_bits,
+	const 	u8 		*iv,
+	const 	u32 		min_rounds,
+	const	u32		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const	u32 		hash_interval,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
+	const	u32 		pepper,
+	const	u8 		*init_hash)
 {	
 	freestyle_init_common (x, key, key_length_bits, iv, min_rounds, 
 				max_rounds, num_precomputed_rounds, 
@@ -645,11 +649,11 @@ void freestyle_init_decrypt_with_pepper (
 }
 	
 int freestyle_process (
-		freestyle_ctx 		*x,
-	const 	u8 			*plaintext,
-		u8 			*ciphertext,
-		u32 			bytes,
-		freestyle_hash_t	*hash,
+		freestyle_ctx 	*x,
+	const 	u8 		*plaintext,
+		u8 		*ciphertext,
+		u32 		bytes,
+		u8		*hash,
 	const 	bool 		do_encryption)
 {
 	u32 	i	= 0;

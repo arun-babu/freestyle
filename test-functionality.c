@@ -18,7 +18,7 @@ int main ()
 	u8 plaintext [MSG_LEN];
 	u8 ciphertext[MSG_LEN];
 
-	u16 expected_hash [MSG_LEN/64 + 1];
+	u8 expected_hash [MSG_LEN/64 + 1];
 
 	u32 min_rounds 	= 8;
 	u32 max_rounds 	= 32;
@@ -34,11 +34,11 @@ int main ()
 	u16 total_tests = sizeof(test_init_hash)/sizeof(test_init_hash[0]);
 
 	for (i = 0; i < 32; ++i) {
-		key[i] = 0x0; 
+		key[i] = i; 
 	}
 
 	for (i = 0; i < 12; ++i) {
-		iv[i] = 0xF; 
+		iv[i] = i; 
 	}
 
 	for (i = 0; i < MSG_LEN; ++i) {

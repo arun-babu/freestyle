@@ -32,28 +32,28 @@
 	x->input_COUNTER = PLUSONE(x->input_COUNTER);
 
 #define HAS_COLLISION(hash,hash_collided) \
-	(hash_collided[hash >> 6] & ((u64)1 << (hash & 0x3F)))
+	(hash_collided[hash >> 5] & (1 << (hash & 0x1F)))
 
 #define SET_COLLIDED(hash,hash_collided) \
-	hash_collided[hash >> 6] |= ((u64)1 << (hash & 0x3F));
+	hash_collided[hash >> 5] |= (1 << (hash & 0x1F));
 
-#define COMPUTE_HASH(x,hash,rounds) {					\
-									\
-	temp1 	= rounds;						\
-	temp2 	= hash;							\
-									\
-	AXR (temp1, output32_03, temp2, 16);				\
-	AXR (temp2, output32_06, temp1, 12);				\
-	AXR (temp1, output32_09, temp2,  8);				\
-	AXR (temp2, output32_12, temp1,  7);				\
-									\
-	hash = (freestyle_hash_t) XOR(temp1 & 0xFFFF, temp1 >> 16);	\
-									\
-	while (HAS_COLLISION(hash, hash_collided)) {			\
-		++hash;							\
-	}								\
-									\
-	SET_COLLIDED(hash,hash_collided)				\
+#define COMPUTE_HASH(x,hash,rounds) {				\
+								\
+	temp1 	= rounds;					\
+	temp2 	= hash;						\
+								\
+	AXR (temp1, output32_03, temp2, 16);			\
+	AXR (temp2, output32_06, temp1, 12);			\
+	AXR (temp1, output32_09, temp2,  8);			\
+	AXR (temp2, output32_12, temp1,  7);			\
+								\
+	hash = temp1 & 0xFF;					\
+								\
+	while (HAS_COLLISION(hash, hash_collided)) {		\
+		++hash;						\
+	}							\
+								\
+	SET_COLLIDED(hash,hash_collided)			\
 } 
 
 #define FREESTYLE_DOUBLE_ROUND() {				\
@@ -172,7 +172,7 @@
 }
 
 #define freestyle_random_round_number(x,r) {				\
-	r = (u16) (							\
+	r = (							\
 		(x->min_rounds						\
 		+ arc4random() % (					\
 		       x->max_rounds - x->min_rounds + x->hash_interval	\

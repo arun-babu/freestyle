@@ -48,6 +48,12 @@
 	AXR (temp2, output32_12, temp1,  7);				\
 									\
 	hash = (freestyle_hash_t) XOR(temp1 & 0xFFFF, temp1 >> 16);	\
+									\
+	while (HAS_COLLISION(hash, hash_collided)) {			\
+		++hash;							\
+	}								\
+									\
+	SET_COLLIDED(hash,hash_collided)				\
 } 
 
 #define FREESTYLE_DOUBLE_ROUND() {				\
@@ -168,7 +174,7 @@
 #define freestyle_random_round_number(x,r) {				\
 	r = (u16) (							\
 		(x->min_rounds						\
-		+ arc4random_uniform (					\
+		+ arc4random() % (					\
 		       x->max_rounds - x->min_rounds + x->hash_interval	\
 		  )							\
 		) / x->hash_interval					\

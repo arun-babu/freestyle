@@ -170,12 +170,6 @@ static u32 freestyle_encrypt_block (
 		if (r >= x->min_rounds && r % x->hash_interval == 0)
 		{
 			COMPUTE_HASH(x,hash,r)
-
-			while (HAS_COLLISION(hash, hash_collided)) {
-				++hash;
-			}
-
-			SET_COLLIDED(hash,hash_collided)
 		}
 	}
 
@@ -235,12 +229,6 @@ static u32 freestyle_decrypt_block (
 		if (r >= x->min_rounds && r % x->hash_interval == 0)
 		{
 			COMPUTE_HASH(x,hash,r)
-
-			while (HAS_COLLISION(hash, hash_collided)) {
-				++hash;
-			}
-
-			SET_COLLIDED(hash,hash_collided)
 
 			if (hash == *expected_hash) {
 				break;
@@ -707,12 +695,6 @@ void freestyle_encrypt (
 			if (r >= x->min_rounds && r % x->hash_interval == 0)
 			{
 				COMPUTE_HASH(x,hash,r)
-
-				while (HAS_COLLISION(hash, hash_collided)) {
-					++hash;
-				}
-
-				SET_COLLIDED(hash,hash_collided)
 			}
 		}
 
@@ -849,12 +831,6 @@ void freestyle_decrypt (
 			if (r >= x->min_rounds && r % x->hash_interval == 0)
 			{
 				COMPUTE_HASH(x,hash,r)
-
-				while (HAS_COLLISION(hash, hash_collided)) {
-					++hash;
-				}
-
-				SET_COLLIDED(hash,hash_collided)
 
 				if (hash == expected_hash[block]) {
 					break;

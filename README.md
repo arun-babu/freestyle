@@ -6,7 +6,7 @@ Freestyle uses the concept of hash based halting condition where a decryption at
 
 Freestyle provides the possibility of generating 2^256 different ciphertexts for a given key, nonce, and message; thus resisting key and nonce reuse attacks. Due to its inherent random behavior, Freestyle makes cryptanalysis through known-plaintext, chosen-plaintext, and chosen-ciphertext attacks difficult in practice. 
 
-On the other hand, Freestyle has costlier cipher initialization process, typically generates 3.125% larger ciphertext, and was found to be 1.6 to 3.2 times slower than ChaCha20. Freestyle is suitable for applications that favor ciphertext randomization and resistance to key-guessing and key reuse attacks over performance and ciphertext size. Freestyle is ideal for applications where ciphertext can be assumed to be in full control of an adversary, and an offline key-guessing attack can be carried out. 
+On the other hand, Freestyle has costlier cipher initialization process, typically generates 1.56% larger ciphertext, and was found to be 1.6 to 3.2 times slower than ChaCha20. Freestyle is suitable for applications that favor ciphertext randomization and resistance to key-guessing and key reuse attacks over performance and ciphertext size. Freestyle is ideal for applications where ciphertext can be assumed to be in full control of an adversary, and an offline key-guessing attack can be carried out. 
 
 The main aim of Freestyle is to improve the Key Guessing Penalty (KGP), which is defined as:
 

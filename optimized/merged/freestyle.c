@@ -629,8 +629,6 @@ void freestyle_encrypt (
 
 	u32 	block 	= 0;
 
-	u8 	bytes_to_process;
-
 	u8	hash;
 
 	u16 	r;
@@ -638,7 +636,7 @@ void freestyle_encrypt (
 
 	u32 	temp1, temp2;
 
-	u8	output8[64];
+	u8	keystream[64];
 
 	register u32
 		output32_00, output32_01, output32_02, output32_03,
@@ -651,7 +649,6 @@ void freestyle_encrypt (
 	while (bytes > 0)
 	{
 		hash = 0;
-		bytes_to_process = bytes >= 64 ? 64 : bytes;
 		
 		memset (hash_collided, 0, sizeof(hash_collided));
 	
@@ -722,38 +719,38 @@ void freestyle_encrypt (
 		output32_14 = PLUS(output32_14, x->input_IV1);
 		output32_15 = PLUS(output32_15, x->input_IV2);
 
-		U32TO8_LITTLE (output8 + 4 * 0,  output32_00);
-		U32TO8_LITTLE (output8 + 4 * 1,  output32_01);
-		U32TO8_LITTLE (output8 + 4 * 2,  output32_02);
-		U32TO8_LITTLE (output8 + 4 * 3,  output32_03);
-		U32TO8_LITTLE (output8 + 4 * 4,  output32_04);
-		U32TO8_LITTLE (output8 + 4 * 5,  output32_05);
-		U32TO8_LITTLE (output8 + 4 * 6,  output32_06);
-		U32TO8_LITTLE (output8 + 4 * 7,  output32_07);
-		U32TO8_LITTLE (output8 + 4 * 8,  output32_08);
-		U32TO8_LITTLE (output8 + 4 * 9,  output32_09);
-		U32TO8_LITTLE (output8 + 4 * 10, output32_10);
-		U32TO8_LITTLE (output8 + 4 * 11, output32_11);
-		U32TO8_LITTLE (output8 + 4 * 12, output32_12);
-		U32TO8_LITTLE (output8 + 4 * 13, output32_13);
-		U32TO8_LITTLE (output8 + 4 * 14, output32_14);
-		U32TO8_LITTLE (output8 + 4 * 15, output32_15);
+		U32TO8_LITTLE (keystream + 4 * 0,  output32_00);
+		U32TO8_LITTLE (keystream + 4 * 1,  output32_01);
+		U32TO8_LITTLE (keystream + 4 * 2,  output32_02);
+		U32TO8_LITTLE (keystream + 4 * 3,  output32_03);
+		U32TO8_LITTLE (keystream + 4 * 4,  output32_04);
+		U32TO8_LITTLE (keystream + 4 * 5,  output32_05);
+		U32TO8_LITTLE (keystream + 4 * 6,  output32_06);
+		U32TO8_LITTLE (keystream + 4 * 7,  output32_07);
+		U32TO8_LITTLE (keystream + 4 * 8,  output32_08);
+		U32TO8_LITTLE (keystream + 4 * 9,  output32_09);
+		U32TO8_LITTLE (keystream + 4 * 10, output32_10);
+		U32TO8_LITTLE (keystream + 4 * 11, output32_11);
+		U32TO8_LITTLE (keystream + 4 * 12, output32_12);
+		U32TO8_LITTLE (keystream + 4 * 13, output32_13);
+		U32TO8_LITTLE (keystream + 4 * 14, output32_14);
+		U32TO8_LITTLE (keystream + 4 * 15, output32_15);
                                          
-		if (bytes_to_process == 64)                 
+		if (bytes >= 64)                 
 		{
-			FREESTYLE_XOR_64(plaintext,ciphertext,output8)
+			FREESTYLE_XOR_64(plaintext,ciphertext,keystream)
 		}
 		else
 		{
 			for (i = 0; i < bytes; ++i) {
-				ciphertext [i] = XOR(plaintext[i],output8[i]);
+				ciphertext [i] = plaintext[i] ^ keystream[i];
 			}
 		}
 
-		plaintext  += bytes_to_process;
-		ciphertext += bytes_to_process;
+		plaintext  += 64;
+		ciphertext += 64;
 
-		bytes -= bytes_to_process;
+		bytes -= 64;
 	
         	++block;
 
@@ -772,15 +769,13 @@ void freestyle_decrypt (
 
 	u32 	block 	= 0;
 
-	u8 	bytes_to_process;
-
 	u8	hash;
 
 	u16 	r;
 
 	u32 	temp1, temp2;
 
-	u8	output8[64];
+	u8	keystream[64];
 
 	register u32 
 		output32_00, output32_01, output32_02, output32_03,
@@ -793,7 +788,6 @@ void freestyle_decrypt (
 	while (bytes > 0)
 	{
 		hash = 0;
-		bytes_to_process = bytes >= 64 ? 64 : bytes;
 
 		memset (hash_collided, 0, sizeof(hash_collided));
 
@@ -858,38 +852,38 @@ void freestyle_decrypt (
 		output32_14 = PLUS(output32_14, x->input_IV1);
 		output32_15 = PLUS(output32_15, x->input_IV2);
 
-		U32TO8_LITTLE (output8 + 4 * 0,  output32_00);
-		U32TO8_LITTLE (output8 + 4 * 1,  output32_01);
-		U32TO8_LITTLE (output8 + 4 * 2,  output32_02);
-		U32TO8_LITTLE (output8 + 4 * 3,  output32_03);
-		U32TO8_LITTLE (output8 + 4 * 4,  output32_04);
-		U32TO8_LITTLE (output8 + 4 * 5,  output32_05);
-		U32TO8_LITTLE (output8 + 4 * 6,  output32_06);
-		U32TO8_LITTLE (output8 + 4 * 7,  output32_07);
-		U32TO8_LITTLE (output8 + 4 * 8,  output32_08);
-		U32TO8_LITTLE (output8 + 4 * 9,  output32_09);
-		U32TO8_LITTLE (output8 + 4 * 10, output32_10);
-		U32TO8_LITTLE (output8 + 4 * 11, output32_11);
-		U32TO8_LITTLE (output8 + 4 * 12, output32_12);
-		U32TO8_LITTLE (output8 + 4 * 13, output32_13);
-		U32TO8_LITTLE (output8 + 4 * 14, output32_14);
-		U32TO8_LITTLE (output8 + 4 * 15, output32_15);
+		U32TO8_LITTLE (keystream + 4 * 0,  output32_00);
+		U32TO8_LITTLE (keystream + 4 * 1,  output32_01);
+		U32TO8_LITTLE (keystream + 4 * 2,  output32_02);
+		U32TO8_LITTLE (keystream + 4 * 3,  output32_03);
+		U32TO8_LITTLE (keystream + 4 * 4,  output32_04);
+		U32TO8_LITTLE (keystream + 4 * 5,  output32_05);
+		U32TO8_LITTLE (keystream + 4 * 6,  output32_06);
+		U32TO8_LITTLE (keystream + 4 * 7,  output32_07);
+		U32TO8_LITTLE (keystream + 4 * 8,  output32_08);
+		U32TO8_LITTLE (keystream + 4 * 9,  output32_09);
+		U32TO8_LITTLE (keystream + 4 * 10, output32_10);
+		U32TO8_LITTLE (keystream + 4 * 11, output32_11);
+		U32TO8_LITTLE (keystream + 4 * 12, output32_12);
+		U32TO8_LITTLE (keystream + 4 * 13, output32_13);
+		U32TO8_LITTLE (keystream + 4 * 14, output32_14);
+		U32TO8_LITTLE (keystream + 4 * 15, output32_15);
 
-		if (bytes_to_process == 64)                 
+		if (bytes >= 64)                 
 		{
-			FREESTYLE_XOR_64(ciphertext,plaintext,output8)
+			FREESTYLE_XOR_64(ciphertext,plaintext,keystream)
 		}
 		else
 		{
 			for (i = 0; i < bytes; ++i) {
-				plaintext [i] = XOR(ciphertext[i],output8[i]);
+				plaintext [i] = ciphertext[i] ^ keystream[i];
 			}
 		}
 
-		plaintext  += bytes_to_process;
-		ciphertext += bytes_to_process;
+		plaintext  += 64;
+		ciphertext += 64;
 
-		bytes -= bytes_to_process;
+		bytes -= 64;
 	
 		++block;
 

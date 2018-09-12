@@ -172,10 +172,10 @@
 }
 
 #define freestyle_random_round_number(x,r) {				\
-	r = (							\
+	r = (								\
 		(x->min_rounds						\
-		+ arc4random() % (					\
-		       x->max_rounds - x->min_rounds + x->hash_interval	\
+			+ arc4random() % (				\
+		       	x->max_rounds - x->min_rounds + x->hash_interval\
 		  )							\
 		) / x->hash_interval					\
 	) * x->hash_interval; 						\

@@ -71,7 +71,7 @@ int main ()
 		fflush(stdout);
 		assert(0 == memcmp(plaintext,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@",64));
 
-		printf("Known ciphertext test %d OK\n",i);
+		printf("Known ciphertext test %d OK\n",i+1);
 	}
 
 	printf("----------------------------------------------\n");
@@ -124,7 +124,7 @@ int main ()
 		fflush(stdout);
 		assert (0 == memcmp (plaintext, message, MSG_LEN));
 
-		printf("Encrypt-Decrypt test %d OK\n",i);
+		printf("Encrypt-Decrypt test %d OK\n",i+1);
 	}
 
 	printf("----------------------------------------------\n");
@@ -181,7 +181,7 @@ int main ()
 		fflush(stdout);
 		assert (0 == memcmp (plaintext, message, MSG_LEN));
 
-		printf("Encrypt-Decrypt (with known pepper) test %d OK\n",i);
+		printf("Encrypt-Decrypt (with known pepper) test %d OK\n",i+1);
 	}
 
 	printf("\n");

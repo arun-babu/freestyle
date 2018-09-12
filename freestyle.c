@@ -244,16 +244,16 @@ static u32 freestyle_process_block (
 
 	if (! init)
 	{
-		u8 output8 [64];
+		u8 keystream [64];
 
 		for (i = 0; i < 16; ++i)
 		{
 			output32 [i] = PLUS(output32[i], x->input[i]);
-	     		U32TO8_LITTLE (output8 + 4 * i, output32[i]);
+	     		U32TO8_LITTLE (keystream + 4 * i, output32[i]);
 		}
 
 		for (i = 0; i < bytes; ++i) {
-			ciphertext [i] = plaintext[i] ^ output8[i];
+			ciphertext [i] = plaintext[i] ^ keystream[i];
 		}
         }
 

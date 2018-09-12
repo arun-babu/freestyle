@@ -131,25 +131,25 @@ static u32 freestyle_encrypt_block (
 
 	u32 hash_collided [8];
 
-	u32 	output32_00 = x->input_CONSTANT0,
-		output32_01 = x->input_CONSTANT1,
-		output32_02 = x->input_CONSTANT2,
-		output32_03 = x->input_CONSTANT3,
+	u32 	output_00 = x->input_CONSTANT0,
+		output_01 = x->input_CONSTANT1,
+		output_02 = x->input_CONSTANT2,
+		output_03 = x->input_CONSTANT3,
 
-		output32_04 = x->input_KEY0,
-		output32_05 = x->input_KEY1,
-		output32_06 = x->input_KEY2,
-		output32_07 = x->input_KEY3,
-		output32_08 = x->input_KEY4,
-		output32_09 = x->input_KEY5,
-		output32_10 = x->input_KEY6,
-		output32_11 = x->input_KEY7,
+		output_04 = x->input_KEY0,
+		output_05 = x->input_KEY1,
+		output_06 = x->input_KEY2,
+		output_07 = x->input_KEY3,
+		output_08 = x->input_KEY4,
+		output_09 = x->input_KEY5,
+		output_10 = x->input_KEY6,
+		output_11 = x->input_KEY7,
 
-		output32_12 = x->input_COUNTER ^ x->rand[0],
+		output_12 = x->input_COUNTER ^ x->rand[0],
 
-		output32_13 = x->input_IV0,
-		output32_14 = x->input_IV1,
-		output32_15 = x->input_IV2;
+		output_13 = x->input_IV0,
+		output_14 = x->input_IV1,
+		output_15 = x->input_IV2;
 	
 	memset (hash_collided, 0, sizeof(hash_collided));
 
@@ -193,25 +193,25 @@ static u32 freestyle_decrypt_block (
 
 	u32 hash_collided [8];
 
-	u32 	output32_00 = x->input_CONSTANT0,
-		output32_01 = x->input_CONSTANT1,
-		output32_02 = x->input_CONSTANT2,
-		output32_03 = x->input_CONSTANT3,
+	u32 	output_00 = x->input_CONSTANT0,
+		output_01 = x->input_CONSTANT1,
+		output_02 = x->input_CONSTANT2,
+		output_03 = x->input_CONSTANT3,
 
-		output32_04 = x->input_KEY0,
-		output32_05 = x->input_KEY1,
-		output32_06 = x->input_KEY2,
-		output32_07 = x->input_KEY3,
-		output32_08 = x->input_KEY4,
-		output32_09 = x->input_KEY5,
-		output32_10 = x->input_KEY6,
-		output32_11 = x->input_KEY7,
+		output_04 = x->input_KEY0,
+		output_05 = x->input_KEY1,
+		output_06 = x->input_KEY2,
+		output_07 = x->input_KEY3,
+		output_08 = x->input_KEY4,
+		output_09 = x->input_KEY5,
+		output_10 = x->input_KEY6,
+		output_11 = x->input_KEY7,
 
-		output32_12 = x->input_COUNTER ^ x->rand[0],
+		output_12 = x->input_COUNTER ^ x->rand[0],
 
-		output32_13 = x->input_IV0,
-		output32_14 = x->input_IV1,
-		output32_15 = x->input_IV2;
+		output_13 = x->input_IV0,
+		output_14 = x->input_IV1,
+		output_15 = x->input_IV2;
 
 	memset (hash_collided, 0, sizeof(hash_collided));
 
@@ -639,10 +639,10 @@ void freestyle_encrypt (
 	u8	keystream[64];
 
 	register u32
-		output32_00, output32_01, output32_02, output32_03,
-		output32_04, output32_05, output32_06, output32_07,
-		output32_08, output32_09, output32_10, output32_11,
-		output32_12, output32_13, output32_14, output32_15;
+		output_00, output_01, output_02, output_03,
+		output_04, output_05, output_06, output_07,
+		output_08, output_09, output_10, output_11,
+		output_12, output_13, output_14, output_15;
 
 	u32 hash_collided [8];
 
@@ -652,25 +652,25 @@ void freestyle_encrypt (
 		
 		memset (hash_collided, 0, sizeof(hash_collided));
 	
-		output32_00 = x->input_CONSTANT0;
-		output32_01 = x->input_CONSTANT1;
-		output32_02 = x->input_CONSTANT2;
-		output32_03 = x->input_CONSTANT3;
+		output_00 = x->input_CONSTANT0;
+		output_01 = x->input_CONSTANT1;
+		output_02 = x->input_CONSTANT2;
+		output_03 = x->input_CONSTANT3;
 
-		output32_04 = x->input_KEY0;
-		output32_05 = x->input_KEY1;
-		output32_06 = x->input_KEY2;
-		output32_07 = x->input_KEY3;
-		output32_08 = x->input_KEY4;
-		output32_09 = x->input_KEY5;
-		output32_10 = x->input_KEY6;
-		output32_11 = x->input_KEY7;
+		output_04 = x->input_KEY0;
+		output_05 = x->input_KEY1;
+		output_06 = x->input_KEY2;
+		output_07 = x->input_KEY3;
+		output_08 = x->input_KEY4;
+		output_09 = x->input_KEY5;
+		output_10 = x->input_KEY6;
+		output_11 = x->input_KEY7;
 
-		output32_12 = x->input_COUNTER ^ x->rand[0];
+		output_12 = x->input_COUNTER ^ x->rand[0];
 
-		output32_13 = x->input_IV0;
-		output32_14 = x->input_IV1;
-		output32_15 = x->input_IV2;
+		output_13 = x->input_IV0;
+		output_14 = x->input_IV1;
+		output_15 = x->input_IV2;
 
 		/* Generate a random round */ 
 		freestyle_random_round_number(x,rounds);
@@ -699,42 +699,42 @@ void freestyle_encrypt (
 
 	    	expected_hash[block] = hash; 
 
-		output32_00 = PLUS(output32_00, x->input_CONSTANT0);
-		output32_01 = PLUS(output32_01, x->input_CONSTANT1);
-		output32_02 = PLUS(output32_02, x->input_CONSTANT2);
-		output32_03 = PLUS(output32_03, x->input_CONSTANT3);
+		output_00 = PLUS(output_00, x->input_CONSTANT0);
+		output_01 = PLUS(output_01, x->input_CONSTANT1);
+		output_02 = PLUS(output_02, x->input_CONSTANT2);
+		output_03 = PLUS(output_03, x->input_CONSTANT3);
 
-		output32_04 = PLUS(output32_04, x->input_KEY0);
-		output32_05 = PLUS(output32_05, x->input_KEY1);
-		output32_06 = PLUS(output32_06, x->input_KEY2);
-		output32_07 = PLUS(output32_07, x->input_KEY3);
-		output32_08 = PLUS(output32_08, x->input_KEY4);
-		output32_09 = PLUS(output32_09, x->input_KEY5);
-		output32_10 = PLUS(output32_10, x->input_KEY6);
-		output32_11 = PLUS(output32_11, x->input_KEY7);
+		output_04 = PLUS(output_04, x->input_KEY0);
+		output_05 = PLUS(output_05, x->input_KEY1);
+		output_06 = PLUS(output_06, x->input_KEY2);
+		output_07 = PLUS(output_07, x->input_KEY3);
+		output_08 = PLUS(output_08, x->input_KEY4);
+		output_09 = PLUS(output_09, x->input_KEY5);
+		output_10 = PLUS(output_10, x->input_KEY6);
+		output_11 = PLUS(output_11, x->input_KEY7);
 
-		output32_12 = PLUS(output32_12, x->input_COUNTER);
+		output_12 = PLUS(output_12, x->input_COUNTER);
 
-		output32_13 = PLUS(output32_13, x->input_IV0);
-		output32_14 = PLUS(output32_14, x->input_IV1);
-		output32_15 = PLUS(output32_15, x->input_IV2);
+		output_13 = PLUS(output_13, x->input_IV0);
+		output_14 = PLUS(output_14, x->input_IV1);
+		output_15 = PLUS(output_15, x->input_IV2);
 
-		U32TO8_LITTLE (keystream + 4 * 0,  output32_00);
-		U32TO8_LITTLE (keystream + 4 * 1,  output32_01);
-		U32TO8_LITTLE (keystream + 4 * 2,  output32_02);
-		U32TO8_LITTLE (keystream + 4 * 3,  output32_03);
-		U32TO8_LITTLE (keystream + 4 * 4,  output32_04);
-		U32TO8_LITTLE (keystream + 4 * 5,  output32_05);
-		U32TO8_LITTLE (keystream + 4 * 6,  output32_06);
-		U32TO8_LITTLE (keystream + 4 * 7,  output32_07);
-		U32TO8_LITTLE (keystream + 4 * 8,  output32_08);
-		U32TO8_LITTLE (keystream + 4 * 9,  output32_09);
-		U32TO8_LITTLE (keystream + 4 * 10, output32_10);
-		U32TO8_LITTLE (keystream + 4 * 11, output32_11);
-		U32TO8_LITTLE (keystream + 4 * 12, output32_12);
-		U32TO8_LITTLE (keystream + 4 * 13, output32_13);
-		U32TO8_LITTLE (keystream + 4 * 14, output32_14);
-		U32TO8_LITTLE (keystream + 4 * 15, output32_15);
+		U32TO8_LITTLE (keystream + 4 * 0,  output_00);
+		U32TO8_LITTLE (keystream + 4 * 1,  output_01);
+		U32TO8_LITTLE (keystream + 4 * 2,  output_02);
+		U32TO8_LITTLE (keystream + 4 * 3,  output_03);
+		U32TO8_LITTLE (keystream + 4 * 4,  output_04);
+		U32TO8_LITTLE (keystream + 4 * 5,  output_05);
+		U32TO8_LITTLE (keystream + 4 * 6,  output_06);
+		U32TO8_LITTLE (keystream + 4 * 7,  output_07);
+		U32TO8_LITTLE (keystream + 4 * 8,  output_08);
+		U32TO8_LITTLE (keystream + 4 * 9,  output_09);
+		U32TO8_LITTLE (keystream + 4 * 10, output_10);
+		U32TO8_LITTLE (keystream + 4 * 11, output_11);
+		U32TO8_LITTLE (keystream + 4 * 12, output_12);
+		U32TO8_LITTLE (keystream + 4 * 13, output_13);
+		U32TO8_LITTLE (keystream + 4 * 14, output_14);
+		U32TO8_LITTLE (keystream + 4 * 15, output_15);
                                          
 		if (bytes >= 64)                 
 		{
@@ -778,10 +778,10 @@ void freestyle_decrypt (
 	u8	keystream[64];
 
 	register u32 
-		output32_00, output32_01, output32_02, output32_03,
-		output32_04, output32_05, output32_06, output32_07,
-		output32_08, output32_09, output32_10, output32_11,
-		output32_12, output32_13, output32_14, output32_15;
+		output_00, output_01, output_02, output_03,
+		output_04, output_05, output_06, output_07,
+		output_08, output_09, output_10, output_11,
+		output_12, output_13, output_14, output_15;
 
 	u32 hash_collided [8];
 
@@ -791,25 +791,25 @@ void freestyle_decrypt (
 
 		memset (hash_collided, 0, sizeof(hash_collided));
 
-		output32_00 = x->input_CONSTANT0;
-		output32_01 = x->input_CONSTANT1;
-		output32_02 = x->input_CONSTANT2;
-		output32_03 = x->input_CONSTANT3;
+		output_00 = x->input_CONSTANT0;
+		output_01 = x->input_CONSTANT1;
+		output_02 = x->input_CONSTANT2;
+		output_03 = x->input_CONSTANT3;
 
-		output32_04 = x->input_KEY0;
-		output32_05 = x->input_KEY1;
-		output32_06 = x->input_KEY2;
-		output32_07 = x->input_KEY3;
-		output32_08 = x->input_KEY4;
-		output32_09 = x->input_KEY5;
-		output32_10 = x->input_KEY6;
-		output32_11 = x->input_KEY7;
+		output_04 = x->input_KEY0;
+		output_05 = x->input_KEY1;
+		output_06 = x->input_KEY2;
+		output_07 = x->input_KEY3;
+		output_08 = x->input_KEY4;
+		output_09 = x->input_KEY5;
+		output_10 = x->input_KEY6;
+		output_11 = x->input_KEY7;
 
-		output32_12 = x->input_COUNTER ^ x->rand[0];
+		output_12 = x->input_COUNTER ^ x->rand[0];
 
-		output32_13 = x->input_IV0;
-		output32_14 = x->input_IV1;
-		output32_15 = x->input_IV2;
+		output_13 = x->input_IV0;
+		output_14 = x->input_IV1;
+		output_15 = x->input_IV2;
 
 		for(r = x->num_precomputed_rounds + 1; r <= x->max_rounds; ++r)
 		{
@@ -832,42 +832,42 @@ void freestyle_decrypt (
 			}
 		}
 
-		output32_00 = PLUS(output32_00, x->input_CONSTANT0);
-		output32_01 = PLUS(output32_01, x->input_CONSTANT1);
-		output32_02 = PLUS(output32_02, x->input_CONSTANT2);
-		output32_03 = PLUS(output32_03, x->input_CONSTANT3);
+		output_00 = PLUS(output_00, x->input_CONSTANT0);
+		output_01 = PLUS(output_01, x->input_CONSTANT1);
+		output_02 = PLUS(output_02, x->input_CONSTANT2);
+		output_03 = PLUS(output_03, x->input_CONSTANT3);
 
-		output32_04 = PLUS(output32_04, x->input_KEY0);
-		output32_05 = PLUS(output32_05, x->input_KEY1);
-		output32_06 = PLUS(output32_06, x->input_KEY2);
-		output32_07 = PLUS(output32_07, x->input_KEY3);
-		output32_08 = PLUS(output32_08, x->input_KEY4);
-		output32_09 = PLUS(output32_09, x->input_KEY5);
-		output32_10 = PLUS(output32_10, x->input_KEY6);
-		output32_11 = PLUS(output32_11, x->input_KEY7);
+		output_04 = PLUS(output_04, x->input_KEY0);
+		output_05 = PLUS(output_05, x->input_KEY1);
+		output_06 = PLUS(output_06, x->input_KEY2);
+		output_07 = PLUS(output_07, x->input_KEY3);
+		output_08 = PLUS(output_08, x->input_KEY4);
+		output_09 = PLUS(output_09, x->input_KEY5);
+		output_10 = PLUS(output_10, x->input_KEY6);
+		output_11 = PLUS(output_11, x->input_KEY7);
 
-		output32_12 = PLUS(output32_12, x->input_COUNTER);
+		output_12 = PLUS(output_12, x->input_COUNTER);
 
-		output32_13 = PLUS(output32_13, x->input_IV0);
-		output32_14 = PLUS(output32_14, x->input_IV1);
-		output32_15 = PLUS(output32_15, x->input_IV2);
+		output_13 = PLUS(output_13, x->input_IV0);
+		output_14 = PLUS(output_14, x->input_IV1);
+		output_15 = PLUS(output_15, x->input_IV2);
 
-		U32TO8_LITTLE (keystream + 4 * 0,  output32_00);
-		U32TO8_LITTLE (keystream + 4 * 1,  output32_01);
-		U32TO8_LITTLE (keystream + 4 * 2,  output32_02);
-		U32TO8_LITTLE (keystream + 4 * 3,  output32_03);
-		U32TO8_LITTLE (keystream + 4 * 4,  output32_04);
-		U32TO8_LITTLE (keystream + 4 * 5,  output32_05);
-		U32TO8_LITTLE (keystream + 4 * 6,  output32_06);
-		U32TO8_LITTLE (keystream + 4 * 7,  output32_07);
-		U32TO8_LITTLE (keystream + 4 * 8,  output32_08);
-		U32TO8_LITTLE (keystream + 4 * 9,  output32_09);
-		U32TO8_LITTLE (keystream + 4 * 10, output32_10);
-		U32TO8_LITTLE (keystream + 4 * 11, output32_11);
-		U32TO8_LITTLE (keystream + 4 * 12, output32_12);
-		U32TO8_LITTLE (keystream + 4 * 13, output32_13);
-		U32TO8_LITTLE (keystream + 4 * 14, output32_14);
-		U32TO8_LITTLE (keystream + 4 * 15, output32_15);
+		U32TO8_LITTLE (keystream + 4 * 0,  output_00);
+		U32TO8_LITTLE (keystream + 4 * 1,  output_01);
+		U32TO8_LITTLE (keystream + 4 * 2,  output_02);
+		U32TO8_LITTLE (keystream + 4 * 3,  output_03);
+		U32TO8_LITTLE (keystream + 4 * 4,  output_04);
+		U32TO8_LITTLE (keystream + 4 * 5,  output_05);
+		U32TO8_LITTLE (keystream + 4 * 6,  output_06);
+		U32TO8_LITTLE (keystream + 4 * 7,  output_07);
+		U32TO8_LITTLE (keystream + 4 * 8,  output_08);
+		U32TO8_LITTLE (keystream + 4 * 9,  output_09);
+		U32TO8_LITTLE (keystream + 4 * 10, output_10);
+		U32TO8_LITTLE (keystream + 4 * 11, output_11);
+		U32TO8_LITTLE (keystream + 4 * 12, output_12);
+		U32TO8_LITTLE (keystream + 4 * 13, output_13);
+		U32TO8_LITTLE (keystream + 4 * 14, output_14);
+		U32TO8_LITTLE (keystream + 4 * 15, output_15);
 
 		if (bytes >= 64)                 
 		{

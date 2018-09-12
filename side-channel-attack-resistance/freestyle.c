@@ -215,7 +215,7 @@ static u32 freestyle_process_block (
 
 	u8 	hash = 0;
 
-	u32 	output32[16];
+	u32 	output[16];
 
 	bool init = (plaintext == NULL) || (ciphertext == NULL);
 
@@ -231,22 +231,22 @@ static u32 freestyle_process_block (
 	memset (hash_collided, false, sizeof(hash_collided));
 
 	for (i = 0; i < 16; ++i) {
-		output32 [i] = x->input [i];
+		output [i] = x->input [i];
 	}
 
 	/* modify counter */
-	output32[COUNTER] ^= x->rand[0];
+	output[COUNTER] ^= x->rand[0];
 
 	for (r = x->num_precomputed_rounds + 1; r <= rounds; ++r)
 	{
 		if (r & 1)
-			freestyle_column_round   (output32);
+			freestyle_column_round   (output);
 		else
-			freestyle_diagonal_round (output32);
+			freestyle_diagonal_round (output);
 
 		if (r >= x->min_rounds && r % x->hash_interval == 0)
 		{
-			hash = freestyle_hash (output32,hash,r);
+			hash = freestyle_hash (output,hash,r);
 
 			while (hash_collided [hash ^ random_mask]) {
 				++hash;
@@ -272,8 +272,8 @@ static u32 freestyle_process_block (
 
 		for (i = 0; i < 16; ++i)
 		{
-			output32 [i] = PLUS(output32[i], x->input[i]);
-	     		U32TO8_LITTLE (keystream + 4 * i, output32[i]);
+			output [i] = PLUS(output[i], x->input[i]);
+	     		U32TO8_LITTLE (keystream + 4 * i, output[i]);
 		}
 
 		for (i = 0; i < bytes; ++i) {

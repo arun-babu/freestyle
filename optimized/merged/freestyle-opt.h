@@ -42,10 +42,10 @@
 	temp1 	= rounds;					\
 	temp2 	= hash;						\
 								\
-	AXR (temp1, output32_03, temp2, 16);			\
-	AXR (temp2, output32_06, temp1, 12);			\
-	AXR (temp1, output32_09, temp2,  8);			\
-	AXR (temp2, output32_12, temp1,  7);			\
+	AXR (temp1, output_03, temp2, 16);			\
+	AXR (temp2, output_06, temp1, 12);			\
+	AXR (temp1, output_09, temp2,  8);			\
+	AXR (temp2, output_12, temp1,  7);			\
 								\
 	hash = temp1 & 0xFF;					\
 								\
@@ -56,30 +56,30 @@
 	SET_COLLIDED(hash,hash_collided)			\
 } 
 
-#define FREESTYLE_DOUBLE_ROUND() {				\
-	QR (output32_00, output32_04, output32_08, output32_12)	\
-	QR (output32_01, output32_05, output32_09, output32_13)	\
-	QR (output32_02, output32_06, output32_10, output32_14)	\
-	QR (output32_03, output32_07, output32_11, output32_15)	\
-								\
-	QR (output32_00, output32_05, output32_10, output32_15)	\
-	QR (output32_01, output32_06, output32_11, output32_12)	\
-	QR (output32_02, output32_07, output32_08, output32_13)	\
-	QR (output32_03, output32_04, output32_09, output32_14)	\
+#define FREESTYLE_DOUBLE_ROUND() {			\
+	QR (output_00, output_04, output_08, output_12)	\
+	QR (output_01, output_05, output_09, output_13)	\
+	QR (output_02, output_06, output_10, output_14)	\
+	QR (output_03, output_07, output_11, output_15)	\
+							\
+	QR (output_00, output_05, output_10, output_15)	\
+	QR (output_01, output_06, output_11, output_12)	\
+	QR (output_02, output_07, output_08, output_13)	\
+	QR (output_03, output_04, output_09, output_14)	\
 }
 
-#define FREESTYLE_COLUMN_ROUND() {				\
-	QR (output32_00, output32_04, output32_08, output32_12)	\
-	QR (output32_01, output32_05, output32_09, output32_13)	\
-	QR (output32_02, output32_06, output32_10, output32_14)	\
-	QR (output32_03, output32_07, output32_11, output32_15)	\
+#define FREESTYLE_COLUMN_ROUND() {			\
+	QR (output_00, output_04, output_08, output_12)	\
+	QR (output_01, output_05, output_09, output_13)	\
+	QR (output_02, output_06, output_10, output_14)	\
+	QR (output_03, output_07, output_11, output_15)	\
 }
 
-#define FREESTYLE_DIAGONAL_ROUND() {				\
-	QR (output32_00, output32_05, output32_10, output32_15)	\
-	QR (output32_01, output32_06, output32_11, output32_12)	\
-	QR (output32_02, output32_07, output32_08, output32_13)	\
-	QR (output32_03, output32_04, output32_09, output32_14)	\
+#define FREESTYLE_DIAGONAL_ROUND() {			\
+	QR (output_00, output_05, output_10, output_15)	\
+	QR (output_01, output_06, output_11, output_12)	\
+	QR (output_02, output_07, output_08, output_13)	\
+	QR (output_03, output_04, output_09, output_14)	\
 }
 
 #define FREESTYLE_XOR_64(input,output,keystream) {	\

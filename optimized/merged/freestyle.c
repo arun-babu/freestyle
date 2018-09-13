@@ -676,7 +676,7 @@ void freestyle_encrypt (
 		output_15 = x->input_IV2;
 
 		/* Generate a random round */ 
-		freestyle_random_round_number(x,rounds);
+		freestyle_random_round_number_fast(x,rounds);
 
 		assert (rounds >= x->min_rounds);
 		assert (rounds <= x->max_rounds);

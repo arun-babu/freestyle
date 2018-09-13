@@ -262,6 +262,9 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	u32 p;
 
+	/* init RNG */
+	freestyle_init_RNG(x);	
+
 	if (! x->is_pepper_set)
 	{
 		if (x->pepper_bits == 32)
@@ -371,9 +374,6 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	/* Do pre-computation as specified by the user */
 	freestyle_precompute_rounds(x);
-
-	/* init RNG */
-	freestyle_init_RNG(x);	
 }
 
 static void freestyle_randomsetup_decrypt (freestyle_ctx *x)

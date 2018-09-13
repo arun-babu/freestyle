@@ -6,10 +6,10 @@ rm -rf test-timing 2>/dev/null
 rm -rf freestyle.o 2>/dev/null
 rm -rf randen-rng/src/randen.o 2>/dev/null
 
-$CC -c -Wall freestyle.c
+$CC -c freestyle.c
 
 cd randen-rng/src
-$CC -c -Wall randen.c
+$CC -c randen.c
 cd - >/dev/null
 
 
@@ -22,8 +22,8 @@ then
 fi
 
 
-$CC -Wall -o test-functionality test-functionality.c freestyle.o randen-rng/src/randen.o $LFLAGS
-$CC -Wall -o test-timing test-timing.c freestyle.o randen-rng/src/randen.o $LFLAGS
+$CC -o test-functionality test-functionality.c freestyle.o randen-rng/src/randen.o $LFLAGS
+$CC -o test-timing test-timing.c freestyle.o randen-rng/src/randen.o $LFLAGS
 
 time ./test-functionality
 time ./test-timing

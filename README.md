@@ -22,3 +22,10 @@ An old version of paper on Freestyle can be found at [(arXiv.org)](https://arxiv
 On Linux, you need to install libbsd-dev package for arc4random() and arc4random_uniform() functions.
 
 Released in ISC License
+
+**To run:**
+```
+	$ git clone https://github.com/arun-babu/freestyle
+	$ cd freestyle
+	$ ./test.sh
+```

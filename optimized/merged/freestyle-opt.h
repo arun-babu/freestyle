@@ -24,9 +24,18 @@
 #ifndef FREESTYLE_OPT_H
 #define FREESTYLE_OPT_H
 
+#include "./randen-rng/src/randen.h"
+
 #ifdef __OpenBSD__
 	#define restrict __restrict
 #endif
+
+#define freestyle_init_RNG(x) \
+	for (i = 0; i < RANDEN_SEED_BYTES/sizeof(unsigned long long); ++i) \
+	{								\
+		while (___builtin_ia32_rdrand64_step(&x->seed[i]));	\
+	}								\
+	randen_init(&x->seed,&x->rng);					\
 
 #define freestyle_increment_counter(x) \
 	x->input_COUNTER = PLUSONE(x->input_COUNTER);
@@ -174,7 +183,17 @@
 #define freestyle_random_round_number(x,r) {				\
 	r = (								\
 		(x->min_rounds						\
-			+ arc4random() % (				\
+			+ arc4random_uniform (				\
+		       	x->max_rounds - x->min_rounds + x->hash_interval\
+		  )							\
+		) / x->hash_interval					\
+	) * x->hash_interval; 						\
+}
+
+#define freestyle_random_round_number_fast(x,r) {			\
+	r = (								\
+		(x->min_rounds						\
+			+ randen_generate_byte(&x->rng) % (		\
 		       	x->max_rounds - x->min_rounds + x->hash_interval\
 		  )							\
 		) / x->hash_interval					\

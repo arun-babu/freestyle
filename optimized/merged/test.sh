@@ -10,7 +10,7 @@ $CC -c -Wall freestyle.c
 
 cd randen-rng/src
 $CC -c -Wall randen.c
-cd -
+cd - >/dev/null
 
 
 LFLAGS=""

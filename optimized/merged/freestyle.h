@@ -30,6 +30,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "./randen-rng/src/randen.h"
+
 #define MAX_HASH_VALUES	(256)
 #define MAX_INIT_HASHES (56)
 
@@ -146,6 +148,9 @@ typedef struct freestyle_ctx {
 	bool 	is_pepper_set;
 
 	u32 	hash_interval;
+
+	RandenState	rng;
+	unsigned long long seed [RANDEN_SEED_BYTES/sizeof(unsigned long long)];
 
 } freestyle_ctx;
 

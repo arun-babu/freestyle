@@ -20,10 +20,8 @@ int main ()
 
 	u8 expected_hash [MSG_LEN/64 + 1];
 
-	u32 min_rounds 	= 8;
-	u32 max_rounds 	= 32;
-
-	u32 hash_interval = 1;
+	u8 min_rounds 	= 8;
+	u8 max_rounds 	= 32;
 
 	u8 pepper_bits = 16;
 	u32 pepper;
@@ -61,7 +59,6 @@ int main ()
 			min_rounds,
 			max_rounds,
 			num_precomputed_rounds,
-			hash_interval,
 			pepper_bits,
 			num_init_hashes,
 			test_init_hash[i]
@@ -100,7 +97,6 @@ int main ()
 			min_rounds,
 			max_rounds,
 			num_precomputed_rounds,
-			hash_interval,
 			pepper_bits,
 			num_init_hashes	
 		);
@@ -114,7 +110,6 @@ int main ()
 			min_rounds,
 			max_rounds,
 			num_precomputed_rounds,
-			hash_interval,
 			pepper_bits,
 			num_init_hashes,
 			encrypt.init_hash	
@@ -155,7 +150,6 @@ int main ()
 			min_rounds,
 			max_rounds,
 			num_precomputed_rounds,
-			hash_interval,
 			pepper_bits,
 			num_init_hashes,	
 			pepper
@@ -170,7 +164,6 @@ int main ()
 			min_rounds,
 			max_rounds,
 			num_precomputed_rounds,
-			hash_interval,
 			pepper_bits,
 			num_init_hashes,
 			pepper,

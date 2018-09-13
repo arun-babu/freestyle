@@ -131,12 +131,13 @@ typedef struct freestyle_ctx {
 
 	u32 	initial_counter;
 
-	u32	min_rounds;
-	u32	max_rounds;
-
+	u8	min_rounds;
+	u8	max_rounds;
 	u8	num_precomputed_rounds;
 
-	u32 	cipher_parameter[2];
+	u8 	hash_interval;
+
+	u32 	cipher_parameter;
 	u32 	rand[8];
 
 	u8	num_init_hashes;
@@ -147,7 +148,6 @@ typedef struct freestyle_ctx {
 
 	bool 	is_pepper_set;
 
-	u32 	hash_interval;
 
 	RandenState	rng;
 	uint8_t seed [RANDEN_SEED_BYTES];
@@ -177,10 +177,9 @@ void freestyle_init_encrypt (
 	const 	u8 		*key,
 	const 	u16 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
+	const 	u8 		min_rounds,
+	const 	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes	
 );
@@ -190,10 +189,9 @@ void freestyle_init_encrypt_with_pepper (
 	const 	u8 		*key,
 	const 	u16 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
+	const 	u8 		min_rounds,
+	const 	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
 	const 	u32 		pepper_set	
@@ -204,10 +202,9 @@ void freestyle_init_decrypt (
 	const 	u8 		*key,
 	const 	u16 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
+	const 	u8 		min_rounds,
+	const 	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
 	const	u8 		*init_hash
@@ -218,10 +215,9 @@ void freestyle_init_decrypt_with_pepper (
 	const 	u8 		*key,
 	const 	u16 		key_length_bits,
 	const 	u8 		*iv,
-	const 	u32 		min_rounds,
-	const 	u32		max_rounds,
+	const 	u8 		min_rounds,
+	const 	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const 	u32 		hash_interval,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
 	const 	u32 		pepper_set,

@@ -18,3 +18,10 @@ cd ../optimized/merged
 ./test.sh
 
 echo
+echo "======================================================"
+echo "[ Optimized for min_rounds = 8, max_rounds = 32 ]" 
+echo "======================================================"
+cd ../8-32
+./test.sh
+
+echo

@@ -21,11 +21,9 @@ then
 	LFLAGS="-lbsd"	
 fi
 
-EXTRA_FLAGS="-mrdrnd"
-OS=`uname`
 
-$CC -Wall -o test-functionality test-functionality.c freestyle.o randen-rng/src/randen.o $LFLAGS $EXTRA_FLAGS
-$CC -Wall -o test-timing test-timing.c freestyle.o randen-rng/src/randen.o $LFLAGS $EXTRA_FLAGS
+$CC -Wall -o test-functionality test-functionality.c freestyle.o randen-rng/src/randen.o $LFLAGS
+$CC -Wall -o test-timing test-timing.c freestyle.o randen-rng/src/randen.o $LFLAGS
 
 time ./test-functionality
 time ./test-timing

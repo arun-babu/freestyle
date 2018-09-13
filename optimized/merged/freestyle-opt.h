@@ -31,11 +31,8 @@
 #endif
 
 #define freestyle_init_RNG(x) \
-	for (i = 0; i < RANDEN_SEED_BYTES/sizeof(unsigned long long); ++i) \
-	{								\
-		while (___builtin_ia32_rdrand64_step(&x->seed[i]));	\
-	}								\
-	randen_init(&x->seed,&x->rng);					\
+	arc4random_buf (x->seed,RANDEN_SEED_BYTES);	\
+	randen_init(&x->rng,(const uint8_t *)&x->seed);
 
 #define freestyle_increment_counter(x) \
 	x->input_COUNTER = PLUSONE(x->input_COUNTER);

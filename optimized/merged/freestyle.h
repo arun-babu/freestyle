@@ -150,7 +150,7 @@ typedef struct freestyle_ctx {
 	u32 	hash_interval;
 
 	RandenState	rng;
-	unsigned long long seed [RANDEN_SEED_BYTES/sizeof(unsigned long long)];
+	uint8_t seed [RANDEN_SEED_BYTES];
 
 } freestyle_ctx;
 

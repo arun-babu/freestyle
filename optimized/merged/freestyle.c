@@ -373,7 +373,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	freestyle_precompute_rounds(x);
 
 	/* init RNG */
-	randen_init(&x->rng,(const uint8_t *)&x->seed);
+	freestyle_init_RNG(x);	
 }
 
 static void freestyle_randomsetup_decrypt (freestyle_ctx *x)

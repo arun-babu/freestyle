@@ -494,7 +494,7 @@ static void freestyle_init_common (
 	const	u8 		num_init_hashes)
 {	
 	assert (min_rounds >= 1);
-	assert (min_rounds <= max_rounds);
+	assert (min_rounds < max_rounds);
 
 	assert (num_precomputed_rounds <= 15);
 	assert (num_precomputed_rounds <= (min_rounds - 4));

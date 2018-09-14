@@ -170,7 +170,7 @@ static u8 freestyle_random_round_number (const freestyle_ctx *x)
 
 
 static u8 freestyle_hash (
-	const	u32 	output[16],
+	const	u32 	cipher_state[16],
 	const 	u8	previous_hash,
 	const	u8	rounds)
 {
@@ -179,10 +179,10 @@ static u8 freestyle_hash (
 	u32 temp1 = rounds;
 	u32 temp2 = previous_hash;
 
-	AXR (temp1, output[ 3], temp2, 16);
-	AXR (temp2, output[ 6], temp1, 12);
-	AXR (temp1, output[ 9], temp2,  8);
-	AXR (temp2, output[12], temp1,  7);
+	AXR (temp1, cipher_state[ 3], temp2, 16);
+	AXR (temp2, cipher_state[ 6], temp1, 12);
+	AXR (temp1, cipher_state[ 9], temp2,  8);
+	AXR (temp2, cipher_state[12], temp1,  7);
 
 	hash = temp1 & 0xFF;
 
@@ -524,7 +524,7 @@ static void freestyle_init_common (
 	const	u8 		num_init_hashes)
 {	
 	assert (min_rounds >= 1);
-	assert (min_rounds <= max_rounds);
+	assert (min_rounds < max_rounds);
 
 	assert (num_precomputed_rounds <= 15);
 	assert (num_precomputed_rounds <= (min_rounds - 4));

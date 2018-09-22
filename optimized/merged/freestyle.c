@@ -333,7 +333,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 			memcpy(R, CR, sizeof(R));
 			break;
 
-		retry:
+retry:
 			x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
 		}
 	}
@@ -436,7 +436,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 		/* found all valid R[i]s */
 		break;
 
-	retry:
+retry:
 		x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
 	}
 

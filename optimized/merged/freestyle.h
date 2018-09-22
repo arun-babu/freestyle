@@ -137,7 +137,6 @@ typedef struct freestyle_ctx {
 
 	u8 	hash_interval;
 
-	u32 	cipher_parameter;
 	u32 	rand[8];
 
 	u8	num_init_hashes;

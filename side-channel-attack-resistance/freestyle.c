@@ -148,7 +148,7 @@ static void freestyle_roundsetup (
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes)
 {
-	uint8_t i;
+	u8 i;
 
 	x->min_rounds 			= min_rounds;
 	x->max_rounds 			= max_rounds;
@@ -159,7 +159,7 @@ static void freestyle_roundsetup (
 	x->hash_interval = gcd(x->min_rounds,x->max_rounds);
 
 	/* 8 + 8 + 6 + 6 + 4  bits */
-	x->cipher_parameter =	  ((x->min_rounds 		& 0xFF) << 24)
+	u32 cipher_parameter =	  ((x->min_rounds 		& 0xFF) << 24)
 				| ((x->max_rounds 		& 0xFF) << 16)
 				| ((x->pepper_bits     	      	& 0x3F) << 10)
 				| ((x->num_init_hashes 	      	& 0x3F) <<  4)
@@ -170,7 +170,7 @@ static void freestyle_roundsetup (
 	}
 
 	/* modify constant[0] */
-	x->input[CONSTANT0] ^= x->cipher_parameter;
+	x->input[CONSTANT0] ^= cipher_parameter;
 }
 
 static u8 freestyle_random_round_number (const freestyle_ctx *x)

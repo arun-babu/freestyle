@@ -106,7 +106,7 @@ static void freestyle_roundsetup (
 	x->hash_interval = gcd(x->min_rounds,x->max_rounds);
 
 	/* 8 + 8 + 6 + 6 + 4  bits */
-	x->cipher_parameter =	  ((x->min_rounds 		& 0xFF) << 24)
+	u32 cipher_parameter =	  ((x->min_rounds 		& 0xFF) << 24)
 				| ((x->max_rounds 		& 0xFF) << 16)
 				| ((x->pepper_bits     	      	& 0x3F) << 10)
 				| ((x->num_init_hashes 	      	& 0x3F) <<  4)
@@ -117,7 +117,7 @@ static void freestyle_roundsetup (
 	}
 
 	/* modify constant[0] */
-	x->input_CONSTANT0 ^= x->cipher_parameter;
+	x->input_CONSTANT0 ^= cipher_parameter;
 }
 
 

@@ -323,7 +323,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 				);
 
 				if (CR[i] == 0) {
-					goto continue_loop_encrypt;	
+					goto retry;	
 				}
 
 				freestyle_increment_counter(x);
@@ -333,7 +333,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 			memcpy(R, CR, sizeof(R));
 			break;
 
-	continue_loop_encrypt:
+		retry:
 			x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
 		}
 	}
@@ -427,7 +427,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 			);
 
 			if (R[i] == 0) {
-				goto continue_loop_decrypt;
+				goto retry;
 			}
 
 			freestyle_increment_counter(x);
@@ -436,7 +436,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 		/* found all valid R[i]s */
 		break;
 
-continue_loop_decrypt:
+	retry:
 		x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
 	}
 
@@ -679,7 +679,7 @@ void freestyle_encrypt (
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		COMPUTE_HASH(x,hash,8)
-		if (8 == rounds) goto encrypt_done;
+		if (8 == rounds) goto done;
 
 		// For rounds = min_rounds(8) + 1 TO rounds (max value = 32)
 		FREESTYLE_DOUBLE_ROUND()
@@ -687,23 +687,23 @@ void freestyle_encrypt (
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		COMPUTE_HASH(x,hash,16)
-		if (16 == rounds) goto encrypt_done;
+		if (16 == rounds) goto done;
 
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		COMPUTE_HASH(x,hash,24)
-		if (24 == rounds) goto encrypt_done;
+		if (24 == rounds) goto done;
 
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		COMPUTE_HASH(x,hash,32)
-		if (32 == rounds) goto encrypt_done;
+		if (32 == rounds) goto done;
 
-encrypt_done:
+done:
 	    	expected_hash[block] = hash; 
 
 		output_00 = PLUS(output_00, x->input_CONSTANT0);
@@ -820,7 +820,7 @@ void freestyle_decrypt (
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		COMPUTE_HASH(x,hash,8)
-		if (hash == expected_hash[block]) goto decrypt_done;
+		if (hash == expected_hash[block]) goto done;
 
 		// For rounds = min_rounds(8) + 1 TO rounds (max value = 32)
 		FREESTYLE_DOUBLE_ROUND()
@@ -828,23 +828,23 @@ void freestyle_decrypt (
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		COMPUTE_HASH(x,hash,16)
-		if (hash == expected_hash[block]) goto decrypt_done;
+		if (hash == expected_hash[block]) goto done;
 
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		COMPUTE_HASH(x,hash,24)
-		if (hash == expected_hash[block]) goto decrypt_done;
+		if (hash == expected_hash[block]) goto done;
 
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		FREESTYLE_DOUBLE_ROUND()
 		COMPUTE_HASH(x,hash,32)
-		if (hash == expected_hash[block]) goto decrypt_done;
+		if (hash == expected_hash[block]) goto done;
 
-decrypt_done:
+done:
 		output_00 = PLUS(output_00, x->input_CONSTANT0);
 		output_01 = PLUS(output_01, x->input_CONSTANT1);
 		output_02 = PLUS(output_02, x->input_CONSTANT2);

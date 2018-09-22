@@ -323,7 +323,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 				);
 
 				if (CR[i] == 0) {
-					goto continue_loop_encrypt;	
+					goto retry;	
 				}
 
 				freestyle_increment_counter(x);
@@ -333,7 +333,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 			memcpy(R, CR, sizeof(R));
 			break;
 
-	continue_loop_encrypt:
+		retry:
 			x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
 		}
 	}
@@ -427,7 +427,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 			);
 
 			if (R[i] == 0) {
-				goto continue_loop_decrypt;
+				goto retry;
 			}
 
 			freestyle_increment_counter(x);
@@ -436,7 +436,7 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 		/* found all valid R[i]s */
 		break;
 
-continue_loop_decrypt:
+	retry:
 		x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
 	}
 

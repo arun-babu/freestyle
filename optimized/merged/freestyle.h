@@ -66,9 +66,9 @@
 
 /*------*/
 
-typedef unsigned char	u8;
-typedef unsigned short	u16;
-typedef unsigned int	u32;
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
 
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)

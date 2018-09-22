@@ -148,7 +148,7 @@ static void freestyle_roundsetup (
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes)
 {
-	int i;
+	uint8_t i;
 
 	x->min_rounds 			= min_rounds;
 	x->max_rounds 			= max_rounds;

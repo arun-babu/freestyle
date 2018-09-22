@@ -60,9 +60,9 @@
 
 /*------*/
 
-typedef unsigned char	u8;
-typedef unsigned short	u16;
-typedef unsigned int	u32;
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
 
 #define freestyle_encrypt(...) freestyle_process(__VA_ARGS__,true)
 #define freestyle_decrypt(...) freestyle_process(__VA_ARGS__,false)

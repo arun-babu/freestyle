@@ -1,7 +1,7 @@
 #include "freestyle.h"
 #include <time.h>
 
-#define MSG_LEN (1024)
+#define MSG_LEN (1111)
 
 int main ()
 {

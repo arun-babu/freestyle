@@ -752,6 +752,8 @@ done:
 			for (i = 0; i < bytes; ++i) {
 				ciphertext [i] = plaintext[i] ^ keystream[i];
 			}
+
+			return;
 		}
 
 		plaintext  += 64;
@@ -891,6 +893,8 @@ done:
 			for (i = 0; i < bytes; ++i) {
 				plaintext [i] = ciphertext[i] ^ keystream[i];
 			}
+
+			return;
 		}
 
 		plaintext  += 64;

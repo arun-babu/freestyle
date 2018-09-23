@@ -743,6 +743,8 @@ void freestyle_encrypt (
 			for (i = 0; i < bytes; ++i) {
 				ciphertext [i] = plaintext[i] ^ keystream[i];
 			}
+
+			return;
 		}
 
 		plaintext  += 64;
@@ -876,6 +878,8 @@ void freestyle_decrypt (
 			for (i = 0; i < bytes; ++i) {
 				plaintext [i] = ciphertext[i] ^ keystream[i];
 			}
+
+			return ;
 		}
 
 		plaintext  += 64;

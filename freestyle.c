@@ -189,7 +189,7 @@ static u8 freestyle_hash (
 	return hash;
 }
 
-static u8 freestyle_process_block (
+static u8 freestyle_xcrypt_block (
 		freestyle_ctx	*x,	
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
@@ -646,7 +646,7 @@ void freestyle_init_decrypt_with_pepper (
 	freestyle_randomsetup_decrypt(x);
 }
 	
-int freestyle_process (
+int freestyle_xcrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
@@ -661,7 +661,7 @@ int freestyle_process (
 	{
 	    u8 bytes_to_process = bytes >= 64 ? 64 : bytes;
 
-	    u8 num_rounds = freestyle_process_block (
+	    u8 num_rounds = freestyle_xcrypt_block (
 		x,
 		plaintext  + i,
 		ciphertext + i,

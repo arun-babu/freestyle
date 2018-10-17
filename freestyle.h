@@ -64,11 +64,11 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 
-#define freestyle_encrypt(...) freestyle_process(__VA_ARGS__,true)
-#define freestyle_decrypt(...) freestyle_process(__VA_ARGS__,false)
+#define freestyle_encrypt(...) freestyle_xcrypt(__VA_ARGS__,true)
+#define freestyle_decrypt(...) freestyle_xcrypt(__VA_ARGS__,false)
 
-#define freestyle_encrypt_block(...) freestyle_process_block(__VA_ARGS__,true)
-#define freestyle_decrypt_block(...) freestyle_process_block(__VA_ARGS__,false)
+#define freestyle_encrypt_block(...) freestyle_xcrypt_block(__VA_ARGS__,true)
+#define freestyle_decrypt_block(...) freestyle_xcrypt_block(__VA_ARGS__,false)
 
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)
@@ -187,7 +187,7 @@ void freestyle_init_decrypt_with_pepper (
 	const	u8		*init_hash
 );
 
-int freestyle_process (
+int freestyle_xcrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*input,
 		u8 		*output,

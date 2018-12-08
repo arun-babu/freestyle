@@ -6,7 +6,7 @@ Freestyle uses the concept of hash based halting condition where a decryption at
 
 Freestyle provides the possibility of generating 2^256 different ciphertexts for a given key, nonce, and message; thus resisting key and nonce reuse attacks. Due to its inherent random behavior, Freestyle makes cryptanalysis through known-plaintext, chosen-plaintext, and chosen-ciphertext attacks difficult in practice. 
 
-On the other hand, Freestyle has costlier cipher initialization process, typically generates 1.56% larger ciphertext, and was found to be 1.6 to 3.2 times slower than ChaCha20. Freestyle is suitable for applications that favor ciphertext randomization and resistance to key-guessing and key reuse attacks over performance and ciphertext size. Freestyle is ideal for applications where ciphertext can be assumed to be in full control of an adversary, and an offline key-guessing attack can be carried out. 
+On the other hand, Freestyle has costlier cipher initialization process, typically generates 1.56% larger ciphertext, and was found to be  1.13 to 1.60 times slower than ChaCha20. Freestyle is suitable for applications that favor ciphertext randomization and resistance to key-guessing and key reuse attacks over performance and ciphertext size. Freestyle is ideal for applications where ciphertext can be assumed to be in full control of an adversary, and an offline key-guessing attack can be carried out. 
 
 The main aim of Freestyle is to improve the Key Guessing Penalty (KGP), which is defined as:
 
@@ -15,16 +15,14 @@ The main aim of Freestyle is to improve the Key Guessing Penalty (KGP), which is
 KGP =     -----------------------------------------------------------
 	       Time taken to decrypt using the correct key
 ```
-
-A paper on Freestyle is available at: [(eprint.iacr.org)](https://eprint.iacr.org/2018/1127.pdf)
-
-On Linux, you need to install libbsd-dev package for arc4random() and arc4random_uniform() functions.
-
-Freestyle is released in ISC License.
+Freestyle is released in ISC License; and a paper on Freestyle is available at: [(eprint.iacr.org)](https://eprint.iacr.org/2018/1127.pdf)
 
 randen-rng (https://github.com/jedisct1/randen-rng) is released in Apache License Version 2.0, January 2004.
 
 **To run:**
+
+On Ubuntu, libbsd-dev package is needed for arc4random() and arc4random_uniform() functions.
+
 ```
 	$ git clone https://github.com/arun-babu/freestyle
 	$ cd freestyle

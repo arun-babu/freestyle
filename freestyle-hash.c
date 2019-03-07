@@ -117,22 +117,16 @@ bool freestyle_dehash_password (
 
 	freestyle_decrypt (&x, ciphertext, plaintext, hash_len, &expected_hash);
 
-	int r = memcmp(plaintext,salt,hash_len);
-
-	printf("Got pt = {%s} {%s} {%d} = %u\n",plaintext,salt, hash_len,
-		memcmp(plaintext,salt,hash_len));
-
-	printf("r == 0 %d\n",r);
-
-	return r == 0;
+	return (0 == memcmp(plaintext,salt,hash_len));
 }
 
 int main ()
 {
 	double th;
 	double td;
+	double tw;
 
-	u8 h[100];
+	u8 hash[128];
 
 	u8 min_rounds			= 8;
 	u8 max_rounds			= 32;
@@ -147,7 +141,7 @@ int main ()
 	freestyle_hash_password (
 		"hello",
 		"world",
-		h,
+		hash,
 		5,
 		min_rounds,
 		max_rounds,
@@ -164,9 +158,9 @@ int main ()
 
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
 	bool success = freestyle_dehash_password (
-			"xhello",
+			"hello",
 			"world",
-			h,
+			hash,
 			5,
 			min_rounds,
 			max_rounds,
@@ -176,16 +170,35 @@ int main ()
 	);
 	clock_gettime(CLOCK_MONOTONIC, &ts_end);
 
+	assert (success);
+
 	td = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-	printf ("Time taken to dehash = %f nano seconds\n",td);
+	printf ("Time taken to dehash using correct password = %f nano seconds\n",td);
 	printf ("td/th = %f\n",td/th);
 
-	if (success)
-		printf("Passed\n");
-	else
-		printf("Failed\n");
+	clock_gettime(CLOCK_MONOTONIC, &ts_start);
+	success = freestyle_dehash_password (
+			"xhello",
+			"world",
+			hash,
+			5,
+			min_rounds,
+			max_rounds,
+			num_precomputed_rounds,
+			pepper_bits,
+			num_init_hashes
+	);
+	clock_gettime(CLOCK_MONOTONIC, &ts_end);
+
+	assert (! success);
+
+	tw = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
+            (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
+
+	printf ("Time taken to dehash using WRONG password   = %f nano seconds\n",tw);
+	printf ("tw/th = %f\n",tw/th);
 
 	return 0;
 }

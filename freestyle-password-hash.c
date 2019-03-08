@@ -4,7 +4,7 @@
 #include <time.h>
 
 void freestyle_hash_password (
-	const 	u8 		*password,
+	const 	char 		*password,
 	const 	u8 		*salt,
 		u8		*hash,
 	const	size_t		hash_len,
@@ -39,7 +39,7 @@ void freestyle_hash_password (
 	for (i = 0; i < 32; )
 	{
 		for (j = 0; i < 32 && j < password_len; ++j)
-			key [i++] = password[j];
+			key [i++] = (u8) password[j];
 	}
 
 	freestyle_init_encrypt (
@@ -63,8 +63,8 @@ void freestyle_hash_password (
 	memcpy (hash + num_init_hashes + 1, 	ciphertext, 	hash_len	);
 }
 
-bool freestyle_dehash_password (
-	const 	u8 		*password,
+bool freestyle_verify_password_hash (
+	const 	char 		*password,
 	const 	u8 		*salt,
 		u8		*hash,
 	const	size_t		hash_len,
@@ -99,7 +99,7 @@ bool freestyle_dehash_password (
 	for (i = 0; i < 32; )
 	{
 		for (j = 0; i < 32 && j < password_len; ++j)
-			key [i++] = password[j];
+			key [i++] = (u8) password[j];
 	}
 
 	freestyle_init_decrypt (
@@ -123,7 +123,7 @@ bool freestyle_dehash_password (
 int main ()
 {
 	double th;
-	double td;
+	double tc;
 	double tw;
 
 	u8 hash[128];
@@ -140,7 +140,7 @@ int main ()
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
 	freestyle_hash_password (
 		"hello",
-		"world",
+		(u8 *)"world",
 		hash,
 		5,
 		min_rounds,
@@ -154,12 +154,12 @@ int main ()
 	th = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-	printf ("Time taken to hash = %f nano seconds\n",th);
+	printf ("Time taken to hash                               = %f nano seconds (th)\n",th);
 
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
-	bool success = freestyle_dehash_password (
+	bool success = freestyle_verify_password_hash (
 			"hello",
-			"world",
+			(u8 *)"world",
 			hash,
 			5,
 			min_rounds,
@@ -172,16 +172,15 @@ int main ()
 
 	assert (success);
 
-	td = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
+	tc = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-	printf ("Time taken to dehash using correct password = %f nano seconds\n",td);
-	printf ("td/th = %f\n",td/th);
+	printf ("Time taken to verify hash using CORRECT password = %f nano seconds (tc)\n",tc);
 
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
-	success = freestyle_dehash_password (
-			"xhello",
-			"world",
+	success = freestyle_verify_password_hash (
+			"wrong password",
+			(u8 *)"world",
 			hash,
 			5,
 			min_rounds,
@@ -197,7 +196,9 @@ int main ()
 	tw = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-	printf ("Time taken to dehash using WRONG password   = %f nano seconds\n",tw);
+	printf ("Time taken to verify hash using   WRONG password = %f nano seconds (tw)\n",tw);
+
+	printf ("\ntc/th = %f\n",tc/th);
 	printf ("tw/th = %f\n",tw/th);
 
 	return 0;

@@ -13,6 +13,6 @@ then
 	LFLAGS="-lbsd"	
 fi
 
-$CC -o h freestyle-password-hash.c freestyle.o $LFLAGS
+$CC -o test-password-hash freestyle-password-hash.c freestyle.o $LFLAGS
 
-time ./h
+time ./test-password-hash

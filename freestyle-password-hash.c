@@ -139,11 +139,20 @@ bool freestyle_verify_password_hash (
 
 int main ()
 {
+	int i;
+
 	double th;
 	double tc;
 	double tw;
 
-	u8 hash[128];
+	const char PASSWORD_CHARS [] = 
+			"abcdefghijklmnopqrstuvwxyz"
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			"01234567890"
+			"~!@#$%^&*-_+=,.:;?/ {}[]<>()"
+			;
+
+	u8 hash [128];
 
 	u8 min_rounds			= 8;
 	u8 max_rounds			= 32;
@@ -154,69 +163,97 @@ int main ()
         struct timespec ts_start;
         struct timespec ts_end;
 
-	clock_gettime(CLOCK_MONOTONIC, &ts_start);
-	freestyle_hash_password (
-		"hello",
-		(u8 *)"world",
-		hash,
-		5,
-		min_rounds,
-		max_rounds,
-		num_precomputed_rounds,
-		pepper_bits,
-		num_init_hashes
-	);
-	clock_gettime(CLOCK_MONOTONIC, &ts_end);
+	char 	password 	[32 + 1];
+	char 	wrong_password 	[32 + 1];
 
-	th = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
-            (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
+	u8	salt	 [64];
 
-	printf ("Time taken to hash                               = %f nano seconds (th)\n",th);
+	for (int t = 1; t <= 10; ++t)
+	{
 
-	clock_gettime(CLOCK_MONOTONIC, &ts_start);
-	bool success = freestyle_verify_password_hash (
-			"hello",
-			(u8 *)"world",
+		int password_len 	= 1 + arc4random_uniform(32);
+		int hash_len 		= 1 + arc4random_uniform(64);
+
+		for (i = 0; i < password_len; ++i)
+		{
+			int r = arc4random_uniform(sizeof(PASSWORD_CHARS) - 1);
+			password[i] = PASSWORD_CHARS [r];
+		}
+
+		password[i] = '\0';
+
+		arc4random_buf (salt, hash_len); 
+
+		clock_gettime(CLOCK_MONOTONIC, &ts_start);
+		freestyle_hash_password (
+			password,
+			salt,
 			hash,
-			5,
+			hash_len,
 			min_rounds,
 			max_rounds,
 			num_precomputed_rounds,
 			pepper_bits,
 			num_init_hashes
-	);
-	clock_gettime(CLOCK_MONOTONIC, &ts_end);
+		);
+		clock_gettime(CLOCK_MONOTONIC, &ts_end);
 
-	assert (success);
+		th = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
+            		(double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-	tc = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
-            (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
+		printf ("Time taken to hash                               = %f nano seconds (th)\n",th);
 
-	printf ("Time taken to verify hash using CORRECT password = %f nano seconds (tc)\n",tc);
-
-	clock_gettime(CLOCK_MONOTONIC, &ts_start);
-	success = freestyle_verify_password_hash (
-			"wrong password",
-			(u8 *)"world",
+		clock_gettime(CLOCK_MONOTONIC, &ts_start);
+		bool success = freestyle_verify_password_hash (
+			password,
+			salt,
 			hash,
-			5,
+			hash_len,
 			min_rounds,
 			max_rounds,
 			num_precomputed_rounds,
 			pepper_bits,
 			num_init_hashes
-	);
-	clock_gettime(CLOCK_MONOTONIC, &ts_end);
+		);
+		clock_gettime(CLOCK_MONOTONIC, &ts_end);
 
-	assert (! success);
+		assert (success);
 
-	tw = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
-            (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
+		tc = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
+       		     (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-	printf ("Time taken to verify hash using   WRONG password = %f nano seconds (tw)\n",tw);
+		printf ("Time taken to verify hash using CORRECT password = %f nano seconds (tc)\n",tc);
 
-	printf ("\ntc/th = %f\n",tc/th);
-	printf ("tw/th = %f\n",tw/th);
+		// wrong password !
+		strcpy(wrong_password,password);
+		wrong_password[0] = ~wrong_password[0];
+
+		clock_gettime(CLOCK_MONOTONIC, &ts_start);
+		success = freestyle_verify_password_hash (
+			wrong_password,
+			salt,
+			hash,
+			hash_len,
+			min_rounds,
+			max_rounds,
+			num_precomputed_rounds,
+			pepper_bits,
+			num_init_hashes
+		);
+		clock_gettime(CLOCK_MONOTONIC, &ts_end);
+
+		assert (! success);
+
+		tw = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
+            		(double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
+
+		printf ("Time taken to verify hash using   WRONG password = %f nano seconds (tw)\n",tw);
+
+		printf ("\ntc/th = %f\n",tc/th);
+		printf ("tw/th = %f\n",tw/th);
+
+		printf("---> Password hash test %d OK\n\n",t);
+	}
 
 	return 0;
 }

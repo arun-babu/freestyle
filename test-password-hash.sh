@@ -1,6 +1,6 @@
 CC="gcc -O3 -Wall -Wextra "
 
-rm -rf h
+rm -rf test-password-hash
 rm -rf freestyle.o 2>/dev/null
 
 $CC -c  freestyle.c

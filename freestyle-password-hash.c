@@ -17,7 +17,6 @@
 
 #include "freestyle.h"
 #include <time.h>
-#include <err.h>
 
 void freestyle_hash_password (
 	const 	char 		*password,
@@ -44,19 +43,15 @@ void freestyle_hash_password (
 
 	int password_len = strlen (password);
 
+	assert (password_len 	<= 32);
+	assert (hash_len 	<= 64);
+
 	ciphertext = malloc(hash_len);
 	if (! ciphertext)
 	{
 		perror("malloc failed ");
 		exit(-1);
 	}
-
-	if (password_len > 32)
-		warnx (
-			"Warning: %s",
-				"For generating the key, "
-				"long passwords will be truncated to 32 chars!\n"
-		);
 
 	// fill iv with password length
 	for (i = 0; i < 12; ++i)
@@ -115,19 +110,15 @@ bool freestyle_verify_password_hash (
 
 	int password_len = strlen (password);
 
+	assert (password_len 	<= 32);
+	assert (hash_len 	<= 64);
+
 	plaintext = malloc(hash_len);
 	if (! plaintext)
 	{
 		perror("malloc failed ");
 		exit(-1);
 	}
-
-	if (password_len > 32)
-		warnx (
-			"Warning: %s",
-				"For generating the key, "
-				"long passwords will be truncated to 32 chars!"
-		);
 
 	// fill iv with password length
 	for (i = 0; i < 12; ++i)
@@ -184,14 +175,14 @@ int main ()
         struct timespec ts_start;
         struct timespec ts_end;
 
-	char 	password 	[52 + 1];
-	char 	wrong_password 	[52 + 1];
+	char 	password 	[32 + 1];
+	char 	wrong_password 	[32 + 1];
 
-	u8	salt	 [128];
+	u8	salt	 [64];
 
 	for (int t = 1; t <= 10; ++t)
 	{
-		int password_len 	= 1 + arc4random_uniform(52);
+		int password_len 	= 1 + arc4random_uniform(32);
 		int hash_len 		= 1 + arc4random_uniform(64);
 
 		for (i = 0; i < password_len; ++i)

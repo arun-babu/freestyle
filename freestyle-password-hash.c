@@ -15,10 +15,9 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#define MSG_LEN (64)
-
 #include "freestyle.h"
 #include <time.h>
+#include <err.h>
 
 void freestyle_hash_password (
 	const 	char 		*password,
@@ -35,8 +34,8 @@ void freestyle_hash_password (
 
 	freestyle_ctx	x;
 
-	const u8 *plaintext = salt;	// salt is 'hash_len' bytes long
-	u8 ciphertext [MSG_LEN];
+	const u8 	*plaintext = salt;	// salt is 'hash_len' bytes long
+	u8 		*ciphertext;
 
 	u8 iv [12];
 	u8 key[32];
@@ -45,8 +44,19 @@ void freestyle_hash_password (
 
 	int password_len = strlen (password);
 
-	assert (hash_len 	<= 64);
-	assert (password_len 	<= 32);
+	ciphertext = malloc(hash_len);
+	if (! ciphertext)
+	{
+		perror("malloc failed ");
+		exit(-1);
+	}
+
+	if (password_len > 32)
+		warnx (
+			"Warning: %s",
+				"For generating the key, "
+				"long passwords will be truncated to 32 chars!\n"
+		);
 
 	// fill iv with password length
 	for (i = 0; i < 12; ++i)
@@ -95,8 +105,8 @@ bool freestyle_verify_password_hash (
 
 	freestyle_ctx	x;
 
-	const u8 *ciphertext = hash + num_init_hashes + 1;
-	u8 plaintext [MSG_LEN];
+	const u8 	*ciphertext = hash + num_init_hashes + 1;
+	u8 		*plaintext;
 
 	u8 iv [12];
 	u8 key[32];
@@ -105,8 +115,19 @@ bool freestyle_verify_password_hash (
 
 	int password_len = strlen (password);
 
-	assert (hash_len 	<= 64);
-	assert (password_len 	<= 32);
+	plaintext = malloc(hash_len);
+	if (! plaintext)
+	{
+		perror("malloc failed ");
+		exit(-1);
+	}
+
+	if (password_len > 32)
+		warnx (
+			"Warning: %s",
+				"For generating the key, "
+				"long passwords will be truncated to 32 chars!"
+		);
 
 	// fill iv with password length
 	for (i = 0; i < 12; ++i)
@@ -163,15 +184,14 @@ int main ()
         struct timespec ts_start;
         struct timespec ts_end;
 
-	char 	password 	[32 + 1];
-	char 	wrong_password 	[32 + 1];
+	char 	password 	[52 + 1];
+	char 	wrong_password 	[52 + 1];
 
-	u8	salt	 [64];
+	u8	salt	 [128];
 
 	for (int t = 1; t <= 10; ++t)
 	{
-
-		int password_len 	= 1 + arc4random_uniform(32);
+		int password_len 	= 1 + arc4random_uniform(52);
 		int hash_len 		= 1 + arc4random_uniform(64);
 
 		for (i = 0; i < password_len; ++i)
@@ -201,7 +221,7 @@ int main ()
 		th = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             		(double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-		printf ("Time taken to hash                               = %f nano seconds (th)\n",th);
+		printf ("(th) Time taken to hash                               = %f nano seconds\n",th);
 
 		clock_gettime(CLOCK_MONOTONIC, &ts_start);
 		bool success = freestyle_verify_password_hash (
@@ -222,7 +242,7 @@ int main ()
 		tc = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
        		     (double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-		printf ("Time taken to verify hash using CORRECT password = %f nano seconds (tc)\n",tc);
+		printf ("(tc) Time taken to verify hash using CORRECT password = %f nano seconds\n",tc);
 
 		// wrong password !
 		strcpy(wrong_password,password);
@@ -247,7 +267,7 @@ int main ()
 		tw = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             		(double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-		printf ("Time taken to verify hash using   WRONG password = %f nano seconds (tw)\n",tw);
+		printf ("(tw) Time taken to verify hash using   WRONG password = %f nano seconds\n",tw);
 
 		printf ("\ntc/th = %f\n",tc/th);
 		printf ("tw/th = %f\n",tw/th);

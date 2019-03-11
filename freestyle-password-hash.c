@@ -161,7 +161,7 @@ int main ()
 			"abcdefghijklmnopqrstuvwxyz"
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			"0123456789"
-			"~!@#$%^&*-_+=,.:;?/ {}[]<>()"
+			"~!@#$%^&*-_+=,.:;?/ {}[]<>()'\""
 			;
 
 	u8 hash [128];
@@ -192,6 +192,7 @@ int main ()
 		}
 
 		password[i] = '\0';
+		printf ("For password = '%s'\n",password);
 
 		arc4random_buf (salt, hash_len); 
 
@@ -263,7 +264,7 @@ int main ()
 		printf ("\ntc/th = %f\n",tc/th);
 		printf ("tw/th = %f\n",tw/th);
 
-		printf("---> Password hash test %d OK\n\n",t);
+		printf ("---> Password hash test %d OK\n\n",t);
 	}
 
 	return 0;

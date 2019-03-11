@@ -160,7 +160,7 @@ int main ()
 	const char PASSWORD_CHARS [] = 
 			"abcdefghijklmnopqrstuvwxyz"
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			"01234567890"
+			"0123456789"
 			"~!@#$%^&*-_+=,.:;?/ {}[]<>()"
 			;
 

@@ -186,7 +186,9 @@ int main ()
 
 	u8	salt	 [64];
 
-	for (int t = 1; t <= 10; ++t)
+	int t;
+
+	for (t = 1; t <= 10; ++t)
 	{
 		int password_len 	= 1 + arc4random_uniform(32);
 		int hash_len 		= 1 + arc4random_uniform(64);

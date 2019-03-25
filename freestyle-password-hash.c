@@ -36,14 +36,13 @@ void freestyle_hash_password (
 	const u8 	*plaintext = salt;	// salt is 'hash_len' bytes long
 	u8 		*ciphertext;
 
-	u8 iv [12];
-	u8 key[32];
+	u8 key_and_iv [44];
 
 	u8 expected_hash;
 
 	int password_len = strlen (password);
 
-	assert (password_len 	<= 32);
+	assert (password_len 	<= 43);
 	assert (hash_len 	<= 64);
 
 	ciphertext = malloc(hash_len);
@@ -53,16 +52,20 @@ void freestyle_hash_password (
 		exit(-1);
 	}
 
-	// fill iv with password length
-	for (i = 0; i < 12; ++i)
-		iv [i] = password_len; 
-
-	// fill the key with password
-	for (i = 0; i < 32; )
+	// fill the key (32 bytes) and IV (first 11 bytes) with password
+	for (i = 0; i < 43; )
 	{
-		for (j = 0; i < 32 && j < password_len; ++j)
-			key [i++] = (u8) password[j];
+		for (j = 0; i < 43 && j < password_len; ++j)
+		{
+			key_and_iv [i++] = (u8) password[j];
+		}
 	}
+
+	// last byte of IV is the password length 
+	key_and_iv [43] = password_len;
+
+	u8 *key	= key_and_iv;
+	u8 *iv	= key_and_iv + 32; 
 
 	freestyle_init_encrypt (
 		&x,
@@ -103,14 +106,13 @@ bool freestyle_verify_password_hash (
 	const u8 	*ciphertext = hash + num_init_hashes + 1;
 	u8 		*plaintext;
 
-	u8 iv [12];
-	u8 key[32];
+	u8 key_and_iv [44];
 
 	u8 expected_hash = hash [num_init_hashes];
 
 	int password_len = strlen (password);
 
-	assert (password_len 	<= 32);
+	assert (password_len 	<= 43);
 	assert (hash_len 	<= 64);
 
 	plaintext = malloc(hash_len);
@@ -120,16 +122,20 @@ bool freestyle_verify_password_hash (
 		exit(-1);
 	}
 
-	// fill iv with password length
-	for (i = 0; i < 12; ++i)
-		iv[i] = password_len;
-
-	// fill the key with password
-	for (i = 0; i < 32; )
+	// fill the key (32 bytes) and IV (first 11 bytes) with password
+	for (i = 0; i < 43; )
 	{
-		for (j = 0; i < 32 && j < password_len; ++j)
-			key [i++] = (u8) password[j];
+		for (j = 0; i < 43 && j < password_len; ++j)
+		{
+			key_and_iv [i++] = (u8) password[j];
+		}
 	}
+
+	// last byte of IV is the password length 
+	key_and_iv [43] = password_len;
+
+	u8 *key	= key_and_iv;
+	u8 *iv	= key_and_iv + 32; 
 
 	freestyle_init_decrypt (
 		&x,
@@ -229,6 +235,7 @@ int main ()
 		);
 		clock_gettime(CLOCK_MONOTONIC, &ts_end);
 
+		fflush(stdout);
 		assert (success);
 
 		tc = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
@@ -254,6 +261,7 @@ int main ()
 		);
 		clock_gettime(CLOCK_MONOTONIC, &ts_end);
 
+		fflush(stdout);
 		assert (! success);
 
 		tw = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +

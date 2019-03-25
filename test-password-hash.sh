@@ -1,4 +1,4 @@
-CC="gcc -O3 -Wall -Wextra "
+CC="gcc -O3 -Wall -Wextra --std=c99"
 
 rm -rf test-password-hash
 rm -rf freestyle.o 2>/dev/null

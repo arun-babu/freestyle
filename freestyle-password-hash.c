@@ -181,8 +181,8 @@ int main ()
         struct timespec ts_start;
         struct timespec ts_end;
 
-	char 	password 	[32 + 1];
-	char 	wrong_password 	[32 + 1];
+	char 	password 	[43 + 1];
+	char 	wrong_password 	[43 + 1];
 
 	u8	salt	 [64];
 
@@ -190,7 +190,7 @@ int main ()
 
 	for (t = 1; t <= 10; ++t)
 	{
-		int password_len 	= 1 + arc4random_uniform(32);
+		int password_len 	= 1 + arc4random_uniform(43);
 		int hash_len 		= 1 + arc4random_uniform(64);
 
 		for (i = 0; i < password_len; ++i)

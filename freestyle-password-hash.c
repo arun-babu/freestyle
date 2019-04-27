@@ -42,6 +42,7 @@ void freestyle_hash_password (
 
 	int password_len = strlen (password);
 
+	assert (password_len 	>= 1 );
 	assert (password_len 	<= 43);
 	assert (hash_len 	<= 64);
 

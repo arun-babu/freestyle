@@ -10,10 +10,20 @@ On the other hand, Freestyle has costlier cipher initialization process, typical
 
 The main aim of Freestyle is to improve the Key Guessing Penalty (KGP), which is defined as:
 
+1. For encryption
+
 ```
-	    Time taken to attempt decryption using an incorrect key
+	    Expected time to attempt decryption using an incorrect key
 KGP =     -----------------------------------------------------------
-	       Time taken to decrypt using the correct key
+	       Expected time to decrypt using the correct key
+```
+
+2. For password hashing 
+
+```
+	    Expected time to verify a password hash using an incorrect password 
+KGP =     ----------------------------------------------------------------------
+	    Expected time to verify a password hash using the correct password 
 ```
 Freestyle is released in ISC License; and a paper on Freestyle is available at: [(eprint.iacr.org)](https://eprint.iacr.org/2018/1127.pdf)
 

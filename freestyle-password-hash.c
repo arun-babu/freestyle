@@ -222,7 +222,7 @@ int main ()
 		th = (double) (ts_end.tv_nsec - ts_start.tv_nsec) +
             		(double) (ts_end.tv_sec - ts_start.tv_sec)*1000000000;
 
-		printf ("(th) Time taken to hash                               = %f nano seconds\n",th);
+		printf ("(th) Time taken to hash password                      = %f nano seconds\n",th);
 
 		clock_gettime(CLOCK_MONOTONIC, &ts_start);
 		bool success = freestyle_verify_password_hash (
@@ -273,7 +273,7 @@ int main ()
 		printf ("(tw) Time taken to verify hash using   WRONG password = %f nano seconds\n",tw);
 
 		printf ("\ntc/th = %f\n",tc/th);
-		printf ("tw/th = %f\n",tw/th);
+		printf ("tw/th = %f (KGP)\n",tw/th);
 
 		printf ("---> Password hash test %d OK\n\n",t);
 	}

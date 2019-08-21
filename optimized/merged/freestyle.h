@@ -196,7 +196,7 @@ void freestyle_init_encrypt_with_pepper (
 	const 	u32 		pepper_set	
 );
 
-void freestyle_init_decrypt (
+bool freestyle_init_decrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
 	const 	u16 		key_length_bits,
@@ -209,7 +209,7 @@ void freestyle_init_decrypt (
 	const	u8 		*init_hash
 );
 
-void freestyle_init_decrypt_with_pepper (
+bool freestyle_init_decrypt_with_pepper (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
 	const 	u16 		key_length_bits,

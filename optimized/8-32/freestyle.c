@@ -95,7 +95,7 @@ static void freestyle_roundsetup (
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes)
 {
-	uint8_t i;
+	u8 i;
 
 	x->min_rounds 			= min_rounds;
 	x->max_rounds 			= max_rounds;
@@ -290,7 +290,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	}
 
 	/* initial pre-computed rounds */
-	freestyle_precompute_rounds(x)
+	freestyle_precompute_rounds(x);
 
 	/* add a random/user-set pepper to constant[0] */
 	x->input_CONSTANT0 = PLUS(x->input_CONSTANT0,x->pepper);
@@ -307,7 +307,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	if (! x->is_pepper_set)
 	{
-		/* set it back to its previous value */
+		/* set constant[0] back to its previous value */
 		x->input_CONSTANT0 = MINUS(x->input_CONSTANT0,x->pepper);
 
 		/* check for any collisions between 0 and pepper */
@@ -380,7 +380,7 @@ retry:
 	freestyle_precompute_rounds(x);
 }
 
-static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
+static bool freestyle_randomsetup_decrypt (freestyle_ctx *x)
 {
 	u32 	i;
 
@@ -397,7 +397,9 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 	u32 pepper;
 	u32 max_pepper = x->pepper_bits == 32 ?
-				UINT32_MAX : (u32)((1 << x->pepper_bits) - 1);
+				UINT32_MAX : (u32) ((1 << x->pepper_bits) - 1);
+
+	bool found_pepper = false;
 
 	/* set sane values for initalization */
 	x->min_rounds 			= 8;
@@ -434,11 +436,15 @@ static void freestyle_randomsetup_decrypt (freestyle_ctx *x)
 		}
 
 		/* found all valid R[i]s */
+		found_pepper = true;
 		break;
 
 retry:
 		x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
 	}
+
+	if (! found_pepper)
+		return false;
 
 	for (i = 0; i < 8; ++i)
 	{
@@ -480,6 +486,8 @@ retry:
 
 	/* Do pre-computation as specified by the user */
 	freestyle_precompute_rounds(x);
+
+	return true;
 }
 
 static void freestyle_init_common (
@@ -559,7 +567,7 @@ void freestyle_init_encrypt_with_pepper (
 	freestyle_randomsetup_encrypt(x);
 }
 
-void freestyle_init_decrypt (
+bool freestyle_init_decrypt (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
 	const 	u16		key_length_bits,
@@ -571,9 +579,16 @@ void freestyle_init_decrypt (
 	const	u8 		num_init_hashes,
 	const	u8		*init_hash)
 {	
-	freestyle_init_common (x, key, key_length_bits, iv, min_rounds,
-				max_rounds, num_precomputed_rounds,
-				pepper_bits, num_init_hashes
+	freestyle_init_common (
+		x,
+		key,
+		key_length_bits,
+		iv,
+		min_rounds,
+		max_rounds,
+		num_precomputed_rounds,
+		pepper_bits,
+		num_init_hashes
 	);
 
 	x->pepper		= 0;
@@ -584,10 +599,10 @@ void freestyle_init_decrypt (
 		 sizeof(x->init_hash)
 	);
 
-	freestyle_randomsetup_decrypt(x);
+	return freestyle_randomsetup_decrypt(x);
 }
 
-void freestyle_init_decrypt_with_pepper (
+bool freestyle_init_decrypt_with_pepper (
 		freestyle_ctx 	*x,
 	const 	u8 		*key,
 	const 	u16		key_length_bits,
@@ -600,9 +615,16 @@ void freestyle_init_decrypt_with_pepper (
 	const	u32 		pepper,
 	const	u8		*init_hash)
 {	
-	freestyle_init_common (x, key, key_length_bits, iv, min_rounds,
-				max_rounds, num_precomputed_rounds,
-				pepper_bits, num_init_hashes
+	freestyle_init_common (
+		x,
+		key,
+		key_length_bits,
+		iv,
+		min_rounds,
+		max_rounds,
+		num_precomputed_rounds,
+		pepper_bits,
+		num_init_hashes
 	);
 
 	x->pepper 		= pepper;
@@ -613,7 +635,7 @@ void freestyle_init_decrypt_with_pepper (
 		 sizeof(x->init_hash)
 	);
 
-	freestyle_randomsetup_decrypt(x);
+	return freestyle_randomsetup_decrypt(x);
 }
 
 void freestyle_encrypt (

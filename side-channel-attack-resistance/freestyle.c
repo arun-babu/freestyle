@@ -598,9 +598,16 @@ void freestyle_init_encrypt (
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes)
 {	
-	freestyle_init_common (x, key, key_length_bits, iv, min_rounds,
-				max_rounds, num_precomputed_rounds,
-				pepper_bits, num_init_hashes
+	freestyle_init_common (
+		x,
+		key,
+		key_length_bits,
+		iv,
+		min_rounds,
+		max_rounds,
+		num_precomputed_rounds,
+		pepper_bits,
+		num_init_hashes
 	);
 
 	x->pepper		= 0;
@@ -621,9 +628,16 @@ void freestyle_init_encrypt_with_pepper (
 	const	u8 		num_init_hashes,
 	const	u32 		pepper)
 {	
-	freestyle_init_common (x, key, key_length_bits, iv, min_rounds,
-				max_rounds, num_precomputed_rounds,
-				pepper_bits, num_init_hashes
+	freestyle_init_common (
+		x,
+		key,
+		key_length_bits,
+		iv,
+		min_rounds,
+		max_rounds,
+		num_precomputed_rounds,
+		pepper_bits,
+		num_init_hashes
 	);
 
 	x->pepper 		= pepper;

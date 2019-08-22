@@ -138,7 +138,7 @@ bool freestyle_verify_password_hash (
 	u8 *key	= key_and_iv;
 	u8 *iv	= key_and_iv + 32; 
 
-	freestyle_init_decrypt (
+	if (! freestyle_init_decrypt (
 		&x,
 		key,
 		256,
@@ -149,7 +149,10 @@ bool freestyle_verify_password_hash (
 		pepper_bits,
 		num_init_hashes,
 		hash		
-	);
+	))
+	{
+		return false;
+	}
 
 	freestyle_decrypt (&x, ciphertext, plaintext, hash_len, &expected_hash);
 

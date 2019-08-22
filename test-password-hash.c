@@ -20,7 +20,7 @@
 #include <assert.h>
 #include <time.h>
 
-#include "freestyle-password-hash.h"
+#include "freestyle.h"
 
 int main ()
 {

@@ -206,7 +206,7 @@ bool freestyle_init_decrypt (
 	const	u8		num_precomputed_rounds,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
-	const	u8 		*init_hash
+	const	u8		*init_hash
 );
 
 bool freestyle_init_decrypt_with_pepper (
@@ -220,7 +220,31 @@ bool freestyle_init_decrypt_with_pepper (
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
 	const 	u32 		pepper_set,
-	const	u8 		*init_hash
+	const	u8		*init_hash
+);
+
+void freestyle_hash_password (
+	const 	char 		*password,
+	const 	u8 		*salt,
+		u8		*hash,
+	const	size_t		hash_len,
+	const 	u8 		min_rounds,
+	const 	u8 		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes
+);
+
+bool freestyle_verify_password_hash (
+	const 	char 		*password,
+	const 	u8 		*salt,
+		u8		*hash,
+	const	size_t		hash_len,
+	const 	u8 		min_rounds,
+	const 	u8 		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes
 );
 
 #endif	/* FREESTYLE_H */

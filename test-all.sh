@@ -30,4 +30,3 @@ echo "[ Password hashing tests ]"
 echo "======================================================"
 cd ../..
 ./test-password-hash.sh
-

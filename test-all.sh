@@ -23,10 +23,3 @@ echo "[ Optimized for min_rounds = 8, max_rounds = 32 ]"
 echo "======================================================"
 cd ../8-32
 ./test.sh
-
-echo
-echo "======================================================"
-echo "[ Password hashing tests ]" 
-echo "======================================================"
-cd ../..
-./test-password-hash.sh

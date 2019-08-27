@@ -17,6 +17,8 @@ fi
 
 $CC -o test-functionality test-functionality.c freestyle.o $LFLAGS
 $CC -o test-timing test-timing.c freestyle.o $LFLAGS
+$CC -o test-password-hash test-password-hash.c freestyle.o $LFLAGS
 
 time ./test-functionality
 time ./test-timing
+time ./test-password-hash

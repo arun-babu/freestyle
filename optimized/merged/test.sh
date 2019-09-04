@@ -21,7 +21,6 @@ then
 	LFLAGS="-lbsd"	
 fi
 
-
 $CC -o test-functionality test-functionality.c freestyle.o randen-rng/src/randen.o $LFLAGS
 $CC -o test-timing test-timing.c freestyle.o randen-rng/src/randen.o $LFLAGS
 $CC -o test-password-hash test-password-hash.c freestyle.o randen-rng/src/randen.o $LFLAGS

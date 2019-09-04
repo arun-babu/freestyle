@@ -736,8 +736,9 @@ void freestyle_hash_password (
 
 	freestyle_ctx	x;
 
-	const u8 	*plaintext = salt;	// salt is 'hash_len' bytes long
-	u8 		*ciphertext;
+	/* salt is 'hash_len' bytes long */
+	const u8 	*plaintext	= salt;
+	u8 		*ciphertext	= NULL;
 
 	u8 key_and_iv [44];
 
@@ -749,14 +750,14 @@ void freestyle_hash_password (
 	assert (password_len 	<= 43);
 	assert (hash_len 	<= 64);
 
-	ciphertext = malloc(hash_len);
-	if (! ciphertext)
+	if (! (ciphertext = malloc(hash_len)))
 	{
 		perror("malloc failed ");
 		exit(-1);
 	}
 
-	// fill the key (32 bytes) and IV (first 11 bytes) with password
+	/* Fill the key (32 bytes)
+	   and IV (first 11 bytes) with password */
 	for (i = 0; i < 43; )
 	{
 		for (j = 0; i < 43 && j < password_len; ++j)
@@ -827,8 +828,8 @@ bool freestyle_verify_password_hash (
 
 	freestyle_ctx	x;
 
-	const u8 	*ciphertext = hash + num_init_hashes + 1;
-	u8 		*plaintext;
+	const u8 	*ciphertext	= hash + num_init_hashes + 1;
+	u8 		*plaintext	= NULL;
 
 	u8 key_and_iv [44];
 
@@ -839,14 +840,14 @@ bool freestyle_verify_password_hash (
 	assert (password_len 	<= 43);
 	assert (hash_len 	<= 64);
 
-	plaintext = malloc(hash_len);
-	if (! plaintext)
+	if (! (plaintext = malloc(hash_len)))
 	{
 		perror("malloc failed ");
 		exit(-1);
 	}
 
-	// fill the key (32 bytes) and IV (first 11 bytes) with password
+	/* Fill the key (32 bytes)
+	   and IV (first 11 bytes) with password */
 	for (i = 0; i < 43; )
 	{
 		for (j = 0; i < 43 && j < password_len; ++j)

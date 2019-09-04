@@ -745,7 +745,7 @@ void freestyle_hash_password (
 
 	int password_len = strlen (password);
 
-	assert (password_len 	>= 1 );
+	assert (password_len 	>=  1);
 	assert (password_len 	<= 43);
 	assert (hash_len 	<= 64);
 
@@ -783,13 +783,33 @@ void freestyle_hash_password (
 		num_init_hashes	
 	);
 
-	freestyle_encrypt (&x, plaintext, ciphertext, hash_len, &expected_hash);
+	freestyle_encrypt (
+		&x,
+		plaintext,
+		ciphertext,
+		hash_len,
+		&expected_hash
+	);
 
-	// 'hash' should be (hash_len + num_init_hashes + 1) long
+	// 'hash' is (num_init_hashes + 1 + hash_len) long
 
-	memcpy (hash, 				x.init_hash, 	num_init_hashes	);
-	memcpy (hash + num_init_hashes, 	&expected_hash, 1		);
-	memcpy (hash + num_init_hashes + 1, 	ciphertext, 	hash_len	);
+	memcpy (
+		hash,
+		x.init_hash,
+		num_init_hashes
+	);
+
+	memcpy (
+		hash + num_init_hashes,
+		&expected_hash,
+		1
+	);
+
+	memcpy (
+		hash + num_init_hashes + 1,
+		ciphertext,
+		hash_len
+	);
 }
 
 bool freestyle_verify_password_hash (
@@ -857,7 +877,13 @@ bool freestyle_verify_password_hash (
 		return false;
 	}
 
-	freestyle_decrypt (&x, ciphertext, plaintext, hash_len, &expected_hash);
+	freestyle_decrypt (
+		&x,
+		ciphertext,
+		plaintext,
+		hash_len,
+		&expected_hash
+	);
 
 	return (0 == memcmp(plaintext,salt,hash_len));
 }

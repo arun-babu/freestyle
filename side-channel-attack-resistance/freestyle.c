@@ -842,8 +842,8 @@ bool freestyle_verify_password_hash (
 
 	freestyle_ctx	x;
 
-	const u8 	*ciphertext = hash + num_init_hashes + 1;
-	u8 		*plaintext;
+	const u8 	*ciphertext	= hash + num_init_hashes + 1;
+	u8 		*plaintext	= NULL;
 
 	u8 key_and_iv [44];
 
@@ -854,14 +854,14 @@ bool freestyle_verify_password_hash (
 	assert (password_len 	<= 43);
 	assert (hash_len 	<= 64);
 
-	plaintext = malloc(hash_len);
-	if (! plaintext)
+	if (! (plaintext = malloc(hash_len)))
 	{
 		perror("malloc failed ");
 		exit(-1);
 	}
 
-	// fill the key (32 bytes) and IV (first 11 bytes) with password
+	/* Fill the key (32 bytes)
+	   and IV (first 11 bytes) with password */
 	for (i = 0; i < 43; )
 	{
 		for (j = 0; i < 43 && j < password_len; ++j)
@@ -892,7 +892,13 @@ bool freestyle_verify_password_hash (
 		return false;
 	}
 
-	freestyle_decrypt (&x, ciphertext, plaintext, hash_len, &expected_hash);
+	freestyle_decrypt (
+		&x,
+		ciphertext,
+		plaintext,
+		hash_len,
+		&expected_hash
+	);
 
 	return (0 == memcmp(plaintext,salt,hash_len));
 }

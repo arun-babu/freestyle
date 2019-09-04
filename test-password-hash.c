@@ -19,8 +19,11 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <time.h>
+#include <string.h>
 
 #include "freestyle.h"
+
+#include "test-password-hash.h"
 
 int main ()
 {
@@ -54,6 +57,8 @@ int main ()
 	u8	salt	 [64];
 
 	int t;
+
+	bool success;
 
 	for (t = 1; t <= 10; ++t)
 	{
@@ -91,7 +96,7 @@ int main ()
 		printf ("(th) Time taken to hash password                      = %f nano seconds\n",th);
 
 		clock_gettime(CLOCK_MONOTONIC, &ts_start);
-		bool success = freestyle_verify_password_hash (
+		success = freestyle_verify_password_hash (
 			password,
 			salt,
 			hash,
@@ -142,6 +147,27 @@ int main ()
 		printf ("tw/th = %f (KGP)\n",tw/th);
 
 		printf ("---> Password hash test %d OK\n\n",t);
+	}
+
+	for (t = 0; t < 30; ++t)
+	{
+		assert (strlen(test_salt[t]) == 64);
+
+		success = freestyle_verify_password_hash (
+			test_password[t],
+			test_salt[t],
+			test_hash[t],
+			64,
+			min_rounds,
+			max_rounds,
+			num_precomputed_rounds,
+			pepper_bits,
+			num_init_hashes
+		);
+
+		assert (success);
+
+		printf("===> Known password hash test %02d OK\n",t+1);
 	}
 
 	return 0;

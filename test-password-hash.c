@@ -155,7 +155,7 @@ int main ()
 
 		success = freestyle_verify_password_hash (
 			test_password[t],
-			test_salt[t],
+			(u8 *)test_salt[t],
 			test_hash[t],
 			64,
 			min_rounds,

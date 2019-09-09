@@ -1,7 +1,8 @@
-CC="gcc -O3 -Wall -Wextra -Werror "
+CC="gcc --std=c99 -O3 -Wall -Wextra -Werror -pedantic -pedantic-errors "
 
 rm -rf test-functionality 2>/dev/null
 rm -rf test-timing 2>/dev/null
+rm -rf test-password-hash 2>/dev/null
 
 rm -rf freestyle.o 2>/dev/null
 

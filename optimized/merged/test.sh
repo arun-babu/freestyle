@@ -1,7 +1,8 @@
-CC="clang -Ofast -Wall -Wextra -march=native "
+CC="clang -Ofast -Wall -Wextra -march=native -pedantic "
 
 rm -rf test-functionality 2>/dev/null
 rm -rf test-timing 2>/dev/null
+rm -rf test-password-hash 2>/dev/null
 
 rm -rf freestyle.o 2>/dev/null
 rm -rf randen-rng/src/randen.o 2>/dev/null

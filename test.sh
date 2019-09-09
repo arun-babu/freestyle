@@ -14,6 +14,7 @@ OS=`uname`
 if [ $OS == "Linux" ]
 then 
 	LFLAGS="-lbsd"	
+	CC="gcc --std=gnu99 -O3 -Wall -Wextra -Werror -pedantic "
 fi
 
 $CC -o test-functionality test-functionality.c freestyle.o $LFLAGS

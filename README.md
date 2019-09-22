@@ -25,7 +25,7 @@ KGP =     -----------------------------------------------------------
 KGP =     ----------------------------------------------------------------------
 	    Expected time to verify a password hash using the correct password 
 ```
-Freestyle is released in ISC License; and a paper on Freestyle is available at: [(eprint.iacr.org)](https://eprint.iacr.org/2018/1127.pdf)
+Freestyle is released in ISC License; and a paper on Freestyle is available [(here)](https://github.com/arun-babu/freestyle/blob/master/freestyle.pdf)
 
 randen-rng (https://github.com/jedisct1/randen-rng) is released in Apache License Version 2.0, January 2004.
 

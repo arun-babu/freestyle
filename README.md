@@ -25,10 +25,6 @@ KGP =     -----------------------------------------------------------
 KGP =     ----------------------------------------------------------------------
 	    Expected time to verify a password hash using the correct password 
 ```
-Freestyle is released in ISC License; and a paper on Freestyle is available [(here)](https://github.com/arun-babu/freestyle/blob/master/freestyle.pdf)
-
-randen-rng (https://github.com/jedisct1/randen-rng) is released in Apache License Version 2.0, January 2004.
-
 **To run:**
 
 On Ubuntu, libbsd-dev package is needed for arc4random() and arc4random_uniform() functions.
@@ -38,3 +34,40 @@ On Ubuntu, libbsd-dev package is needed for arc4random() and arc4random_uniform(
 	$ cd freestyle
 	$ ./test.sh
 ```
+
+**License**
+
+Freestyle is released in ISC License; and a paper on Freestyle is available [(here)](https://github.com/arun-babu/freestyle/blob/master/freestyle.pdf), and in [(Journal of Information Security and Applications)](http://www.sciencedirect.com/science/article/pii/S2214212618307634).
+
+You may cite the Freestyle paper as:
+
+```
+Arun Babu Puthuparambil, Jithin Jose Thomas,
+Freestyle, a randomized version of ChaCha for resisting offline brute-force and dictionary attacks,
+Journal of Information Security and Applications,
+Volume 49,
+2019,
+102396,
+ISSN 2214-2126,
+https://doi.org/10.1016/j.jisa.2019.102396.
+```
+
+Or as BibTex:
+
+```
+@article{PUTHUPARAMBIL2019102396,
+title = "Freestyle, a randomized version of ChaCha for resisting offline brute-force and dictionary attacks",
+journal = "Journal of Information Security and Applications",
+volume = "49",
+pages = "102396",
+year = "2019",
+issn = "2214-2126",
+doi = "https://doi.org/10.1016/j.jisa.2019.102396",
+url = "http://www.sciencedirect.com/science/article/pii/S2214212618307634",
+author = "Arun Babu Puthuparambil and Jithin Jose Thomas",
+}
+```
+
+**Other libraries used**
+
+The "randen-rng" (https://github.com/jedisct1/randen-rng) is released in Apache License Version 2.0, January 2004.

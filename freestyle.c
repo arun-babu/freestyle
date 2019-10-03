@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018  P. Arun Babu and Jithin Jose Thomas 
+ * Copyright (c) 2018  P. Arun Babu and Jithin Jose Thomas
  * arun DOT hbni AT gmail DOT com, jithinjosethomas AT gmail DOT com
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -190,7 +190,7 @@ static u8 freestyle_hash (
 }
 
 static u8 freestyle_xcrypt_block (
-		freestyle_ctx	*x,	
+		freestyle_ctx	*x,
 	const 	u8 		*plaintext,
 		u8 		*ciphertext,
 		u8 		bytes,
@@ -351,7 +351,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 				);
 
 				if (CR[i] == 0) {
-					goto retry;	
+					goto retry;
 				}
 
 				freestyle_increment_counter(x);
@@ -530,9 +530,13 @@ static void freestyle_init_common (
 	const	u8		num_precomputed_rounds,
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes)
-{	
+{
 	assert (min_rounds >= 1);
-	assert (min_rounds < max_rounds);
+
+	/* if min_rounds == max_rounds,
+	      and peper is set manually,
+		then Freestyle produces deterministic output */
+	assert (min_rounds <= max_rounds);
 
 	assert (num_precomputed_rounds <= 15);
 	assert (num_precomputed_rounds <= (min_rounds - 4));
@@ -562,7 +566,7 @@ void freestyle_init_encrypt (
 	const	u8		num_precomputed_rounds,
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes)
-{	
+{
 	freestyle_init_common (
 		x,
 		key,
@@ -577,7 +581,7 @@ void freestyle_init_encrypt (
 
 	x->pepper		= 0;
 	x->is_pepper_set 	= false;
-	
+
 	freestyle_randomsetup_encrypt(x);
 }
 
@@ -592,7 +596,7 @@ void freestyle_init_encrypt_with_pepper (
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
 	const	u32 		pepper)
-{	
+{
 	freestyle_init_common (
 		x,
 		key,
@@ -622,7 +626,7 @@ bool freestyle_init_decrypt (
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
 	const	u8		*init_hash)
-{	
+{
 	freestyle_init_common (
 		x,
 		key,
@@ -658,7 +662,7 @@ bool freestyle_init_decrypt_with_pepper (
 	const	u8 		num_init_hashes,
 	const	u32 		pepper,
 	const	u8		*init_hash)
-{	
+{
 	freestyle_init_common (
 		x,
 		key,
@@ -673,7 +677,7 @@ bool freestyle_init_decrypt_with_pepper (
 
 	x->pepper 		= pepper;
 	x->is_pepper_set 	= true;
-	
+
 	memcpy ( x->init_hash,
 		 init_hash,
 		 sizeof(x->init_hash)
@@ -712,7 +716,7 @@ int freestyle_xcrypt (
 
 	    i 	  += bytes_to_process;
 	    bytes -= bytes_to_process;
-	
+
             ++block;
 
 	    freestyle_increment_counter(x);
@@ -766,11 +770,11 @@ void freestyle_hash_password (
 		}
 	}
 
-	// last byte of IV is the password length 
+	// last byte of IV is the password length
 	key_and_iv [43] = password_len;
 
 	u8 *key	= key_and_iv;
-	u8 *iv	= key_and_iv + 32; 
+	u8 *iv	= key_and_iv + 32;
 
 	freestyle_init_encrypt (
 		&x,
@@ -781,7 +785,7 @@ void freestyle_hash_password (
 		max_rounds,
 		num_precomputed_rounds,
 		pepper_bits,
-		num_init_hashes	
+		num_init_hashes
 	);
 
 	freestyle_encrypt (
@@ -813,6 +817,101 @@ void freestyle_hash_password (
 	);
 }
 
+void freestyle_hash_password_with_pepper (
+	const 	char 		*password,
+	const 	u8 		*salt,
+		u8		*hash,
+	const	size_t		hash_len,
+	const 	u8 		min_rounds,
+	const 	u8 		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
+	const	u32 		pepper)
+{
+	int i,j;
+
+	freestyle_ctx	x;
+
+	/* salt is 'hash_len' bytes long */
+	const u8 	*plaintext	= salt;
+	u8 		*ciphertext	= NULL;
+
+	u8 key_and_iv [44];
+
+	u8 expected_hash;
+
+	int password_len = strlen (password);
+
+	assert (password_len 	>=  1);
+	assert (password_len 	<= 43);
+	assert (hash_len 	<= 64);
+
+	if (! (ciphertext = malloc(hash_len)))
+	{
+		perror("malloc failed ");
+		exit(-1);
+	}
+
+	/* Fill the key (32 bytes)
+	   and IV (first 11 bytes) with password */
+	for (i = 0; i < 43; )
+	{
+		for (j = 0; i < 43 && j < password_len; ++j)
+		{
+			key_and_iv [i++] = (u8) password[j];
+		}
+	}
+
+	// last byte of IV is the password length
+	key_and_iv [43] = password_len;
+
+	u8 *key	= key_and_iv;
+	u8 *iv	= key_and_iv + 32;
+
+	freestyle_init_encrypt_with_pepper (
+		&x,
+		key,
+		256,
+		iv,
+		min_rounds,
+		max_rounds,
+		num_precomputed_rounds,
+		pepper_bits,
+		num_init_hashes,
+		pepper
+	);
+
+	freestyle_encrypt (
+		&x,
+		plaintext,
+		ciphertext,
+		hash_len,
+		&expected_hash
+	);
+
+	// 'hash' is (num_init_hashes + 1 + hash_len) long
+
+	memcpy (
+		hash,
+		x.init_hash,
+		num_init_hashes
+	);
+
+	memcpy (
+		hash + num_init_hashes,
+		&expected_hash,
+		1
+	);
+
+	memcpy (
+		hash + num_init_hashes + 1,
+		ciphertext,
+		hash_len
+	);
+}
+
+
 bool freestyle_verify_password_hash (
 	const 	char 		*password,
 	const 	u8 		*salt,
@@ -837,6 +936,7 @@ bool freestyle_verify_password_hash (
 
 	int password_len = strlen (password);
 
+	assert (password_len 	>=  1);
 	assert (password_len 	<= 43);
 	assert (hash_len 	<= 64);
 
@@ -856,11 +956,11 @@ bool freestyle_verify_password_hash (
 		}
 	}
 
-	// last byte of IV is the password length 
+	// last byte of IV is the password length
 	key_and_iv [43] = password_len;
 
 	u8 *key	= key_and_iv;
-	u8 *iv	= key_and_iv + 32; 
+	u8 *iv	= key_and_iv + 32;
 
 	if (! freestyle_init_decrypt (
 		&x,
@@ -872,7 +972,7 @@ bool freestyle_verify_password_hash (
 		num_precomputed_rounds,
 		pepper_bits,
 		num_init_hashes,
-		hash		
+		hash
 	))
 	{
 		return false;

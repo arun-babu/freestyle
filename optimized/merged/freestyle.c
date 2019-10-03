@@ -502,7 +502,11 @@ static void freestyle_init_common (
 	const	u8 		num_init_hashes)
 {	
 	assert (min_rounds >= 1);
-	assert (min_rounds < max_rounds);
+
+	/* if min_rounds == max_rounds,
+	      and peper is set manually,
+		then Freestyle produces deterministic output */
+	assert (min_rounds <= max_rounds);
 
 	assert (num_precomputed_rounds <= 15);
 	assert (num_precomputed_rounds <= (min_rounds - 4));

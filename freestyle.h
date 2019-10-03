@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018  P. Arun Babu and Jithin Jose Thomas 
+ * Copyright (c) 2018  P. Arun Babu and Jithin Jose Thomas
  * arun DOT hbni AT gmail DOT com, jithinjosethomas AT gmail DOT com
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -55,7 +55,7 @@
 #define KEY7 		(11)
 #define COUNTER 	(12)
 #define IV0 		(13)
-#define IV1 		(14)	
+#define IV1 		(14)
 #define IV2 		(15)
 
 /*------*/
@@ -144,7 +144,7 @@ void freestyle_init_encrypt (
 	const 	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
 	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes	
+	const	u8 		num_init_hashes
 );
 
 void freestyle_init_encrypt_with_pepper (
@@ -157,7 +157,7 @@ void freestyle_init_encrypt_with_pepper (
 	const	u8		num_precomputed_rounds,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
-	const 	u32 		pepper_set	
+	const 	u32 		pepper
 );
 
 bool freestyle_init_decrypt (
@@ -183,7 +183,7 @@ bool freestyle_init_decrypt_with_pepper (
 	const	u8		num_precomputed_rounds,
 	const 	u8 		pepper_bits,
 	const	u8 		num_init_hashes,
-	const 	u32 		pepper_set,
+	const 	u32 		pepper,
 	const	u8		*init_hash
 );
 
@@ -206,6 +206,19 @@ void freestyle_hash_password (
 	const	u8		num_precomputed_rounds,
 	const	u8 		pepper_bits,
 	const	u8 		num_init_hashes
+);
+
+void freestyle_hash_password_with_pepper (
+	const 	char 		*password,
+	const 	u8 		*salt,
+		u8		*hash,
+	const	size_t		hash_len,
+	const 	u8 		min_rounds,
+	const 	u8 		max_rounds,
+	const	u8		num_precomputed_rounds,
+	const	u8 		pepper_bits,
+	const	u8 		num_init_hashes,
+	const	u32		pepper
 );
 
 bool freestyle_verify_password_hash (

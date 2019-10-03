@@ -144,7 +144,7 @@ int main ()
 		printf ("(tw) Time taken to verify hash using   WRONG password = %f nano seconds\n",tw);
 
 		printf ("\ntc/th = %f\n",tc/th);
-		printf ("tw/th = %f (KGP)\n",tw/th);
+		printf ("tw/th = %f (Key guessing penalty (KGP))\n",tw/th);
 
 		printf ("---> Password hash test %d OK\n\n",t);
 	}

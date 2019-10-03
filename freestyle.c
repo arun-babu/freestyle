@@ -911,7 +911,6 @@ void freestyle_hash_password_with_pepper (
 	);
 }
 
-
 bool freestyle_verify_password_hash (
 	const 	char 		*password,
 	const 	u8 		*salt,

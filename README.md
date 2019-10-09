@@ -35,13 +35,6 @@ On Ubuntu, libbsd-dev package is needed for arc4random() and arc4random_uniform(
 	$ ./test.sh
 ```
 
-**Deterministic behaviour**
-
-Freestyle is a non-deterministic cipher, but if you wish to have a deterministic behaviour, then set `min_rounds = max_rounds`, and use:
- 
-`freestyle_init_encrypt_with_pepper (...)` for initialization during encryption.
-`freestyle_hash_password_with_pepper(...)` for password hashing.
-
 **License**
 
 Freestyle is released in ISC License; and a paper on Freestyle is available [(here)](https://github.com/arun-babu/freestyle/blob/master/freestyle.pdf), and in [(Journal of Information Security and Applications)](http://www.sciencedirect.com/science/article/pii/S2214212618307634).

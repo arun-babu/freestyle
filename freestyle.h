@@ -41,22 +41,22 @@
 
 /*--- Elements of the cipher state --- */
 
-#define CONSTANT0 	(0)
-#define CONSTANT1 	(1)
-#define CONSTANT2 	(2)
-#define CONSTANT3 	(3)
-#define KEY0 		(4)
-#define KEY1 		(5)
-#define KEY2 		(6)
-#define KEY3 		(7)
-#define KEY4 		(8)
-#define KEY5 		(9)
-#define KEY6 		(10)
-#define KEY7 		(11)
-#define COUNTER 	(12)
-#define IV0 		(13)
-#define IV1 		(14)
-#define IV2 		(15)
+#define CONSTANT0	(0)
+#define CONSTANT1	(1)
+#define CONSTANT2	(2)
+#define CONSTANT3	(3)
+#define KEY0		(4)
+#define KEY1		(5)
+#define KEY2		(6)
+#define KEY3		(7)
+#define KEY4		(8)
+#define KEY5		(9)
+#define KEY6		(10)
+#define KEY7		(11)
+#define COUNTER	(12)
+#define IV0		(13)
+#define IV1		(14)
+#define IV2		(15)
 
 /*------*/
 
@@ -112,125 +112,125 @@ static const char tau[16] = "expand 16-byte k";
 
 typedef struct freestyle_ctx {
 
-	u32 	input[16];
-	u32 	initial_counter;
+	u32	input[16];
+	u32	initial_counter;
 
 	u8	min_rounds;
 	u8	max_rounds;
 	u8	num_precomputed_rounds;
 
-	u8 	hash_interval;
+	u8	hash_interval;
 
-	u32 	rand[8];
+	u32	rand[8];
 
 	u8	num_init_hashes;
 	u8	init_hash [MAX_INIT_HASHES];
 
-	u8 	pepper_bits;
-	u32 	pepper;
+	u8	pepper_bits;
+	u32	pepper;
 
-	bool 	is_pepper_set;
+	bool	is_pepper_set;
 
 } freestyle_ctx;
 
 void freestyle_set_counter (freestyle_ctx *x, u32 counter);
 
 void freestyle_init_encrypt (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u8 		min_rounds,
-	const 	u8		max_rounds,
+		freestyle_ctx	*x,
+	const	u8		*key,
+	const	u16		key_length_bits,
+	const	u8		*iv,
+	const	u8		min_rounds,
+	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes
+	const	u8		pepper_bits,
+	const	u8		num_init_hashes
 );
 
 void freestyle_init_encrypt_with_pepper (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u8 		min_rounds,
-	const 	u8		max_rounds,
+		freestyle_ctx	*x,
+	const	u8		*key,
+	const	u16		key_length_bits,
+	const	u8		*iv,
+	const	u8		min_rounds,
+	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes,
-	const 	u32 		pepper
+	const	u8		pepper_bits,
+	const	u8		num_init_hashes,
+	const	u32		pepper
 );
 
 bool freestyle_init_decrypt (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u8 		min_rounds,
-	const 	u8		max_rounds,
+		freestyle_ctx	*x,
+	const	u8		*key,
+	const	u16		key_length_bits,
+	const	u8		*iv,
+	const	u8		min_rounds,
+	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes,
+	const	u8		pepper_bits,
+	const	u8		num_init_hashes,
 	const	u8		*init_hash
 );
 
 bool freestyle_init_decrypt_with_pepper (
-		freestyle_ctx 	*x,
-	const 	u8 		*key,
-	const 	u16 		key_length_bits,
-	const 	u8 		*iv,
-	const 	u8 		min_rounds,
-	const 	u8		max_rounds,
+		freestyle_ctx	*x,
+	const	u8		*key,
+	const	u16		key_length_bits,
+	const	u8		*iv,
+	const	u8		min_rounds,
+	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const 	u8 		pepper_bits,
-	const	u8 		num_init_hashes,
-	const 	u32 		pepper,
+	const	u8		pepper_bits,
+	const	u8		num_init_hashes,
+	const	u32		pepper,
 	const	u8		*init_hash
 );
 
 int freestyle_xcrypt (
-		freestyle_ctx 	*x,
-	const 	u8 		*input,
-		u8 		*output,
-		u32 		bytes,
+		freestyle_ctx	*x,
+	const	u8		*input,
+		u8		*output,
+		u32		bytes,
 		u8		*hash,
-	const 	bool 		do_encryption
+	const	bool		do_encryption
 );
 
 void freestyle_hash_password (
-	const 	char 		*password,
-	const 	u8 		*salt,
+	const	char		*password,
+	const	u8		*salt,
 		u8		*hash,
 	const	size_t		hash_len,
-	const 	u8 		min_rounds,
-	const 	u8 		max_rounds,
+	const	u8		min_rounds,
+	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const	u8 		pepper_bits,
-	const	u8 		num_init_hashes
+	const	u8		pepper_bits,
+	const	u8		num_init_hashes
 );
 
 void freestyle_hash_password_with_pepper (
-	const 	char 		*password,
-	const 	u8 		*salt,
+	const	char		*password,
+	const	u8		*salt,
 		u8		*hash,
 	const	size_t		hash_len,
-	const 	u8 		min_rounds,
-	const 	u8 		max_rounds,
+	const	u8		min_rounds,
+	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const	u8 		pepper_bits,
-	const	u8 		num_init_hashes,
+	const	u8		pepper_bits,
+	const	u8		num_init_hashes,
 	const	u32		pepper
 );
 
 bool freestyle_verify_password_hash (
-	const 	char 		*password,
-	const 	u8 		*salt,
+	const	char		*password,
+	const	u8		*salt,
 		u8		*hash,
 	const	size_t		hash_len,
-	const 	u8 		min_rounds,
-	const 	u8 		max_rounds,
+	const	u8		min_rounds,
+	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
-	const	u8 		pepper_bits,
-	const	u8 		num_init_hashes
+	const	u8		pepper_bits,
+	const	u8		num_init_hashes
 );
 
 #endif	/* FREESTYLE_H */

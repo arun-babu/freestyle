@@ -23,6 +23,7 @@
 
 #include "freestyle.h"
 #include "freestyle-opt.h"
+
 static u8 gcd (u8 a, u8 b)
 {
 	u8 r;
@@ -1120,7 +1121,7 @@ void freestyle_hash_password_with_pepper (
 bool freestyle_verify_password_hash (
 	const	char		*password,
 	const	u8		*salt,
-		u8		*hash,
+	const	u8		*hash,
 	const	size_t		hash_len,
 	const	u8		min_rounds,
 	const	u8		max_rounds,

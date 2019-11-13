@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018  P. Arun Babu and Jithin Jose Thomas 
+ * Copyright (c) 2019  P. Arun Babu and Jithin Jose Thomas
  * arun DOT hbni AT gmail DOT com, jithinjosethomas AT gmail DOT com
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -123,6 +123,7 @@ static void freestyle_roundsetup (
 
 static u8 freestyle_encrypt_block (
 		freestyle_ctx	*x,
+	const	u8		rounds,
 		u8		*expected_hash)
 {
 	u8	hash = 0;
@@ -130,7 +131,6 @@ static u8 freestyle_encrypt_block (
 	u32	temp1, temp2;
 
 	u8	r;
-	u8	rounds;
 
 	u32 hash_collided [8];
 
@@ -155,9 +155,6 @@ static u8 freestyle_encrypt_block (
 		output_15 = x->input_IV2;
 
 	memset (hash_collided, 0, sizeof(hash_collided));
-
-	/* Generate a random round */
-	freestyle_random_round_number(x,rounds);
 
 	for (r = x->num_precomputed_rounds + 1; r <= rounds; ++r)
 	{
@@ -286,7 +283,16 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	x->num_precomputed_rounds	= 4;
 
 	for (i = 0; i < MAX_INIT_HASHES; ++i) {
-		R [i] = CR[i] = 0;
+
+		R[i] = CR[i] = 0;
+
+		// generate all init random round numbers
+		if (i < x->num_init_hashes)
+		{
+			R[i] = x->min_rounds + arc4random_uniform(
+				x->max_rounds - x->min_rounds + 1
+			);
+		}
 	}
 
 	/* initial pre-computed rounds */
@@ -297,8 +303,9 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	for (i = 0; i < x->num_init_hashes; ++i)
 	{
-		R[i] = freestyle_encrypt_block (
+		freestyle_encrypt_block (
 			x,
+			R[i],
 			&x->init_hash [i]
 		);
 

@@ -121,7 +121,6 @@ static void freestyle_roundsetup (
 	x->input_CONSTANT0 ^= cipher_parameter;
 }
 
-
 static u8 freestyle_encrypt_block (
 		freestyle_ctx	*x,
 		u8		*expected_hash)

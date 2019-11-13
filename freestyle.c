@@ -168,7 +168,6 @@ static u8 freestyle_random_round_number (const freestyle_ctx *x)
 	return R;
 }
 
-
 static u8 freestyle_hash (
 	const	u32	cipher_state[16],
 	const	u8	previous_hash,
@@ -716,7 +715,7 @@ int freestyle_xcrypt (
 		}
 
 		i	+= bytes_to_process;
-		bytes -= bytes_to_process;
+		bytes	-= bytes_to_process;
 
 		++block;
 

@@ -123,7 +123,7 @@ static void freestyle_roundsetup (
 
 
 static u8 freestyle_encrypt_block (
-		freestyle_ctx	*x,	
+		freestyle_ctx	*x,
 		u8		*expected_hash)
 {
 	u8	hash = 0;
@@ -154,7 +154,7 @@ static u8 freestyle_encrypt_block (
 		output_13 = x->input_IV0,
 		output_14 = x->input_IV1,
 		output_15 = x->input_IV2;
-	
+
 	memset (hash_collided, 0, sizeof(hash_collided));
 
 	/* Generate a random round */
@@ -186,7 +186,7 @@ static u8 freestyle_encrypt_block (
 }
 
 static u8 freestyle_decrypt_block (
-		freestyle_ctx	*x,	
+		freestyle_ctx	*x,
 		u8		*expected_hash)
 {
 	u8	hash = 0;
@@ -268,7 +268,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	u32 p;
 
 	/* init RNG */
-	freestyle_init_RNG(x);	
+	freestyle_init_RNG(x);
 
 	if (! x->is_pepper_set)
 	{
@@ -516,10 +516,13 @@ static void freestyle_init_common (
 
 	freestyle_keysetup	(x, key, key_length_bits);
 	freestyle_ivsetup	(x, iv, 0);
-	freestyle_roundsetup	(x, min_rounds, max_rounds,
-				num_precomputed_rounds,
-				pepper_bits,
-				num_init_hashes
+	freestyle_roundsetup	(
+		x,
+		min_rounds,
+		max_rounds,
+		num_precomputed_rounds,
+		pepper_bits,
+		num_init_hashes
 	);
 }
 
@@ -664,7 +667,7 @@ void freestyle_encrypt (
 {
 	u32	i;
 
-	u32	block	= 0;
+	u32	block = 0;
 
 	u8	hash;
 
@@ -686,9 +689,9 @@ void freestyle_encrypt (
 	while (bytes > 0)
 	{
 		hash = 0;
-		
+
 		memset (hash_collided, 0, sizeof(hash_collided));
-	
+
 		output_00 = x->input_CONSTANT0;
 		output_01 = x->input_CONSTANT1;
 		output_02 = x->input_CONSTANT2;
@@ -790,8 +793,8 @@ void freestyle_encrypt (
 		ciphertext += 64;
 
 		bytes -= 64;
-	
-	++block;
+
+		++block;
 
 		freestyle_increment_counter(x);
 	}
@@ -806,7 +809,7 @@ void freestyle_decrypt (
 {
 	u32	i;
 
-	u32	block	= 0;
+	u32	block = 0;
 
 	u8	hash;
 
@@ -925,7 +928,7 @@ void freestyle_decrypt (
 		ciphertext += 64;
 
 		bytes -= 64;
-	
+
 		++block;
 
 		x->input_COUNTER = PLUSONE (x->input_COUNTER);

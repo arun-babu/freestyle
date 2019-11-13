@@ -545,10 +545,13 @@ static void freestyle_init_common (
 
 	freestyle_keysetup	(x, key, key_length_bits);
 	freestyle_ivsetup	(x, iv, 0);
-	freestyle_roundsetup	(x, min_rounds, max_rounds,
-				num_precomputed_rounds,
-				pepper_bits,
-				num_init_hashes
+	freestyle_roundsetup	(
+		x,
+		min_rounds,
+		max_rounds,
+		num_precomputed_rounds,
+		pepper_bits,
+		num_init_hashes
 	);
 }
 

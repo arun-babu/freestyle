@@ -121,7 +121,7 @@ static void freestyle_roundsetup (
 	x->input_CONSTANT0 ^= cipher_parameter;
 }
 
-static u8 freestyle_encrypt_block (
+static u8 freestyle_encrypt_block_init (
 		freestyle_ctx	*x,
 	const	u8		rounds,
 		u8		*expected_hash)
@@ -181,7 +181,7 @@ static u8 freestyle_encrypt_block (
 	return rounds;
 }
 
-static u8 freestyle_decrypt_block (
+static u8 freestyle_decrypt_block_init (
 		freestyle_ctx	*x,
 		u8		*expected_hash)
 {
@@ -303,7 +303,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 	for (i = 0; i < x->num_init_hashes; ++i)
 	{
-		freestyle_encrypt_block (
+		freestyle_encrypt_block_init (
 			x,
 			R[i],
 			&x->init_hash [i]
@@ -324,7 +324,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 
 			for (i = 0; i < x->num_init_hashes; ++i)
 			{
-				CR[i] = freestyle_decrypt_block (
+				CR[i] = freestyle_decrypt_block_init (
 					x,
 					&x->init_hash [i]
 				);
@@ -430,7 +430,7 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx *x)
 
 		for (i = 0; i < x->num_init_hashes; ++i)
 		{
-			R[i] = freestyle_decrypt_block (
+			R[i] = freestyle_decrypt_block_init (
 				x,
 				&x->init_hash [i]
 			);

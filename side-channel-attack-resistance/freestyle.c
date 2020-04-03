@@ -77,8 +77,7 @@ static void freestyle_diagonal_round (u32 x[16])
 
 static void freestyle_precompute_rounds (freestyle_ctx *x)
 {
-	u8 r;
-	for (r = 1; r <= x->num_precomputed_rounds; ++r)
+	for (u8 r = 1; r <= x->num_precomputed_rounds; ++r)
 	{
 		if (r & 1)
 			freestyle_column_round   (x->input);
@@ -148,8 +147,6 @@ static void freestyle_roundsetup (
 	const	u8		pepper_bits,
 	const	u8		num_init_hashes)
 {
-	u8 i;
-
 	x->min_rounds			= min_rounds;
 	x->max_rounds			= max_rounds;
 	x->num_precomputed_rounds	= num_precomputed_rounds;
@@ -165,7 +162,7 @@ static void freestyle_roundsetup (
 				| ((x->num_init_hashes		& 0x3F) <<  4)
 				| ((x->num_precomputed_rounds	& 0x0F)      );
 
-	for (i = 0; i < 8; ++i) {
+	for (u8 i = 0; i < 8; ++i) {
 		x->rand[i] = 0;
 	}
 
@@ -175,11 +172,11 @@ static void freestyle_roundsetup (
 
 static u8 freestyle_random_round_number (const freestyle_ctx *x)
 {
-	u8 R;
-
 	/* Generate a random number */
-	R = x->min_rounds
-	+ arc4random_uniform(x->max_rounds - x->min_rounds + x->hash_interval);
+
+	u8 R = x->min_rounds + arc4random_uniform (
+		x->max_rounds - x->min_rounds + x->hash_interval
+	);
 
 	/* Make it a multiple of hash_interval */
 	R = x->hash_interval * (u8)(R/x->hash_interval);
@@ -218,11 +215,8 @@ static u8 freestyle_xcrypt_block (
 		u8		*expected_hash,
 	const	bool		do_encryption)
 {
-	u32	i;
-
 	u8	r;
 	u8	hash = 0;
-
 	u32	output[16];
 
 	bool init = (plaintext == NULL) || (ciphertext == NULL);
@@ -238,7 +232,7 @@ static u8 freestyle_xcrypt_block (
 
 	memset (hash_collided, false, sizeof(hash_collided));
 
-	for (i = 0; i < 16; ++i) {
+	for (u8 i = 0; i < 16; ++i) {
 		output [i] = x->input [i];
 	}
 
@@ -278,13 +272,13 @@ static u8 freestyle_xcrypt_block (
 	{
 		u8 keystream [64];
 
-		for (i = 0; i < 16; ++i)
+		for (u8 i = 0; i < 16; ++i)
 		{
 			output [i] = PLUS(output[i], x->input[i]);
 			U32TO8_LITTLE (keystream + 4 * i, output[i]);
 		}
 
-		for (i = 0; i < bytes; ++i) {
+		for (u32 i = 0; i < bytes; ++i) {
 			ciphertext [i] = plaintext[i] ^ keystream[i];
 		}
         }
@@ -299,8 +293,6 @@ static void freestyle_increment_counter (freestyle_ctx *x)
 
 static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 {
-	u32	i;
-
 	u8	R [MAX_INIT_HASHES]; /* actual random rounds */
 	u8	CR[MAX_INIT_HASHES]; /* collided random rounds */
 
@@ -311,8 +303,6 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	const u8 saved_max_rounds		= x->max_rounds;
 	const u8 saved_hash_interval		= x->hash_interval;
 	const u8 saved_num_precomputed_rounds	= x->num_precomputed_rounds;
-
-	u32 p;
 
 	u8 random_i;
 	u8 random_indices [MAX_INIT_HASHES];
@@ -335,7 +325,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	x->hash_interval		= 1;
 	x->num_precomputed_rounds	= 4;
 
-	for (i = 0; i < MAX_INIT_HASHES; ++i) {
+	for (u8 i = 0; i < MAX_INIT_HASHES; ++i) {
 		R [i] = CR[i] = 0;
 	}
 
@@ -345,7 +335,7 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	/* add a random/user-set pepper to constant[0] */
 	x->input[CONSTANT0] = PLUS(x->input[CONSTANT0], x->pepper);
 
-	for (i = 0; i < x->num_init_hashes; ++i)
+	for (u8 i = 0; i < x->num_init_hashes; ++i)
 	{
 		R[i] = freestyle_encrypt_block (
 			x,
@@ -364,9 +354,9 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 		x->input[CONSTANT0] = MINUS(x->input[CONSTANT0], x->pepper);
 
 		/* check for any collisions between 0 and pepper */
-		for (p = 0; p < x->pepper; ++p)
+		for (u32 p = 0; p < x->pepper; ++p)
 		{
-			for (i = 0; i < x->num_init_hashes; ++i)
+			for (u8 i = 0; i < x->num_init_hashes; ++i)
 			{
 				random_i = random_indices[i];
 
@@ -396,7 +386,7 @@ retry:
 		}
 	}
 
-	for (i = 0; i < 8; ++i)
+	for (u8 i = 0; i < 8; ++i)
 	{
 		temp1 = 0;
 		temp2 = 0;
@@ -440,8 +430,6 @@ retry:
 
 static bool freestyle_randomsetup_decrypt (freestyle_ctx *x)
 {
-	u32	i;
-
 	u8	R [MAX_INIT_HASHES]; /* random rounds */
 
 	u32	temp1;
@@ -452,7 +440,6 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	const u8 saved_hash_interval		= x->hash_interval;
 	const u8 saved_num_precomputed_rounds	= x->num_precomputed_rounds;
 
-	u32 pepper;
 	u32 max_pepper = x->pepper_bits == 32 ?
 				UINT32_MAX : (u32) ((1 << x->pepper_bits) - 1);
 
@@ -468,7 +455,7 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	x->hash_interval		= 1;
 	x->num_precomputed_rounds	= 4;
 
-	for (i = 0; i < MAX_INIT_HASHES; ++i) {
+	for (u8 i = 0; i < MAX_INIT_HASHES; ++i) {
 		R[i] = 0;
 	}
 
@@ -478,9 +465,9 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx *x)
 	/* if initial pepper is set, then add it to constant[0] */
 	x->input [CONSTANT0] = PLUS(x->input[CONSTANT0], x->pepper);
 
-	for (pepper = x->pepper; pepper <= max_pepper; ++pepper)
+	for (u32 pepper = x->pepper; pepper <= max_pepper; ++pepper)
 	{
-		for (i = 0; i < x->num_init_hashes; ++i)
+		for (u8 i = 0; i < x->num_init_hashes; ++i)
 		{
 			random_i = random_indices [i];
 
@@ -510,7 +497,7 @@ retry:
 	if (! found_pepper)
 		return false;
 
-	for (i = 0; i < 8; ++i)
+	for (u8 i = 0; i < 8; ++i)
 	{
 		temp1 = 0;
 		temp2 = 0;
@@ -771,8 +758,6 @@ void freestyle_hash_password (
 	const	u8		pepper_bits,
 	const	u8		num_init_hashes)
 {
-	int i,j;
-
 	freestyle_ctx	x;
 
 	/* salt is 'hash_len' bytes long */
@@ -797,9 +782,9 @@ void freestyle_hash_password (
 
 	/* Fill the key (32 bytes)
 		and IV (first 11 bytes) with password */
-	for (i = 0; i < 43; )
+	for (u8 i = 0; i < 43; )
 	{
-		for (j = 0; i < 43 && j < password_len; ++j)
+		for (u8 j = 0; i < 43 && j < password_len; ++j)
 		{
 			key_and_iv [i++] = (u8) password[j];
 		}
@@ -864,8 +849,6 @@ void freestyle_hash_password_with_pepper (
 	const	u8		num_init_hashes,
 	const	u32		pepper)
 {
-	int i,j;
-
 	freestyle_ctx	x;
 
 	/* salt is 'hash_len' bytes long */
@@ -890,9 +873,9 @@ void freestyle_hash_password_with_pepper (
 
 	/* Fill the key (32 bytes)
 		and IV (first 11 bytes) with password */
-	for (i = 0; i < 43; )
+	for (u8 i = 0; i < 43; )
 	{
-		for (j = 0; i < 43 && j < password_len; ++j)
+		for (u8 j = 0; i < 43 && j < password_len; ++j)
 		{
 			key_and_iv [i++] = (u8) password[j];
 		}
@@ -957,8 +940,6 @@ bool freestyle_verify_password_hash (
 	const	u8		pepper_bits,
 	const	u8		num_init_hashes)
 {
-	int i,j;
-
 	freestyle_ctx	x;
 
 	const u8	*ciphertext	= hash + num_init_hashes + 1;
@@ -982,9 +963,9 @@ bool freestyle_verify_password_hash (
 
 	/* Fill the key (32 bytes)
 		and IV (first 11 bytes) with password */
-	for (i = 0; i < 43; )
+	for (u8 i = 0; i < 43; )
 	{
-		for (j = 0; i < 43 && j < password_len; ++j)
+		for (u8 j = 0; i < 43 && j < password_len; ++j)
 		{
 			key_and_iv [i++] = (u8) password[j];
 		}

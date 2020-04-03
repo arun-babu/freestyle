@@ -150,11 +150,11 @@ static void freestyle_roundsetup (
 
 static u8 freestyle_random_round_number (const freestyle_ctx *x)
 {
-	u8 R;
-
 	/* Generate a random number */
-	R = x->min_rounds
-	+ arc4random_uniform(x->max_rounds - x->min_rounds + x->hash_interval);
+
+	u8 R = x->min_rounds + arc4random_uniform (
+		x->max_rounds - x->min_rounds + x->hash_interval
+	);
 
 	/* Make it a multiple of hash_interval */
 	R = x->hash_interval * (u8)(R/x->hash_interval);

@@ -70,4 +70,6 @@ author = "Arun Babu Puthuparambil and Jithin Jose Thomas",
 
 **Other libraries used**
 
+For one of the optimized versions we use `randen-rng` instead of `arc4random` functions.
+
 The "randen-rng" (https://github.com/jedisct1/randen-rng) is released in Apache License Version 2.0, January 2004.

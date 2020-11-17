@@ -47,11 +47,11 @@ static void freestyle_init_random_indices(freestyle_ctx *x, u8 *random_indices)
 
 static u8 gcd (u8 a, u8 b)
 {
-	u8 r;
 
 	while (b != 0)
 	{
-		r = a % b;
+		u8 r = a % b;
+
 		a = b;
 		b = r;
 	}
@@ -296,9 +296,6 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
 	u8	R [MAX_INIT_HASHES]; /* actual random rounds */
 	u8	CR[MAX_INIT_HASHES]; /* collided random rounds */
 
-	u32	temp1;
-	u32	temp2;
-
 	const u8 saved_min_rounds		= x->min_rounds;
 	const u8 saved_max_rounds		= x->max_rounds;
 	const u8 saved_hash_interval		= x->hash_interval;
@@ -388,8 +385,8 @@ retry:
 
 	for (u8 i = 0; i < 8; ++i)
 	{
-		temp1 = 0;
-		temp2 = 0;
+		u32 temp1 = 0;
+		u32 temp2 = 0;
 
 		AXR (temp1, R[7*i + 0], temp2, 16);
 		AXR (temp2, R[7*i + 1], temp1, 12);
@@ -432,18 +429,16 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx *x)
 {
 	u8	R [MAX_INIT_HASHES]; /* random rounds */
 
-	u32	temp1;
-	u32	temp2;
-
 	const u8 saved_min_rounds		= x->min_rounds;
 	const u8 saved_max_rounds		= x->max_rounds;
 	const u8 saved_hash_interval		= x->hash_interval;
 	const u8 saved_num_precomputed_rounds	= x->num_precomputed_rounds;
 
-	u32 max_pepper = x->pepper_bits == 32 ?
+	u32 max_pepper = x->pepper_bits	== 32 ?
 				UINT32_MAX : (u32) ((1 << x->pepper_bits) - 1);
 
-	bool found_pepper = false;
+	bool found_pepper		= false;
+
 	u8 random_i;
 	u8 random_indices[MAX_INIT_HASHES];
 
@@ -499,8 +494,8 @@ retry:
 
 	for (u8 i = 0; i < 8; ++i)
 	{
-		temp1 = 0;
-		temp2 = 0;
+		u32 temp1 = 0;
+		u32 temp2 = 0;
 
 		AXR (temp1, R[7*i + 0], temp2, 16);
 		AXR (temp2, R[7*i + 1], temp1, 12);

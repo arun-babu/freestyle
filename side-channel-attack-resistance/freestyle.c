@@ -47,7 +47,6 @@ static void freestyle_init_random_indices(freestyle_ctx *x, u8 *random_indices)
 
 static u8 gcd (u8 a, u8 b)
 {
-
 	while (b != 0)
 	{
 		u8 r = a % b;

@@ -12,8 +12,8 @@ LFLAGS=""
 OS=`uname`
 
 if [ $OS == "Linux" ]
-then 
-	LFLAGS="-lbsd"	
+then
+	LFLAGS="-lbsd"
 	CC="gcc --std=gnu99 -O3 -Wall -Wextra -Werror -pedantic "
 fi
 

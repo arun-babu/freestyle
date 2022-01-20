@@ -133,13 +133,13 @@ typedef struct freestyle_ctx {
 
 } freestyle_ctx;
 
-void freestyle_set_counter (freestyle_ctx *x, u32 counter);
+void freestyle_set_counter (freestyle_ctx* const x, const u32 counter);
 
 void freestyle_init_encrypt (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
@@ -148,10 +148,10 @@ void freestyle_init_encrypt (
 );
 
 void freestyle_init_encrypt_with_pepper (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
@@ -161,45 +161,45 @@ void freestyle_init_encrypt_with_pepper (
 );
 
 bool freestyle_init_decrypt (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
 	const	u8		pepper_bits,
 	const	u8		num_init_hashes,
-	const	u8		*init_hash
+	const	u8*		const init_hash
 );
 
 bool freestyle_init_decrypt_with_pepper (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
 	const	u8		pepper_bits,
 	const	u8		num_init_hashes,
 	const	u32		pepper,
-	const	u8		*init_hash
+	const	u8*		const init_hash
 );
 
 int freestyle_xcrypt (
-		freestyle_ctx	*x,
-	const	u8		*input,
-		u8		*output,
+		freestyle_ctx*	const x,
+	const	u8*		const input,
+		u8*		const output,
 		u32		bytes,
-		u8		*hash,
+		u8*		const hash,
 	const	bool		do_encryption
 );
 
 void freestyle_hash_password (
-	const	char		*password,
-	const	u8		*salt,
-		u8		*hash,
+	const	char*		const password,
+	const	u8*		const salt,
+		u8*		const hash,
 	const	size_t		hash_len,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
@@ -209,9 +209,9 @@ void freestyle_hash_password (
 );
 
 void freestyle_hash_password_with_pepper (
-	const	char		*password,
-	const	u8		*salt,
-		u8		*hash,
+	const	char*		const password,
+	const	u8*		const salt,
+		u8*		const hash,
 	const	size_t		hash_len,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
@@ -222,9 +222,9 @@ void freestyle_hash_password_with_pepper (
 );
 
 bool freestyle_verify_password_hash (
-	const	char		*password,
-	const	u8		*salt,
-	const	u8		*hash,
+	const	char*		const password,
+	const	u8*		const salt,
+	const	u8*		const hash,
 	const	size_t		hash_len,
 	const	u8		min_rounds,
 	const	u8		max_rounds,

@@ -38,14 +38,14 @@ static u8 gcd (u8 a, u8 b)
 	return a;
 }
 
-void freestyle_set_counter (freestyle_ctx *x, u32 counter)
+void freestyle_set_counter (freestyle_ctx* const x, const u32 counter)
 {
 	x->input_COUNTER = PLUS(x->initial_counter, counter);
 }
 
 static void freestyle_keysetup (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		key,
 	const	u16		key_length_bits)
 {
 	const char *constants;
@@ -77,8 +77,8 @@ static void freestyle_keysetup (
 }
 
 static void freestyle_ivsetup (
-		freestyle_ctx	*x,
-	const	u8		*iv,
+		freestyle_ctx*	const x,
+	const	u8*		const iv,
 	const	u32		counter)
 {
 	x->input_COUNTER = counter;
@@ -89,7 +89,7 @@ static void freestyle_ivsetup (
 }
 
 static void freestyle_roundsetup (
-		freestyle_ctx	*x,
+		freestyle_ctx*	const x,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
@@ -122,9 +122,9 @@ static void freestyle_roundsetup (
 }
 
 static u8 freestyle_encrypt_block_init (
-		freestyle_ctx	*x,
+		freestyle_ctx* const x,
 	const	u8		rounds,
-		u8		*expected_hash)
+		u8*		const expected_hash)
 {
 	u8	hash = 0;
 
@@ -182,8 +182,8 @@ static u8 freestyle_encrypt_block_init (
 }
 
 static u8 freestyle_decrypt_block_init (
-		freestyle_ctx	*x,
-		u8		*expected_hash)
+		freestyle_ctx*	const x,
+		u8*		const expected_hash)
 {
 	u8	hash = 0;
 
@@ -245,7 +245,7 @@ static u8 freestyle_decrypt_block_init (
 		return r;
 }
 
-static void freestyle_randomsetup_encrypt (freestyle_ctx *x)
+static void freestyle_randomsetup_encrypt (freestyle_ctx* const x)
 {
 	u32	i;
 
@@ -387,7 +387,7 @@ retry:
 	freestyle_precompute_rounds(x);
 }
 
-static bool freestyle_randomsetup_decrypt (freestyle_ctx *x)
+static bool freestyle_randomsetup_decrypt (freestyle_ctx* const x)
 {
 	u32	i;
 
@@ -498,10 +498,10 @@ retry:
 }
 
 static void freestyle_init_common (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
@@ -533,10 +533,10 @@ static void freestyle_init_common (
 }
 
 void freestyle_init_encrypt (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
@@ -562,10 +562,10 @@ void freestyle_init_encrypt (
 }
 
 void freestyle_init_encrypt_with_pepper (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
@@ -592,16 +592,16 @@ void freestyle_init_encrypt_with_pepper (
 }
 
 bool freestyle_init_decrypt (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
 	const	u8		pepper_bits,
 	const	u8		num_init_hashes,
-	const	u8		*init_hash)
+	const	u8*		const init_hash)
 {
 	freestyle_init_common (
 		x,
@@ -628,17 +628,17 @@ bool freestyle_init_decrypt (
 }
 
 bool freestyle_init_decrypt_with_pepper (
-		freestyle_ctx	*x,
-	const	u8		*key,
+		freestyle_ctx*	const x,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
 	const	u8		pepper_bits,
 	const	u8		num_init_hashes,
 	const	u32		pepper,
-	const	u8		*init_hash)
+	const	u8*		const init_hash)
 {
 	freestyle_init_common (
 		x,
@@ -665,11 +665,11 @@ bool freestyle_init_decrypt_with_pepper (
 }
 
 void freestyle_encrypt (
-		freestyle_ctx*	restrict	x,
-	const	u8*		restrict	plaintext,
-		u8*		restrict	ciphertext,
-		u32				bytes,
-		u8*		restrict	expected_hash)
+		freestyle_ctx*	const	restrict	x,
+	const	u8*			restrict	plaintext,
+		u8*			restrict	ciphertext,
+		u32					bytes,
+		u8*		const	restrict	expected_hash)
 {
 	u32	i;
 
@@ -807,11 +807,11 @@ void freestyle_encrypt (
 }
 
 void freestyle_decrypt (
-		freestyle_ctx*	restrict	x,
-	const	u8*		restrict	ciphertext,
-		u8*		restrict	plaintext,
-		u32				bytes,
-		u8*		restrict	expected_hash)
+		freestyle_ctx*	const	restrict	x,
+	const	u8*			restrict	ciphertext,
+		u8*			restrict	plaintext,
+		u32					bytes,
+		u8*		const	restrict	expected_hash)
 {
 	u32	i;
 
@@ -942,9 +942,9 @@ void freestyle_decrypt (
 }
 
 void freestyle_hash_password (
-	const	char		*password,
-	const	u8		*salt,
-		u8		*hash,
+	const	char*		const password,
+	const	u8*		const salt,
+		u8*		const hash,
 	const	size_t		hash_len,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
@@ -954,11 +954,11 @@ void freestyle_hash_password (
 {
 	int i,j;
 
-	freestyle_ctx	x;
+	freestyle_ctx x;
 
 	/* salt is 'hash_len' bytes long */
-	const u8	*plaintext	= salt;
-	u8		*ciphertext	= NULL;
+	const	u8*	const	plaintext	= salt;
+		u8*		ciphertext	= NULL;
 
 	u8 key_and_iv [44];
 
@@ -1034,9 +1034,9 @@ void freestyle_hash_password (
 }
 
 void freestyle_hash_password_with_pepper (
-	const	char		*password,
-	const	u8		*salt,
-		u8		*hash,
+	const	char*		const password,
+	const	u8*		const salt,
+		u8*		const hash,
 	const	size_t		hash_len,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
@@ -1047,11 +1047,11 @@ void freestyle_hash_password_with_pepper (
 {
 	int i,j;
 
-	freestyle_ctx	x;
+	freestyle_ctx x;
 
 	/* salt is 'hash_len' bytes long */
-	const u8	*plaintext	= salt;
-	u8		*ciphertext	= NULL;
+	const	u8*	const	plaintext	= salt;
+		u8*		ciphertext	= NULL;
 
 	u8 key_and_iv [44];
 
@@ -1128,9 +1128,9 @@ void freestyle_hash_password_with_pepper (
 }
 
 bool freestyle_verify_password_hash (
-	const	char		*password,
-	const	u8		*salt,
-	const	u8		*hash,
+	const	char*		const password,
+	const	u8*		const salt,
+	const	u8*		const hash,
 	const	size_t		hash_len,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
@@ -1140,10 +1140,10 @@ bool freestyle_verify_password_hash (
 {
 	int i,j;
 
-	freestyle_ctx	x;
+	freestyle_ctx x;
 
-	const u8	*ciphertext	= hash + num_init_hashes + 1;
-	u8		*plaintext	= NULL;
+	const	u8*	const	ciphertext	= hash + num_init_hashes + 1;
+		u8*		plaintext	= NULL;
 
 	u8 key_and_iv [44];
 

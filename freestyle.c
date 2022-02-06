@@ -133,11 +133,13 @@ static void freestyle_roundsetup (
 	x->hash_interval		= gcd(x->min_rounds,x->max_rounds);
 
 	/* 8 + 8 + 6 + 6 + 4  bits */
-	u32 cipher_parameter =	((x->min_rounds			& 0xFF) << 24)
-				| ((x->max_rounds		& 0xFF) << 16)
-				| ((x->pepper_bits		& 0x3F) << 10)
-				| ((x->num_init_hashes		& 0x3F) <<  4)
-				| ((x->num_precomputed_rounds	& 0x0F)      );
+	u32 cipher_parameter = (
+			((x->min_rounds			& 0xFF) << 24) |
+			((x->max_rounds			& 0xFF) << 16) |
+			((x->pepper_bits		& 0x3F) << 10) |
+			((x->num_init_hashes		& 0x3F) <<  4) |
+			((x->num_precomputed_rounds	& 0x0F))
+	);
 
 	for (u8 i = 0; i < 8; ++i) {
 		x->rand[i] = 0;

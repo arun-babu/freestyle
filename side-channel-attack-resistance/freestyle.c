@@ -220,8 +220,6 @@ static u8 freestyle_xcrypt_block (
 	u8	hash = 0;
 	u32	output[16];
 
-	bool init = (plaintext == NULL) || (ciphertext == NULL);
-
 	u8 rounds = do_encryption ?
 			freestyle_random_round_number (x): x->max_rounds;
 
@@ -269,9 +267,11 @@ static u8 freestyle_xcrypt_block (
 		if (r > x->max_rounds)
 			return 0;
 
+	bool init = ((plaintext == NULL) || (ciphertext == NULL));
+
 	if (! init)
 	{
-		u8 keystream [64];
+		u8 keystream [64] = {0};
 
 		for (u8 i = 0; i < 16; ++i)
 		{

@@ -1127,6 +1127,16 @@ void freestyle_hash_password_with_pepper (
 	);
 }
 
+static bool safe_bcmp (const u8 *a, const u8 *b, const size_t length)
+{
+	u8 diff = 0;
+
+	for (size_t i = 0; i < length; ++i)
+		diff |= (a[i] ^ b[i]);
+
+	return diff;
+}
+
 bool freestyle_verify_password_hash (
 	const	char*		const password,
 	const	u8*		const salt,
@@ -1201,5 +1211,5 @@ bool freestyle_verify_password_hash (
 		&expected_hash
 	);
 
-	return (0 == memcmp(plaintext,salt,hash_len));
+	return (0 == safe_bcmp(plaintext,salt,hash_len));
 }

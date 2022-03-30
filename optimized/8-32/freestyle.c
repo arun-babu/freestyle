@@ -1142,7 +1142,7 @@ void freestyle_hash_password_with_pepper (
 	);
 }
 
-static bool safe_bcmp (const u8* const a, const u8* const b, const size_t length)
+static u8 safe_bcmp (const u8* const a, const u8* const b, const size_t length)
 {
 	u8 diff = 0;
 

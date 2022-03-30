@@ -889,7 +889,7 @@ void freestyle_hash_password_with_pepper (
 	);
 }
 
-static bool safe_bcmp (const u8 *a, const u8 *b, const size_t length)
+static bool safe_bcmp (const u8* const a, const u8* const b, const size_t length)
 {
 	u8 diff = 0;
 
@@ -912,7 +912,7 @@ bool freestyle_verify_password_hash (
 {
 	freestyle_ctx x;
 
-	const	u8* const	ciphertext	= hash + num_init_hashes + 1;
+	const	u8*	const	ciphertext	= hash + num_init_hashes + 1;
 		u8*		plaintext	= NULL;
 
 	u8 key_and_iv [44];

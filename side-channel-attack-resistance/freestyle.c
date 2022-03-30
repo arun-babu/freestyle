@@ -133,11 +133,11 @@ static void freestyle_ivsetup (
 	const	u8*		const iv,
 	const	u32		counter)
 {
-	x->input[COUNTER] = counter;
+	x->input[COUNTER]	= counter;
 
-	x->input[IV0] = U8TO32_LITTLE(iv + 0);
-	x->input[IV1] = U8TO32_LITTLE(iv + 4);
-	x->input[IV2] = U8TO32_LITTLE(iv + 8);
+	x->input[IV0]		= U8TO32_LITTLE(iv + 0);
+	x->input[IV1]		= U8TO32_LITTLE(iv + 4);
+	x->input[IV2]		= U8TO32_LITTLE(iv + 8);
 }
 
 static void freestyle_roundsetup (
@@ -925,7 +925,7 @@ void freestyle_hash_password_with_pepper (
 	);
 }
 
-static bool safe_bcmp (const u8 *a, const u8 *b, const size_t length)
+static bool safe_bcmp (const u8* const a, const u8* const b, const size_t length)
 {
 	u8 diff = 0;
 

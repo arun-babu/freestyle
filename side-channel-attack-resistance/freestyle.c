@@ -157,11 +157,13 @@ static void freestyle_roundsetup (
 	x->hash_interval		= gcd(x->min_rounds,x->max_rounds);
 
 	/* 8 + 8 + 6 + 6 + 4  bits */
-	u32 cipher_parameter =	((x->min_rounds			& 0xFF) << 24)
-				| ((x->max_rounds		& 0xFF) << 16)
-				| ((x->pepper_bits		& 0x3F) << 10)
-				| ((x->num_init_hashes		& 0x3F) <<  4)
-				| ((x->num_precomputed_rounds	& 0x0F)      );
+	u32 cipher_parameter = (
+			((x->min_rounds			& 0xFF) << 24) |
+			((x->max_rounds			& 0xFF) << 16) |
+			((x->pepper_bits		& 0x3F) << 10) |
+			((x->num_init_hashes		& 0x3F) <<  4) |
+			((x->num_precomputed_rounds	& 0x0F))
+	);
 
 	for (u8 i = 0; i < 8; ++i) {
 		x->rand[i] = 0;
@@ -435,7 +437,7 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx* const x)
 	const u8 saved_hash_interval		= x->hash_interval;
 	const u8 saved_num_precomputed_rounds	= x->num_precomputed_rounds;
 
-	u32 max_pepper = x->pepper_bits	== 32 ?
+	const u32 max_pepper = (x->pepper_bits == 32) ?
 				UINT32_MAX : (u32) ((1 << x->pepper_bits) - 1);
 
 	bool found_pepper		= false;
@@ -461,7 +463,10 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx* const x)
 	/* if initial pepper is set, then add it to constant[0] */
 	x->input [CONSTANT0] = PLUS(x->input[CONSTANT0], x->pepper);
 
-	for (u32 pepper = x->pepper; pepper <= max_pepper; ++pepper)
+	const	u32 start_pepper	= x->pepper;
+		u32 running_pepper	= x->pepper;
+
+	while (true)
 	{
 		for (u8 i = 0; i < x->num_init_hashes; ++i)
 		{
@@ -488,6 +493,16 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx* const x)
 
 retry:
 		x->input[CONSTANT0] = PLUSONE(x->input[CONSTANT0]);
+
+		++running_pepper;
+
+		if (
+			(running_pepper == start_pepper)
+					||
+			(running_pepper == max_pepper)
+		) {
+			return false;
+		}
 	}
 
 	if (! found_pepper)
@@ -574,9 +589,9 @@ static void freestyle_init_common (
 
 void freestyle_init_encrypt (
 		freestyle_ctx*	const x,
-	const	u8		*key,
+	const	u8*		const key,
 	const	u16		key_length_bits,
-	const	u8		*iv,
+	const	u8*		const iv,
 	const	u8		min_rounds,
 	const	u8		max_rounds,
 	const	u8		num_precomputed_rounds,
@@ -948,7 +963,7 @@ bool freestyle_verify_password_hash (
 {
 	freestyle_ctx x;
 
-	const	u8* const	ciphertext	= hash + num_init_hashes + 1;
+	const	u8*	const	ciphertext	= hash + num_init_hashes + 1;
 		u8*		plaintext	= NULL;
 
 	u8 key_and_iv [44];

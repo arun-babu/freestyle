@@ -20,7 +20,7 @@ static inline void
 store(const int128 v, uint64_t *__restrict__ lanes, const int block)
 {
     uint64_t *__restrict__ to = lanes + block * LANES;
-    return _mm_store_si128((int128 *) to, v);
+    _mm_store_si128((int128 *) to, v);
 }
 
 static inline int128

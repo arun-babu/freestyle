@@ -402,11 +402,10 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx* const x)
 	const u8 saved_hash_interval		= x->hash_interval;
 	const u8 saved_num_precomputed_rounds	= x->num_precomputed_rounds;
 
-	u32 pepper;
-	u32 max_pepper = x->pepper_bits == 32 ?
+	const u32 max_pepper = (x->pepper_bits == 32) ?
 				UINT32_MAX : (u32) ((1 << x->pepper_bits) - 1);
 
-	bool found_pepper = false;
+	bool found_pepper		= false;
 
 	/* set sane values for initalization */
 	x->min_rounds			= 8;
@@ -424,7 +423,10 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx* const x)
 	/* if initial pepper is set, then add it to constant[0] */
 	x->input_CONSTANT0 = PLUS(x->input_CONSTANT0, x->pepper);
 
-	for (pepper = x->pepper; pepper <= max_pepper; ++pepper)
+	const	u32 start_pepper	= x->pepper;
+		u32 running_pepper	= x->pepper;
+
+	while (true)
 	{
 		x->input_COUNTER = x->initial_counter;
 
@@ -448,6 +450,16 @@ static bool freestyle_randomsetup_decrypt (freestyle_ctx* const x)
 
 retry:
 		x->input_CONSTANT0 = PLUSONE(x->input_CONSTANT0);
+
+		++running_pepper;
+
+		if (
+			(running_pepper == start_pepper)
+					||
+			(running_pepper == max_pepper)
+		) {
+			return false;
+		}
 	}
 
 	if (! found_pepper)

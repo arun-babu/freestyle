@@ -458,13 +458,11 @@ retry:
 
 		++running_pepper;
 
-		if (
-			(running_pepper == start_pepper)
-					||
-			(running_pepper == max_pepper)
-		) {
+		if (running_pepper > max_pepper)
+			running_pepper = 0;
+
+		if (running_pepper == start_pepper)
 			return false;
-		}
 	}
 
 	if (! found_pepper)

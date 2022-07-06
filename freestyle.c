@@ -38,18 +38,18 @@ static u8 gcd (u8 a, u8 b)
 
 static void freestyle_column_round (u32 x[16])
 {
-	QR (x[0], x[4], x[ 8], x[12])
-	QR (x[1], x[5], x[ 9], x[13])
-	QR (x[2], x[6], x[10], x[14])
-	QR (x[3], x[7], x[11], x[15])
+	QR (x[0], x[4], x[ 8], x[12]);
+	QR (x[1], x[5], x[ 9], x[13]);
+	QR (x[2], x[6], x[10], x[14]);
+	QR (x[3], x[7], x[11], x[15]);
 }
 
 static void freestyle_diagonal_round (u32 x[16])
 {
-	QR (x[0], x[5], x[10], x[15])
-	QR (x[1], x[6], x[11], x[12])
-	QR (x[2], x[7], x[ 8], x[13])
-	QR (x[3], x[4], x[ 9], x[14])
+	QR (x[0], x[5], x[10], x[15]);
+	QR (x[1], x[6], x[11], x[12]);
+	QR (x[2], x[7], x[ 8], x[13]);
+	QR (x[3], x[4], x[ 9], x[14]);
 }
 
 static void freestyle_precompute_rounds (freestyle_ctx* const x)
@@ -93,15 +93,15 @@ static void freestyle_keysetup (
 		constants = sigma;
 	}
 
-	x->input[KEY4] = U8TO32_LITTLE(key +  0);
-	x->input[KEY5] = U8TO32_LITTLE(key +  4);
-	x->input[KEY6] = U8TO32_LITTLE(key +  8);
-	x->input[KEY7] = U8TO32_LITTLE(key + 12);
+	x->input[KEY4]		= U8TO32_LITTLE(key +  0);
+	x->input[KEY5]		= U8TO32_LITTLE(key +  4);
+	x->input[KEY6]		= U8TO32_LITTLE(key +  8);
+	x->input[KEY7]		= U8TO32_LITTLE(key + 12);
 
-	x->input[CONSTANT0] = U8TO32_LITTLE(constants +  0);
-	x->input[CONSTANT1] = U8TO32_LITTLE(constants +  4);
-	x->input[CONSTANT2] = U8TO32_LITTLE(constants +  8);
-	x->input[CONSTANT3] = U8TO32_LITTLE(constants + 12);
+	x->input[CONSTANT0]	= U8TO32_LITTLE(constants +  0);
+	x->input[CONSTANT1]	= U8TO32_LITTLE(constants +  4);
+	x->input[CONSTANT2]	= U8TO32_LITTLE(constants +  8);
+	x->input[CONSTANT3]	= U8TO32_LITTLE(constants + 12);
 }
 
 static void freestyle_ivsetup (

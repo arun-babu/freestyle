@@ -53,7 +53,7 @@
 #define KEY5		(9)
 #define KEY6		(10)
 #define KEY7		(11)
-#define COUNTER	(12)
+#define COUNTER		(12)
 #define IV0		(13)
 #define IV1		(14)
 #define IV2		(15)
@@ -76,21 +76,20 @@ typedef uint32_t u32;
 #define U8V(v) ((u8)(v) & U8C(0xFF))
 #define U32V(v) ((u32)(v) & U32C(0xFFFFFFFF))
 
-#define ROTL32(v, n) \
-  (U32V((v) << (n)) | ((v) >> (32 - (n))))
+#define ROTL32(v, n) (U32V((v) << (n)) | ((v) >> (32 - (n))))
 
-#define U8TO32_LITTLE(p) \
-  (((u32)((p)[0])      ) | \
-   ((u32)((p)[1]) <<  8) | \
-   ((u32)((p)[2]) << 16) | \
+#define U8TO32_LITTLE(p)	\
+  (((u32)((p)[0])      ) |	\
+   ((u32)((p)[1]) <<  8) |	\
+   ((u32)((p)[2]) << 16) |	\
    ((u32)((p)[3]) << 24))
 
-#define U32TO8_LITTLE(p, v) \
-  do { \
-    (p)[0] = U8V((v)      ); \
-    (p)[1] = U8V((v) >>  8); \
-    (p)[2] = U8V((v) >> 16); \
-    (p)[3] = U8V((v) >> 24); \
+#define U32TO8_LITTLE(p, v)	\
+  do {				\
+    (p)[0] = U8V((v)      );	\
+    (p)[1] = U8V((v) >>  8);	\
+    (p)[2] = U8V((v) >> 16);	\
+    (p)[3] = U8V((v) >> 24);	\
   } while (0)
 
 #define ROTATE(v,c) (ROTL32(v,c))
@@ -99,11 +98,12 @@ typedef uint32_t u32;
 #define MINUS(v,w) (U32V((v) - (w)))
 #define PLUSONE(v) (PLUS((v),1))
 
-#define QR(a,b,c,d) \
-  a = PLUS(a,b); d = ROTATE(XOR(d,a),16); \
-  c = PLUS(c,d); b = ROTATE(XOR(b,c),12); \
-  a = PLUS(a,b); d = ROTATE(XOR(d,a), 8); \
-  c = PLUS(c,d); b = ROTATE(XOR(b,c), 7);
+#define QR(a,b,c,d) {				\
+  a = PLUS(a,b); d = ROTATE(XOR(d,a), 16);	\
+  c = PLUS(c,d); b = ROTATE(XOR(b,c), 12);	\
+  a = PLUS(a,b); d = ROTATE(XOR(d,a),  8);	\
+  c = PLUS(c,d); b = ROTATE(XOR(b,c),  7);	\
+}
 
 static const char sigma[16] = "expand 32-byte k";
 static const char tau[16] = "expand 16-byte k";

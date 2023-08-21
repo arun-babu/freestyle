@@ -27,7 +27,7 @@ static u8 gcd (u8 a, u8 b)
 {
 	while (b != 0)
 	{
-		u8 r = a % b;
+		const u8 r = a % b;
 
 		a = b;
 		b = r;
@@ -171,8 +171,6 @@ static u8 freestyle_hash (
 	const	u8	previous_hash,
 	const	u8	rounds)
 {
-	u8  hash;
-
 	u32 temp1 = rounds;
 	u32 temp2 = previous_hash;
 
@@ -181,7 +179,7 @@ static u8 freestyle_hash (
 	AXR (temp1, cipher_state[ 9], temp2,  8);
 	AXR (temp2, cipher_state[12], temp1,  7);
 
-	hash = temp1 & 0xFF;
+	const u8 hash = temp1 & 0xFF;
 
 	return hash;
 }
@@ -198,10 +196,11 @@ static u8 freestyle_xcrypt_block (
 	u8	hash = 0;
 	u32	output[16];
 
-	u8 rounds = do_encryption ?
-			freestyle_random_round_number (x): x->max_rounds;
+	const u8 rounds	= do_encryption ?
+				freestyle_random_round_number (x):
+				x->max_rounds;
 
-	bool do_decryption = ! do_encryption;
+	const bool do_decryption = ! do_encryption;
 
 	bool hash_collided [MAX_HASH_VALUES];
 
@@ -764,8 +763,8 @@ void freestyle_hash_password (
 	// last byte of IV is the password length
 	key_and_iv [43] = password_len;
 
-	u8 *key	= key_and_iv;
-	u8 *iv	= key_and_iv + 32;
+	const u8* const key	= key_and_iv;
+	const u8* const iv	= key_and_iv + 32;
 
 	freestyle_init_encrypt (
 		&x,
@@ -830,7 +829,7 @@ void freestyle_hash_password_with_pepper (
 
 	u8 expected_hash;
 
-	int password_len = strlen (password);
+	const int password_len = strlen (password);
 
 	assert (password_len	>=  1);
 	assert (password_len	<= 43);
@@ -855,8 +854,8 @@ void freestyle_hash_password_with_pepper (
 	// last byte of IV is the password length
 	key_and_iv [43] = password_len;
 
-	u8 *key	= key_and_iv;
-	u8 *iv	= key_and_iv + 32;
+	const u8* const key	= key_and_iv;
+	const u8* const iv	= key_and_iv + 32;
 
 	freestyle_init_encrypt_with_pepper (
 		&x,
@@ -928,9 +927,8 @@ bool freestyle_verify_password_hash (
 
 	u8 key_and_iv [44];
 
-	u8 expected_hash = hash [num_init_hashes];
-
-	int password_len = strlen (password);
+	u8		expected_hash	= hash [num_init_hashes];
+	const int	password_len	= strlen (password);
 
 	assert (password_len	>=  1);
 	assert (password_len	<= 43);
@@ -955,8 +953,8 @@ bool freestyle_verify_password_hash (
 	// last byte of IV is the password length
 	key_and_iv [43] = password_len;
 
-	u8 *key	= key_and_iv;
-	u8 *iv	= key_and_iv + 32;
+	const u8* const key	= key_and_iv;
+	const u8* const iv	= key_and_iv + 32;
 
 	if (! freestyle_init_decrypt (
 		&x,

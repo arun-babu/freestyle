@@ -3,7 +3,7 @@
 
 #define MSG_LEN (64)
 
-int main ()
+int main (void)
 {
 	int i, j;
 

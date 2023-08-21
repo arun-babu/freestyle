@@ -8,7 +8,7 @@
 
 #include "test-password-hash.h"
 
-int main ()
+int main (void)
 {
 	int i;
 

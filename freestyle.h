@@ -196,7 +196,7 @@ int freestyle_xcrypt (
 	const	bool		do_encryption
 );
 
-void freestyle_hash_password (
+int freestyle_hash_password (
 	const	char*		const password,
 	const	u8*		const salt,
 		u8*		const hash,
@@ -208,7 +208,7 @@ void freestyle_hash_password (
 	const	u8		num_init_hashes
 );
 
-void freestyle_hash_password_with_pepper (
+int freestyle_hash_password_with_pepper (
 	const	char*		const password,
 	const	u8*		const salt,
 		u8*		const hash,

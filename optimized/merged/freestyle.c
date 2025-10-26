@@ -951,7 +951,7 @@ void freestyle_decrypt (
 	}
 }
 
-void freestyle_hash_password (
+int freestyle_hash_password (
 	const	char*		const password,
 	const	u8*		const salt,
 		u8*		const hash,
@@ -962,7 +962,7 @@ void freestyle_hash_password (
 	const	u8		pepper_bits,
 	const	u8		num_init_hashes)
 {
-	int i,j;
+	size_t i,j;
 
 	freestyle_ctx x;
 
@@ -974,16 +974,14 @@ void freestyle_hash_password (
 
 	u8 expected_hash;
 
-	int password_len = strlen (password);
+	const size_t password_len = strnlen (password,64);
 
 	assert (password_len	>=  1);
 	assert (password_len	<= 43);
 	assert (hash_len	<= 64);
 
-	if (! (ciphertext = malloc(hash_len)))
-	{
-		perror("malloc failed ");
-		exit(-1);
+	if ((ciphertext = malloc(hash_len)) == NULL) {
+		return -1;	
 	}
 
 	/* Fill the key (32 bytes)
@@ -1041,9 +1039,13 @@ void freestyle_hash_password (
 		ciphertext,
 		hash_len
 	);
+
+	free(ciphertext);
+	
+	return 0;
 }
 
-void freestyle_hash_password_with_pepper (
+int freestyle_hash_password_with_pepper (
 	const	char*		const password,
 	const	u8*		const salt,
 		u8*		const hash,
@@ -1055,7 +1057,7 @@ void freestyle_hash_password_with_pepper (
 	const	u8		num_init_hashes,
 	const	u32		pepper)
 {
-	int i,j;
+	size_t i,j;
 
 	freestyle_ctx x;
 
@@ -1067,16 +1069,14 @@ void freestyle_hash_password_with_pepper (
 
 	u8 expected_hash;
 
-	int password_len = strlen (password);
+	const size_t password_len = strnlen (password,64);
 
 	assert (password_len	>=  1);
 	assert (password_len	<= 43);
 	assert (hash_len	<= 64);
 
-	if (! (ciphertext = malloc(hash_len)))
-	{
-		perror("malloc failed ");
-		exit(-1);
+	if ((ciphertext = malloc(hash_len)) == NULL) {
+		return -1;	
 	}
 
 	/* Fill the key (32 bytes)
@@ -1135,6 +1135,10 @@ void freestyle_hash_password_with_pepper (
 		ciphertext,
 		hash_len
 	);
+
+	free(ciphertext);
+
+	return 0;
 }
 
 static u8 safe_bcmp (const u8* const a, const u8* const b, const size_t length)
@@ -1158,7 +1162,7 @@ bool freestyle_verify_password_hash (
 	const	u8		pepper_bits,
 	const	u8		num_init_hashes)
 {
-	int i,j;
+	size_t i,j;
 
 	freestyle_ctx x;
 
@@ -1169,16 +1173,14 @@ bool freestyle_verify_password_hash (
 
 	u8 expected_hash = hash [num_init_hashes];
 
-	int password_len = strlen (password);
+	const size_t password_len = strnlen (password,64);
 
 	assert (password_len	>=  1);
 	assert (password_len	<= 43);
 	assert (hash_len	<= 64);
 
-	if (! (plaintext = malloc(hash_len)))
-	{
-		perror("malloc failed ");
-		exit(-1);
+	if ((plaintext = malloc(hash_len)) == NULL) {
+		return false;	
 	}
 
 	/* Fill the key (32 bytes)

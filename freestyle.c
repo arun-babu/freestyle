@@ -85,12 +85,12 @@ static void freestyle_keysetup (
 
 	if (key_length_bits == 128) /* 256 is recommended */
 	{
-		constants = tau;
+		constants	= tau;
 	}
 	else
 	{
-		key += 16;
-		constants = sigma;
+		key		+= 16;
+		constants	= sigma;
 	}
 
 	x->input[KEY4]		= U8TO32_LITTLE(key +  0);
@@ -239,8 +239,10 @@ static u8 freestyle_xcrypt_block (
 	if (do_encryption)
 		*expected_hash = hash;
 	else
+	{
 		if (r > x->max_rounds)
 			return 0;
+	}
 
 	bool init = ((plaintext == NULL) || (ciphertext == NULL));
 
@@ -282,9 +284,11 @@ static void freestyle_randomsetup_encrypt (freestyle_ctx* const x)
 		if (x->pepper_bits == 32)
 			x->pepper = arc4random_uniform (UINT32_MAX);
 		else
+		{
 			x->pepper = arc4random_uniform (
 				1 << x->pepper_bits
 			);
+		}
 	}
 
 	/* set sane values for initalization */

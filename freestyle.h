@@ -233,4 +233,8 @@ bool freestyle_verify_password_hash (
 	const	u8		num_init_hashes
 );
 
+void freestyle_destroy (
+	freestyle_ctx*		const x
+);
+
 #endif	/* FREESTYLE_H */

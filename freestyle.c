@@ -552,7 +552,7 @@ static void freestyle_init_common (
 
 void freestyle_destroy (freestyle_ctx* const x)
 {
-	explicit_bzero(x, sizeof(freestyle_ctx));
+	memset (x, 0, sizeof(freestyle_ctx));
 }
 
 void freestyle_init_encrypt (
